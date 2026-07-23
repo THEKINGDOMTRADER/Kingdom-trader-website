@@ -357,9 +357,46 @@
     font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;
     padding:3px 9px;border-radius:3px;background:rgba(198,161,83,0.12);color:var(--gold);
   }
+  .r-status.status-done{background:rgba(43,174,114,0.15);color:var(--buy);}
+  .r-status.status-progress{background:rgba(198,161,83,0.15);color:var(--gold);}
   .request-card .r-detail{font-size:13.5px;color:var(--text-dim);white-space:pre-wrap;}
   .request-card .r-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);margin-top:10px;}
   .text-dim-note{color:var(--text-dim);font-size:14px;}
+
+  .dash-actions{position:relative;}
+  .kebab-btn{
+    background:var(--panel);border:1px solid var(--line);border-radius:4px;
+    color:var(--text);font-size:20px;line-height:1;padding:6px 14px;cursor:pointer;
+  }
+  .kebab-btn:hover{border-color:var(--gold-soft);}
+  .profile-panel{
+    position:absolute;top:calc(100% + 8px);right:0;z-index:10;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:6px;
+    padding:18px;min-width:220px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  }
+  .profile-row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:13.5px;}
+  .profile-row .l{color:var(--text-dim);}
+  .profile-row .v{font-weight:600;}
+
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px;}
+  @media (max-width:600px){.stats-row{grid-template-columns:1fr;}}
+  .stat-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    padding:20px;text-align:center;
+  }
+  .stat-num{font-family:'JetBrains Mono',monospace;font-size:28px;color:var(--gold);}
+  .stat-label{font-size:12px;color:var(--text-dim);margin-top:6px;}
+
+  .dash-section-label{
+    font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;
+    letter-spacing:0.06em;color:var(--text-dim);margin:0 0 14px;
+  }
+  .payment-placeholder{
+    background:var(--panel);border:1px dashed var(--line);border-radius:6px;
+    padding:24px;margin-bottom:8px;
+  }
+  .new-request-btn{display:inline-flex;margin-bottom:20px;}
 
   /* Contact */
   .contact{
@@ -756,10 +793,41 @@
           <div class="eyebrow">Welcome back</div>
           <div id="dashName" class="dash-name"></div>
         </div>
-        <button type="button" id="logoutBtn" class="btn btn-ghost">Log out</button>
+        <div class="dash-actions">
+          <button type="button" id="kebabBtn" class="kebab-btn" aria-label="Profile menu">⋮</button>
+          <div id="profilePanel" class="profile-panel" style="display:none;">
+            <div class="profile-row"><span class="l">Name</span><span id="profName" class="v"></span></div>
+            <div class="profile-row"><span class="l">Email</span><span id="profEmail" class="v"></span></div>
+            <button type="button" id="logoutBtn" class="btn btn-ghost" style="width:100%;margin-top:14px;">Log out</button>
+          </div>
+        </div>
       </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div id="statTotal" class="stat-num">0</div>
+          <div class="stat-label">Requests submitted</div>
+        </div>
+        <div class="stat-card">
+          <div id="statActive" class="stat-num">0</div>
+          <div class="stat-label">In progress</div>
+        </div>
+        <div class="stat-card">
+          <div id="statDone" class="stat-num">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+      </div>
+      <p id="emptyStateNote" class="text-dim-note" style="display:none;margin-bottom:28px;">Welcome! Your first request will show up here once you submit one below.</p>
+
+      <div class="dash-section-label" id="requestsLabel">Your requests</div>
+      <a href="#request" class="btn btn-gold new-request-btn">+ Log a new request</a>
       <div id="requestsList" class="requests-list">
         <p class="text-dim-note">Loading your requests…</p>
+      </div>
+
+      <div class="dash-section-label">Payment history</div>
+      <div class="payment-placeholder">
+        <p class="text-dim-note">Payment tracking is coming soon — this section will show your payment history once it's set up.</p>
       </div>
     </div>
   </div>
@@ -907,6 +975,8 @@
       authBox.style.display = 'none';
       dashboardBox.style.display = 'block';
       document.getElementById('dashName').textContent = user.displayName || user.email;
+      document.getElementById('profName').textContent = user.displayName || '—';
+      document.getElementById('profEmail').textContent = user.email || '—';
       loadRequests(user.uid);
 
       // Pre-fill and hide name/contact on the intake form since we already know them
@@ -923,10 +993,34 @@
     }
   });
 
+  // Kebab profile menu toggle
+  const kebabBtn = document.getElementById('kebabBtn');
+  const profilePanel = document.getElementById('profilePanel');
+  kebabBtn.addEventListener('click', () => {
+    profilePanel.style.display = profilePanel.style.display === 'none' ? 'block' : 'none';
+  });
+  document.addEventListener('click', (e) => {
+    if (!kebabBtn.contains(e.target) && !profilePanel.contains(e.target)) {
+      profilePanel.style.display = 'none';
+    }
+  });
+
   function loadRequests(uid) {
     const requestsList = document.getElementById('requestsList');
     const q = query(collection(db, 'requests'), where('uid', '==', uid), orderBy('createdAt', 'desc'));
     onSnapshot(q, (snapshot) => {
+      // Update stats
+      let total = 0, active = 0, done = 0;
+      snapshot.forEach((doc) => {
+        total++;
+        const status = (doc.data().status || 'Received').toLowerCase();
+        if (status === 'completed' || status === 'delivered') done++;
+        else active++;
+      });
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statActive').textContent = active;
+      document.getElementById('statDone').textContent = done;
+
       if (snapshot.empty) {
         requestsList.innerHTML = '<p class="text-dim-note">No requests yet — use the "Get started" form above and it\'ll appear here.</p>';
         return;
@@ -937,10 +1031,12 @@
         const date = d.createdAt ? d.createdAt.toDate().toLocaleDateString() : '';
         const card = document.createElement('div');
         card.className = 'request-card';
+        const status = d.status || 'Received';
+        const statusClass = ['completed','delivered'].includes(status.toLowerCase()) ? 'status-done' : 'status-progress';
         card.innerHTML = `
           <div class="r-top">
             <span class="r-service">${d.service || 'Inquiry'}</span>
-            <span class="r-status">${d.status || 'Received'}</span>
+            <span class="r-status ${statusClass}">${status}</span>
           </div>
           <div class="r-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
           <div class="r-date">Submitted ${date}</div>
