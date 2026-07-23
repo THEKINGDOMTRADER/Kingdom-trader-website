@@ -316,6 +316,38 @@
   .form-group textarea:focus{border-color:var(--gold-soft);}
   .form-group select{cursor:pointer;}
 
+  /* Account / Auth / Dashboard */
+  .auth-box{max-width:440px;}
+  .auth-tabs{display:flex;gap:8px;margin-bottom:24px;}
+  .auth-tab{
+    flex:1;padding:10px;background:var(--panel);border:1px solid var(--line);
+    color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;
+    text-transform:uppercase;letter-spacing:0.05em;border-radius:4px;cursor:pointer;
+  }
+  .auth-tab.active{border-color:var(--gold);color:var(--gold);}
+  .auth-form .btn{width:100%;justify-content:center;margin-top:6px;}
+  .auth-error{color:var(--sell);font-size:13px;margin-top:12px;min-height:18px;}
+  .dashboard-box{max-width:760px;}
+  .dashboard-head{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:28px;flex-wrap:wrap;gap:12px;
+  }
+  .dash-name{font-size:20px;font-weight:600;margin-top:4px;}
+  .requests-list{display:flex;flex-direction:column;gap:14px;}
+  .request-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    padding:20px 22px;
+  }
+  .request-card .r-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;}
+  .request-card .r-service{font-weight:600;font-size:14.5px;}
+  .request-card .r-status{
+    font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;
+    padding:3px 9px;border-radius:3px;background:rgba(198,161,83,0.12);color:var(--gold);
+  }
+  .request-card .r-detail{font-size:13.5px;color:var(--text-dim);white-space:pre-wrap;}
+  .request-card .r-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);margin-top:10px;}
+  .text-dim-note{color:var(--text-dim);font-size:14px;}
+
   /* Contact */
   .contact{
     background:var(--panel);border:1px solid var(--line);border-radius:8px;
@@ -653,6 +685,66 @@
   </div>
 </section>
 
+<section id="account">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Client area</span>
+      <h2>My Account</h2>
+      <p>Register or log in to track your requests with us in one place.</p>
+    </div>
+
+    <div id="authBox" class="auth-box">
+      <div class="auth-tabs">
+        <button type="button" id="tabLogin" class="auth-tab active">Log in</button>
+        <button type="button" id="tabRegister" class="auth-tab">Register</button>
+      </div>
+
+      <form id="loginForm" class="intake-form auth-form">
+        <div class="form-group form-group-full">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" required placeholder="you@example.com">
+        </div>
+        <div class="form-group form-group-full">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-gold btn-lg">Log in</button>
+        <div id="loginError" class="auth-error"></div>
+      </form>
+
+      <form id="registerForm" class="intake-form auth-form" style="display:none;">
+        <div class="form-group form-group-full">
+          <label for="reg-name">Your name</label>
+          <input type="text" id="reg-name" required placeholder="e.g. John Okello">
+        </div>
+        <div class="form-group form-group-full">
+          <label for="reg-email">Email</label>
+          <input type="email" id="reg-email" required placeholder="you@example.com">
+        </div>
+        <div class="form-group form-group-full">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" required placeholder="At least 6 characters">
+        </div>
+        <button type="submit" class="btn btn-gold btn-lg">Create account</button>
+        <div id="registerError" class="auth-error"></div>
+      </form>
+    </div>
+
+    <div id="dashboardBox" class="dashboard-box" style="display:none;">
+      <div class="dashboard-head">
+        <div>
+          <div class="eyebrow">Welcome back</div>
+          <div id="dashName" class="dash-name"></div>
+        </div>
+        <button type="button" id="logoutBtn" class="btn btn-ghost">Log out</button>
+      </div>
+      <div id="requestsList" class="requests-list">
+        <p class="text-dim-note">Loading your requests…</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="contact">
   <div class="wrap">
     <div class="contact">
@@ -703,6 +795,140 @@
     </div>
   </div>
 </footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    signOut, onAuthStateChanged, updateProfile
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBTMWE--vpIlQPS081VEv1RoaGCDbvIZhM",
+    authDomain: "the-kingdom-trader-app.firebaseapp.com",
+    projectId: "the-kingdom-trader-app",
+    storageBucket: "the-kingdom-trader-app.firebasestorage.app",
+    messagingSenderId: "590959238217",
+    appId: "1:590959238217:web:3fc9f54aec6ccaa14ab398"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Tab switching (Login / Register)
+  const tabLogin = document.getElementById('tabLogin');
+  const tabRegister = document.getElementById('tabRegister');
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+
+  tabLogin.addEventListener('click', () => {
+    tabLogin.classList.add('active'); tabRegister.classList.remove('active');
+    loginForm.style.display = 'flex'; registerForm.style.display = 'none';
+  });
+  tabRegister.addEventListener('click', () => {
+    tabRegister.classList.add('active'); tabLogin.classList.remove('active');
+    registerForm.style.display = 'flex'; loginForm.style.display = 'none';
+  });
+
+  // Register
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('reg-name').value;
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+    const errBox = document.getElementById('registerError');
+    errBox.textContent = '';
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(cred.user, { displayName: name });
+    } catch (err) {
+      errBox.textContent = err.message.replace('Firebase: ', '');
+    }
+  });
+
+  // Login
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    const errBox = document.getElementById('loginError');
+    errBox.textContent = '';
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      errBox.textContent = err.message.replace('Firebase: ', '');
+    }
+  });
+
+  // Logout
+  document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+
+  // Auth state -> toggle Auth box vs Dashboard, and load this user's requests
+  onAuthStateChanged(auth, (user) => {
+    const authBox = document.getElementById('authBox');
+    const dashboardBox = document.getElementById('dashboardBox');
+    if (user) {
+      authBox.style.display = 'none';
+      dashboardBox.style.display = 'block';
+      document.getElementById('dashName').textContent = user.displayName || user.email;
+      loadRequests(user.uid);
+    } else {
+      authBox.style.display = 'block';
+      dashboardBox.style.display = 'none';
+    }
+  });
+
+  function loadRequests(uid) {
+    const requestsList = document.getElementById('requestsList');
+    const q = query(collection(db, 'requests'), where('uid', '==', uid), orderBy('createdAt', 'desc'));
+    onSnapshot(q, (snapshot) => {
+      if (snapshot.empty) {
+        requestsList.innerHTML = '<p class="text-dim-note">No requests yet — use the "Get started" form above and it\'ll appear here.</p>';
+        return;
+      }
+      requestsList.innerHTML = '';
+      snapshot.forEach((doc) => {
+        const d = doc.data();
+        const date = d.createdAt ? d.createdAt.toDate().toLocaleDateString() : '';
+        const card = document.createElement('div');
+        card.className = 'request-card';
+        card.innerHTML = `
+          <div class="r-top">
+            <span class="r-service">${d.service || 'Inquiry'}</span>
+            <span class="r-status">${d.status || 'Received'}</span>
+          </div>
+          <div class="r-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
+          <div class="r-date">Submitted ${date}</div>
+        `;
+        requestsList.appendChild(card);
+      });
+    });
+  }
+
+  // Hook the existing intake form to also save into Firestore when logged in
+  document.getElementById('intakeForm').addEventListener('submit', async () => {
+    const user = auth.currentUser;
+    if (!user) return; // not logged in -> mailto handler (in the other script) still runs
+    try {
+      await addDoc(collection(db, 'requests'), {
+        uid: user.uid,
+        name: document.getElementById('f-name').value,
+        contact: document.getElementById('f-contact').value,
+        service: document.getElementById('f-service').value,
+        platform: document.getElementById('f-platform').value,
+        strategy: document.getElementById('f-strategy').value,
+        status: 'Received',
+        createdAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error('Could not save request to dashboard:', err);
+    }
+  });
+</script>
 
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
