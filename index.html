@@ -397,6 +397,10 @@
     display:block;font-family:'JetBrains Mono',monospace;font-size:10px;
     text-transform:uppercase;color:var(--gold);margin-bottom:4px;
   }
+  .new-tag{
+    background:var(--sell);color:#fff;font-size:9px;padding:2px 6px;
+    border-radius:3px;margin-left:8px;letter-spacing:0.03em;
+  }
   .request-card .r-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);margin-top:10px;}
   .text-dim-note{color:var(--text-dim);font-size:14px;}
 
@@ -408,7 +412,12 @@
   .kebab-btn:hover{border-color:var(--gold-soft);}
   .menu-btn{
     font-size:16px;font-weight:700;color:var(--gold);
-    padding:8px 12px;line-height:1;
+    padding:8px 12px;line-height:1;position:relative;
+  }
+  .notif-dot{
+    position:absolute;top:2px;right:2px;width:9px;height:9px;
+    border-radius:50%;background:var(--sell);
+    border:2px solid var(--bg);
   }
   .profile-panel{
     position:absolute;top:calc(100% + 8px);right:0;z-index:10;
@@ -531,7 +540,7 @@
   </div>
   <div id="navGreeting" class="sub-nav-bar" style="display:none;">
     <div class="sub-nav-inner">
-      <button type="button" id="kebabBtn" class="kebab-btn menu-btn" aria-label="Open dashboard">☰</button>
+      <button type="button" id="kebabBtn" class="kebab-btn menu-btn" aria-label="Open dashboard">☰<span id="notifDot" class="notif-dot" style="display:none;"></span></button>
       <span id="navGreetingText"></span>
     </div>
   </div>
@@ -1124,7 +1133,11 @@
   const dashboardDrawer = document.getElementById('dashboardDrawer');
   const drawerBackdrop = document.getElementById('drawerBackdrop');
 
-  function openDrawer(){ dashboardDrawer.classList.add('open'); drawerBackdrop.classList.add('open'); }
+  function openDrawer(){
+    dashboardDrawer.classList.add('open');
+    drawerBackdrop.classList.add('open');
+    markNotesAsSeen();
+  }
   function closeDrawer(){ dashboardDrawer.classList.remove('open'); drawerBackdrop.classList.remove('open'); }
 
   kebabBtn.addEventListener('click', () => {
@@ -1154,6 +1167,26 @@
   panelTabProfile.addEventListener('click', () => showTab({el: panelTabProfile, view: panelProfileView}));
   panelTabPayments.addEventListener('click', () => showTab({el: panelTabPayments, view: panelPaymentsView}));
 
+  // Track which notes the client has already seen, using localStorage
+  let currentDocs = [];
+  function checkUnreadNotes() {
+    const notifDot = document.getElementById('notifDot');
+    const hasUnread = currentDocs.some((doc) => {
+      const d = doc.data();
+      if (!d.note) return false;
+      const seenKey = `seenNote_${doc.id}`;
+      return localStorage.getItem(seenKey) !== d.note;
+    });
+    notifDot.style.display = hasUnread ? 'block' : 'none';
+  }
+  function markNotesAsSeen() {
+    currentDocs.forEach((doc) => {
+      const d = doc.data();
+      if (d.note) localStorage.setItem(`seenNote_${doc.id}`, d.note);
+    });
+    document.getElementById('notifDot').style.display = 'none';
+  }
+
   function loadRequests(uid) {
     const requestsList = document.getElementById('requestsList');
     const q = query(collection(db, 'requests'), where('uid', '==', uid));
@@ -1164,6 +1197,8 @@
         const tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
         return tb - ta;
       });
+      currentDocs = docs;
+      checkUnreadNotes();
 
       // Update stats
       let total = 0, active = 0, done = 0;
@@ -1196,7 +1231,7 @@
           </div>
           ${d.title ? `<div class="r-subservice">${d.service || ''}</div>` : ''}
           <div class="r-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
-          ${d.note ? `<div class="r-note"><span class="r-note-label">Message from The Kingdom Trader</span>${d.note.replace(/</g,'&lt;')}</div>` : ''}
+          ${d.note ? `<div class="r-note"><span class="r-note-label">Message from The Kingdom Trader ${localStorage.getItem('seenNote_' + doc.id) !== d.note ? '<span class="new-tag">New</span>' : ''}</span>${d.note.replace(/</g,'&lt;')}</div>` : ''}
           <div class="r-date">Submitted ${date}</div>
         `;
         requestsList.appendChild(card);
