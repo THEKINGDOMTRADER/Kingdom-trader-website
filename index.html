@@ -385,6 +385,10 @@
   .r-status.status-done{background:rgba(43,174,114,0.15);color:var(--buy);}
   .r-status.status-progress{background:rgba(198,161,83,0.15);color:var(--gold);}
   .request-card .r-detail{font-size:13.5px;color:var(--text-dim);white-space:pre-wrap;}
+  .r-subservice{
+    font-size:11.5px;color:var(--text-dim);margin-top:-4px;margin-bottom:8px;
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.03em;
+  }
   .r-note{
     background:rgba(198,161,83,0.08);border-left:2px solid var(--gold);
     padding:10px 12px;margin-top:12px;font-size:13px;color:var(--text);white-space:pre-wrap;
@@ -800,6 +804,10 @@
           <input type="text" id="f-contact" required placeholder="+256 ... or your email">
         </div>
       </div>
+      <div class="form-group form-group-full">
+        <label for="f-title">Give this request a short name</label>
+        <input type="text" id="f-title" placeholder="e.g. My NY Breakout EA, or GBPUSD Bot Rental">
+      </div>
       <div class="form-row">
         <div class="form-group">
           <label for="f-service">What do you need?</label>
@@ -1183,9 +1191,10 @@
         const statusClass = ['completed','delivered'].includes(status.toLowerCase()) ? 'status-done' : 'status-progress';
         card.innerHTML = `
           <div class="r-top">
-            <span class="r-service">${d.service || 'Inquiry'}</span>
+            <span class="r-service">${(d.title || d.service || 'Inquiry').replace(/</g,'&lt;')}</span>
             <span class="r-status ${statusClass}">${status}</span>
           </div>
+          ${d.title ? `<div class="r-subservice">${d.service || ''}</div>` : ''}
           <div class="r-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
           ${d.note ? `<div class="r-note"><span class="r-note-label">Message from The Kingdom Trader</span>${d.note.replace(/</g,'&lt;')}</div>` : ''}
           <div class="r-date">Submitted ${date}</div>
@@ -1200,14 +1209,18 @@
     const user = auth.currentUser;
     if (!user) return; // not logged in -> mailto handler (in the other script) still runs
     try {
+      const service = document.getElementById('f-service').value;
+      const title = document.getElementById('f-title').value.trim() || service;
       await addDoc(collection(db, 'requests'), {
         uid: user.uid,
+        title: title,
         name: document.getElementById('f-name').value,
         contact: document.getElementById('f-contact').value,
-        service: document.getElementById('f-service').value,
+        service: service,
         platform: document.getElementById('f-platform').value,
         strategy: document.getElementById('f-strategy').value,
         status: 'Received',
+        note: "Thanks for reaching out! We've received your request and will review it shortly. We'll update you here as soon as there's progress.",
         createdAt: serverTimestamp()
       });
     } catch (err) {
@@ -1264,6 +1277,7 @@ document.getElementById('intakeForm').addEventListener('submit', function(e){
   e.preventDefault();
   const name = document.getElementById('f-name').value;
   const contact = document.getElementById('f-contact').value;
+  const title = document.getElementById('f-title').value.trim();
   const service = document.getElementById('f-service').value;
   const platform = document.getElementById('f-platform').value;
   const strategy = document.getElementById('f-strategy').value;
@@ -1272,10 +1286,11 @@ document.getElementById('intakeForm').addEventListener('submit', function(e){
   btn.disabled = true;
   btn.textContent = 'Opening your email app…';
 
-  const subject = `New inquiry from ${name} — ${service}`;
+  const subject = `New inquiry from ${name} — ${title || service}`;
   const body =
 `Name: ${name}
 Contact: ${contact}
+Request name: ${title || '(not given)'}
 Service requested: ${service}
 Preferred platform: ${platform}
 
