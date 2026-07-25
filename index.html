@@ -1148,11 +1148,18 @@
 
   function loadRequests(uid) {
     const requestsList = document.getElementById('requestsList');
-    const q = query(collection(db, 'requests'), where('uid', '==', uid), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, 'requests'), where('uid', '==', uid));
     onSnapshot(q, (snapshot) => {
+      // Sort newest-first on our side, since we're not using orderBy in the query
+      const docs = snapshot.docs.slice().sort((a, b) => {
+        const ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
+        const tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
+        return tb - ta;
+      });
+
       // Update stats
       let total = 0, active = 0, done = 0;
-      snapshot.forEach((doc) => {
+      docs.forEach((doc) => {
         total++;
         const status = (doc.data().status || 'Received').toLowerCase();
         if (status === 'completed' || status === 'delivered') done++;
@@ -1162,12 +1169,12 @@
       document.getElementById('statActive').textContent = active;
       document.getElementById('statDone').textContent = done;
 
-      if (snapshot.empty) {
+      if (docs.length === 0) {
         requestsList.innerHTML = '<p class="text-dim-note">No requests yet — use the "Get started" form above and it\'ll appear here.</p>';
         return;
       }
       requestsList.innerHTML = '';
-      snapshot.forEach((doc) => {
+      docs.forEach((doc) => {
         const d = doc.data();
         const date = d.createdAt ? d.createdAt.toDate().toLocaleDateString() : '';
         const card = document.createElement('div');
