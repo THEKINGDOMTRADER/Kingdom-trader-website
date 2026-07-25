@@ -79,7 +79,16 @@
   .nav-links{display:flex;gap:32px;font-size:14px;color:var(--text-dim);}
   .nav-links a:hover{color:var(--text);}
   .nav-cta{
-    display:flex;gap:10px;
+    display:flex;gap:10px;align-items:center;flex-wrap:nowrap;
+  }
+  @media (max-width:480px){
+    .nav-cta{gap:8px;}
+    .nav-cta > a.btn-gold{padding:8px 10px;font-size:11px;}
+  }
+  .wa-short{display:none;}
+  @media (max-width:400px){
+    .wa-full{display:none;}
+    .wa-short{display:inline;}
   }
   .btn{
     padding:9px 16px;font-size:13px;font-weight:600;
@@ -385,6 +394,10 @@
     color:var(--text);font-size:20px;line-height:1;padding:6px 14px;cursor:pointer;
   }
   .kebab-btn:hover{border-color:var(--gold-soft);}
+  .menu-btn{
+    font-size:16px;font-weight:700;color:var(--gold);
+    padding:8px 12px;line-height:1;
+  }
   .profile-panel{
     position:absolute;top:calc(100% + 8px);right:0;z-index:10;
     background:var(--panel-2);border:1px solid var(--line);border-radius:6px;
@@ -402,8 +415,12 @@
   }
   .panel-tab.active{border-color:var(--gold);color:var(--gold);}
 
-  .nav-greeting{display:flex;align-items:center;gap:10px;}
-  .nav-greeting span{font-size:13.5px;color:var(--text-dim);white-space:nowrap;}
+  .nav-greeting{display:flex;align-items:center;gap:12px;}
+  .nav-greeting span{font-size:15px;font-weight:600;color:var(--text);white-space:nowrap;}
+  @media (max-width:420px){
+    .nav-greeting span{font-size:13px;}
+    .nav-cta a.btn{padding:9px 12px;font-size:12px;}
+  }
 
   .drawer-backdrop{
     position:fixed;inset:0;background:rgba(0,0,0,0.55);
@@ -490,9 +507,9 @@
       <a href="#account" id="navAccountBtn" class="btn btn-ghost">Log in</a>
       <div id="navGreeting" class="nav-greeting" style="display:none;">
         <span id="navGreetingText"></span>
-        <button type="button" id="kebabBtn" class="kebab-btn" aria-label="Open dashboard">⋮</button>
+        <button type="button" id="kebabBtn" class="kebab-btn menu-btn" aria-label="Open dashboard">☰</button>
       </div>
-      <a href="https://wa.me/256774077467" class="btn btn-gold" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="https://wa.me/256774077467" class="btn btn-gold" target="_blank" rel="noopener"><span class="wa-full">WhatsApp</span><span class="wa-short">Chat</span></a>
     </div>
   </div>
 </nav>
