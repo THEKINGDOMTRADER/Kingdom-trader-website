@@ -385,6 +385,14 @@
   .r-status.status-done{background:rgba(43,174,114,0.15);color:var(--buy);}
   .r-status.status-progress{background:rgba(198,161,83,0.15);color:var(--gold);}
   .request-card .r-detail{font-size:13.5px;color:var(--text-dim);white-space:pre-wrap;}
+  .r-note{
+    background:rgba(198,161,83,0.08);border-left:2px solid var(--gold);
+    padding:10px 12px;margin-top:12px;font-size:13px;color:var(--text);white-space:pre-wrap;
+  }
+  .r-note-label{
+    display:block;font-family:'JetBrains Mono',monospace;font-size:10px;
+    text-transform:uppercase;color:var(--gold);margin-bottom:4px;
+  }
   .request-card .r-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);margin-top:10px;}
   .text-dim-note{color:var(--text-dim);font-size:14px;}
 
@@ -415,10 +423,19 @@
   }
   .panel-tab.active{border-color:var(--gold);color:var(--gold);}
 
-  .nav-greeting{display:flex;align-items:center;gap:12px;}
-  .nav-greeting span{font-size:15px;font-weight:600;color:var(--text);white-space:nowrap;}
+  .sub-nav-bar{
+    border-top:1px solid var(--line);
+    background:var(--bg);
+  }
+  .sub-nav-inner{
+    display:flex;align-items:center;gap:14px;
+    max-width:1180px;margin:0 auto;
+    padding:10px 28px;
+    justify-content:flex-start;
+  }
+  .sub-nav-inner span{font-size:15px;font-weight:600;color:var(--text);white-space:nowrap;}
   @media (max-width:420px){
-    .nav-greeting span{font-size:13px;}
+    .sub-nav-inner span{font-size:13px;}
     .nav-cta a.btn{padding:9px 12px;font-size:12px;}
   }
 
@@ -505,11 +522,13 @@
     </div>
     <div class="nav-cta">
       <a href="#account" id="navAccountBtn" class="btn btn-ghost">Log in</a>
-      <div id="navGreeting" class="nav-greeting" style="display:none;">
-        <span id="navGreetingText"></span>
-        <button type="button" id="kebabBtn" class="kebab-btn menu-btn" aria-label="Open dashboard">☰</button>
-      </div>
       <a href="https://wa.me/256774077467" class="btn btn-gold" target="_blank" rel="noopener"><span class="wa-full">WhatsApp</span><span class="wa-short">Chat</span></a>
+    </div>
+  </div>
+  <div id="navGreeting" class="sub-nav-bar" style="display:none;">
+    <div class="sub-nav-inner">
+      <button type="button" id="kebabBtn" class="kebab-btn menu-btn" aria-label="Open dashboard">☰</button>
+      <span id="navGreetingText"></span>
     </div>
   </div>
 </nav>
@@ -1067,7 +1086,7 @@
     const navGreetingText = document.getElementById('navGreetingText');
     if (user) {
       navAccountBtn.style.display = 'none';
-      navGreeting.style.display = 'flex';
+      navGreeting.style.display = 'block';
       navGreetingText.textContent = getGreeting(user.displayName);
       authBox.style.display = 'none';
       document.getElementById('dashName').textContent = user.displayName || user.email;
@@ -1161,6 +1180,7 @@
             <span class="r-status ${statusClass}">${status}</span>
           </div>
           <div class="r-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
+          ${d.note ? `<div class="r-note"><span class="r-note-label">Message from The Kingdom Trader</span>${d.note.replace(/</g,'&lt;')}</div>` : ''}
           <div class="r-date">Submitted ${date}</div>
         `;
         requestsList.appendChild(card);
