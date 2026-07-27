@@ -35,8 +35,9 @@
     --sell: #C1494A;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth;overflow-x:hidden;max-width:100%;}
   body{
+    overflow-x:hidden;max-width:100%;
     background:var(--bg);
     color:var(--text);
     font-family:'Inter',sans-serif;
@@ -403,6 +404,13 @@
   }
   .request-card .r-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);margin-top:10px;}
   .text-dim-note{color:var(--text-dim);font-size:14px;}
+  .pay-methods{display:flex;flex-direction:column;gap:10px;}
+  .pay-method{
+    background:var(--panel);border:1px solid var(--line);border-radius:5px;
+    padding:12px 14px;
+  }
+  .pay-method-name{font-size:13.5px;font-weight:600;color:var(--gold);}
+  .pay-method-detail{font-size:12.5px;color:var(--text-dim);margin-top:3px;}
 
   .dash-actions{position:relative;}
   .kebab-btn{
@@ -839,7 +847,7 @@
       </div>
       <div class="form-group form-group-full">
         <label for="f-strategy">Describe your strategy (or what you're looking for)</label>
-        <textarea id="f-strategy" rows="5" placeholder="Entry rules, exit rules, risk per trade — as much detail as you have. If you're after a pre-built bot instead, just tell us what pair/style you're interested in."></textarea>
+        <textarea id="f-strategy" rows="5" required placeholder="Entry rules, exit rules, risk per trade — as much detail as you have. If you're after a pre-built bot instead, just tell us what pair/style you're interested in."></textarea>
       </div>
       <button type="submit" class="btn btn-gold btn-lg">Send request</button>
     </form>
@@ -1000,6 +1008,28 @@
     </div>
 
     <div id="panelPaymentsView" style="display:none;">
+      <div class="dash-section-label" style="margin-top:0;">Accepted payment methods</div>
+      <div class="pay-methods">
+        <div class="pay-method">
+          <div class="pay-method-name">Mobile Money</div>
+          <div class="pay-method-detail">MTN / Airtel — [insert number]</div>
+        </div>
+        <div class="pay-method">
+          <div class="pay-method-name">Bank Transfer</div>
+          <div class="pay-method-detail">[insert bank name + account details]</div>
+        </div>
+        <div class="pay-method">
+          <div class="pay-method-name">PayPal / Payoneer</div>
+          <div class="pay-method-detail">[insert email once set up]</div>
+        </div>
+        <div class="pay-method">
+          <div class="pay-method-name">Crypto (USDT)</div>
+          <div class="pay-method-detail">[insert wallet address if accepted]</div>
+        </div>
+      </div>
+      <p class="text-dim-note" style="margin-top:16px;">Confirm your preferred method with us on WhatsApp before paying — payment details are shared directly per order.</p>
+
+      <div class="dash-section-label">Payment history</div>
       <p class="text-dim-note">Payment tracking is coming soon — this will show your payment history once it's set up.</p>
     </div>
   </div>
@@ -1171,13 +1201,25 @@
   let currentDocs = [];
   function checkUnreadNotes() {
     const notifDot = document.getElementById('notifDot');
+    let unreadCount = 0;
     const hasUnread = currentDocs.some((doc) => {
       const d = doc.data();
       if (!d.note) return false;
       const seenKey = `seenNote_${doc.id}`;
-      return localStorage.getItem(seenKey) !== d.note;
+      const isUnread = localStorage.getItem(seenKey) !== d.note;
+      if (isUnread) unreadCount++;
+      return isUnread;
     });
     notifDot.style.display = hasUnread ? 'block' : 'none';
+
+    // App icon badge (shows a number/dot on the home-screen icon, like Gmail) — supported on some browsers only
+    if ('setAppBadge' in navigator) {
+      if (unreadCount > 0) {
+        navigator.setAppBadge(unreadCount).catch(() => {});
+      } else {
+        navigator.clearAppBadge().catch(() => {});
+      }
+    }
   }
   function markNotesAsSeen() {
     currentDocs.forEach((doc) => {
@@ -1185,6 +1227,7 @@
       if (d.note) localStorage.setItem(`seenNote_${doc.id}`, d.note);
     });
     document.getElementById('notifDot').style.display = 'none';
+    if ('clearAppBadge' in navigator) navigator.clearAppBadge().catch(() => {});
   }
 
   function loadRequests(uid) {
@@ -1239,10 +1282,10 @@
     });
   }
 
-  // Hook the existing intake form to also save into Firestore when logged in
-  document.getElementById('intakeForm').addEventListener('submit', async () => {
+  // Expose a callable save function (called only after the user confirms, from the other script)
+  window.saveRequestToFirestore = async function() {
     const user = auth.currentUser;
-    if (!user) return; // not logged in -> mailto handler (in the other script) still runs
+    if (!user) return; // not logged in -> skip, mailto still runs
     try {
       const service = document.getElementById('f-service').value;
       const title = document.getElementById('f-title').value.trim() || service;
@@ -1261,7 +1304,7 @@
     } catch (err) {
       console.error('Could not save request to dashboard:', err);
     }
-  });
+  };
 </script>
 
 <script>
@@ -1317,6 +1360,23 @@ document.getElementById('intakeForm').addEventListener('submit', function(e){
   const platform = document.getElementById('f-platform').value;
   const strategy = document.getElementById('f-strategy').value;
   const btn = document.querySelector('#intakeForm button[type="submit"]');
+
+  const confirmText =
+`Please confirm your details before sending:
+
+Name: ${name}
+Contact: ${contact}
+${title ? 'Request name: ' + title + '\n' : ''}Service: ${service}
+Platform: ${platform}
+Strategy/details: ${strategy}
+
+Press OK to send, or Cancel to go back and edit.`;
+
+  if (!window.confirm(confirmText)) {
+    return; // let them go back and edit
+  }
+
+  if (window.saveRequestToFirestore) window.saveRequestToFirestore();
 
   btn.disabled = true;
   btn.textContent = 'Opening your email app…';
