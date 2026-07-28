@@ -401,6 +401,10 @@
     font-size:11.5px;color:var(--text-dim);margin-top:-4px;margin-bottom:8px;
     font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.03em;
   }
+  .r-ticket{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);
+    letter-spacing:0.03em;margin-bottom:8px;
+  }
   .r-note{
     background:rgba(198,161,83,0.08);border-left:2px solid var(--gold);
     padding:10px 12px;margin-top:12px;font-size:13px;color:var(--text);white-space:pre-wrap;
@@ -1056,7 +1060,7 @@
           <div class="pay-method-detail">[insert wallet address if accepted]</div>
         </div>
       </div>
-      <p class="text-dim-note" style="margin-top:16px;">Confirm your preferred method with us on WhatsApp before paying — payment details are shared directly per order.</p>
+      <p class="text-dim-note" style="margin-top:16px;">When paying, please include your <strong>Ticket ID</strong> (shown on your request above) as the payment reference or reason — this helps us match your payment quickly. Confirm your preferred method with us on WhatsApp before paying.</p>
 
       <div class="dash-section-label">Payment history</div>
       <p class="text-dim-note">Payment tracking is coming soon — this will show your payment history once it's set up.</p>
@@ -1297,6 +1301,7 @@
         const status = d.status || 'Received';
         const statusClass = ['completed','delivered'].includes(status.toLowerCase()) ? 'status-done' : 'status-progress';
         card.innerHTML = `
+          ${d.ticketId ? `<div class="r-ticket">Ticket: ${d.ticketId}</div>` : ''}
           <div class="r-top">
             <span class="r-service">${(d.title || d.service || 'Inquiry').replace(/</g,'&lt;')}</span>
             <span class="r-status ${statusClass}">${status}</span>
@@ -1312,7 +1317,7 @@
   }
 
   // Expose a callable save function (called only after the user confirms, from the other script)
-  window.saveRequestToFirestore = async function() {
+  window.saveRequestToFirestore = async function(ticketId) {
     const user = auth.currentUser;
     if (!user) return; // not logged in -> skip, mailto still runs
     try {
@@ -1320,6 +1325,7 @@
       const title = document.getElementById('f-title').value.trim() || service;
       await addDoc(collection(db, 'requests'), {
         uid: user.uid,
+        ticketId: ticketId,
         title: title,
         name: document.getElementById('f-name').value,
         contact: document.getElementById('f-contact').value,
@@ -1390,6 +1396,9 @@ document.getElementById('intakeForm').addEventListener('submit', function(e){
   const strategy = document.getElementById('f-strategy').value;
   const btn = document.querySelector('#intakeForm button[type="submit"]');
 
+  // Generate a short, unique ticket ID for tracking this request
+  const ticketId = 'KT-' + Date.now().toString(36).slice(-4).toUpperCase() + '-' + Math.random().toString(36).slice(-3).toUpperCase();
+
   const confirmText =
 `Please confirm your details before sending:
 
@@ -1399,20 +1408,24 @@ ${title ? 'Request name: ' + title + '\n' : ''}Service: ${service}
 Platform: ${platform}
 Strategy/details: ${strategy}
 
+Your ticket ID will be: ${ticketId}
+(Save this — use it to reference this request in any follow-up, including payment.)
+
 Press OK to send, or Cancel to go back and edit.`;
 
   if (!window.confirm(confirmText)) {
     return; // let them go back and edit
   }
 
-  if (window.saveRequestToFirestore) window.saveRequestToFirestore();
+  if (window.saveRequestToFirestore) window.saveRequestToFirestore(ticketId);
 
   btn.disabled = true;
   btn.textContent = 'Opening your email app…';
 
-  const subject = `New inquiry from ${name} — ${title || service}`;
+  const subject = `[${ticketId}] New inquiry from ${name} — ${title || service}`;
   const body =
-`Name: ${name}
+`Ticket ID: ${ticketId}
+Name: ${name}
 Contact: ${contact}
 Request name: ${title || '(not given)'}
 Service requested: ${service}
