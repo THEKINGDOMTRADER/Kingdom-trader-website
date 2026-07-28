@@ -426,6 +426,23 @@
   }
   .pay-method-name{font-size:13.5px;font-weight:600;color:var(--gold);}
   .pay-method-detail{font-size:12.5px;color:var(--text-dim);margin-top:3px;}
+  .pay-method-top{display:flex;align-items:center;gap:10px;}
+  .pay-badge{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-width:38px;height:24px;padding:0 8px;border-radius:4px;
+    font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+    flex-shrink:0;
+  }
+  .badge-mtn{background:#FFCC08;color:#0C121C;}
+  .badge-airtel{background:#ED1C24;color:#fff;}
+  .badge-bank{background:var(--panel-2);border:1px solid var(--line);font-size:13px;}
+  .badge-binance{background:#F0B90B;color:#0C121C;font-size:14px;font-weight:700;}
+  .pay-method-warning{
+    font-size:11.5px;color:var(--sell);margin-top:6px;
+  }
+  .platform-badges{display:inline-flex;gap:5px;}
+  .badge-mt{background:#3399DB;color:#fff;min-width:30px;height:20px;font-size:9px;}
+  .badge-tv{background:#131722;color:#2196F3;border:1px solid #2196F3;min-width:24px;height:20px;font-size:9px;}
 
   .dash-actions{position:relative;}
   .kebab-btn{
@@ -675,7 +692,7 @@
         <div class="card-tagline">From paper to automation.</div>
         <p>Describe how you trade. We build it into a working EA or bot, backtest it, and hand it over — licensed for your accounts.</p>
         <ul class="service-list">
-          <li><span>Platforms</span><span>MT4 / MT5 / TradingView</span></li>
+          <li><span>Platforms</span><span class="platform-badges"><span class="pay-badge badge-mt">MT4</span><span class="pay-badge badge-mt">MT5</span><span class="pay-badge badge-tv">TV</span></span></li>
           <li><span>Delivery</span><span>Backtested + demo-verified</span></li>
           <li><span>Licensing</span><span>Up to 8 accounts, standard tier</span></li>
           <li><span>Pricing</span><span>From $80</span></li>
@@ -1044,20 +1061,33 @@
       <div class="dash-section-label" style="margin-top:0;">Accepted payment methods</div>
       <div class="pay-methods">
         <div class="pay-method">
-          <div class="pay-method-name">Mobile Money</div>
-          <div class="pay-method-detail">MTN / Airtel — [insert number]</div>
+          <div class="pay-method-top">
+            <span class="pay-badge badge-mtn">MTN</span>
+            <div class="pay-method-name">MTN Mobile Money</div>
+          </div>
+          <div class="pay-method-detail">+256 774 077 467 — Musasizi Ezekiel Wasswa</div>
         </div>
         <div class="pay-method">
-          <div class="pay-method-name">Bank Transfer</div>
-          <div class="pay-method-detail">[insert bank name + account details]</div>
+          <div class="pay-method-top">
+            <span class="pay-badge badge-airtel">Airtel</span>
+            <div class="pay-method-name">Airtel Money</div>
+          </div>
+          <div class="pay-method-detail">+256 758 662 069 — Musasizi Ezekiel Wasswa</div>
         </div>
         <div class="pay-method">
-          <div class="pay-method-name">PayPal / Payoneer</div>
-          <div class="pay-method-detail">[insert email once set up]</div>
+          <div class="pay-method-top">
+            <span class="pay-badge badge-bank">🏦</span>
+            <div class="pay-method-name">Bank Transfer</div>
+          </div>
+          <div class="pay-method-detail">Equity Bank — Acc No. 1047103395482 — Musasizi Ezekiel Wasswa</div>
         </div>
         <div class="pay-method">
-          <div class="pay-method-name">Crypto (USDT)</div>
-          <div class="pay-method-detail">[insert wallet address if accepted]</div>
+          <div class="pay-method-top">
+            <span class="pay-badge badge-binance">₿</span>
+            <div class="pay-method-name">Crypto (USDT — TRC20 network only)</div>
+          </div>
+          <div class="pay-method-detail" style="word-break:break-all;">TNSSYjWaFMCaDbbrrBfdYPdsjouVyNpmab</div>
+          <div class="pay-method-warning">⚠ Confirm TRC20 network before sending — wrong network = lost funds.</div>
         </div>
       </div>
       <p class="text-dim-note" style="margin-top:16px;">When paying, please include your <strong>Ticket ID</strong> (shown on your request above) as the payment reference or reason — this helps us match your payment quickly. Confirm your preferred method with us on WhatsApp before paying.</p>
