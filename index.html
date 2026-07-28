@@ -405,6 +405,12 @@
     font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);
     letter-spacing:0.03em;margin-bottom:8px;
   }
+  .download-btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    background:var(--buy);color:#fff;font-weight:700;font-size:13.5px;
+    padding:12px;border-radius:5px;margin-top:12px;text-decoration:none;
+  }
+  .download-btn:hover{opacity:0.9;}
   .r-note{
     background:rgba(198,161,83,0.08);border-left:2px solid var(--gold);
     padding:10px 12px;margin-top:12px;font-size:13px;color:var(--text);white-space:pre-wrap;
@@ -1339,6 +1345,7 @@
           ${d.title ? `<div class="r-subservice">${d.service || ''}</div>` : ''}
           <div class="r-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
           ${d.note ? `<div class="r-note"><span class="r-note-label">Message from The Kingdom Trader ${localStorage.getItem('seenNote_' + doc.id) !== d.note ? '<span class="new-tag">New</span>' : ''}</span>${d.note.replace(/</g,'&lt;')}</div>` : ''}
+          ${d.deliveryLink ? `<a href="${d.deliveryLink.replace(/"/g,'')}" target="_blank" rel="noopener" class="download-btn">⬇ Download your file</a>` : ''}
           <div class="r-date">Submitted ${date}</div>
         `;
         requestsList.appendChild(card);
