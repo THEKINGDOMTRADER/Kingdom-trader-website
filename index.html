@@ -1456,6 +1456,22 @@ Press OK to send, or Cancel to go back and edit.`;
 
   if (window.saveRequestToFirestore) window.saveRequestToFirestore(ticketId);
 
+  // Log every submission to the Google Sheet (works whether logged in or not)
+  fetch('https://script.google.com/macros/s/AKfycbxpn3ijtiP3Bo57ONBnX69vg9HMkusbpZgrExnH_88glZ6EAiD7tWRum5yGQtJwgrwZ/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({
+      ticketId: ticketId,
+      name: name,
+      contact: contact,
+      service: service,
+      platform: platform,
+      title: title,
+      strategy: strategy
+    })
+  }).catch(err => console.log('Sheet log failed (non-critical):', err));
+
   btn.disabled = true;
   btn.textContent = 'Opening your email app…';
 
