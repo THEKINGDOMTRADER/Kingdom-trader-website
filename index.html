@@ -367,7 +367,11 @@
   }
   .auth-tab.active{border-color:var(--gold);color:var(--gold);}
   .auth-form .btn{width:100%;justify-content:center;margin-top:6px;}
-  .auth-error{color:var(--sell);font-size:13px;margin-top:12px;min-height:18px;}
+  .auth-error{
+    display:none;color:#fff;background:var(--sell);font-size:13.5px;font-weight:600;
+    padding:12px 14px;border-radius:5px;margin-top:14px;
+  }
+  .auth-error:not(:empty){display:block;}
   .password-wrap{position:relative;display:flex;}
   .password-wrap input{flex:1;padding-right:60px;}
   .toggle-pw{
@@ -1143,6 +1147,17 @@
   });
 
   // Register
+  function friendlyAuthError(err) {
+    const code = err.code || '';
+    if (code.includes('email-already-in-use')) return "That email is already registered — try logging in instead, or use a different email.";
+    if (code.includes('weak-password')) return "Password must be at least 6 characters.";
+    if (code.includes('invalid-email')) return "That email address doesn't look valid — please check it.";
+    if (code.includes('user-not-found') || code.includes('wrong-password') || code.includes('invalid-credential')) return "Incorrect email or password. Please try again.";
+    if (code.includes('network-request-failed')) return "Network problem — check your internet connection and try again.";
+    if (code.includes('too-many-requests')) return "Too many attempts — please wait a moment and try again.";
+    return err.message.replace('Firebase: ', '');
+  }
+
   registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('reg-name').value;
@@ -1157,7 +1172,7 @@
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(cred.user, { displayName: name });
     } catch (err) {
-      errBox.textContent = err.message.replace('Firebase: ', '');
+      errBox.textContent = friendlyAuthError(err);
       btn.disabled = false;
       btn.textContent = 'Create account';
     }
@@ -1176,7 +1191,7 @@
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
-      errBox.textContent = err.message.replace('Firebase: ', '');
+      errBox.textContent = friendlyAuthError(err);
       btn.disabled = false;
       btn.textContent = 'Log in';
     }
