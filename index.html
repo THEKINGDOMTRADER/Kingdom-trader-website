@@ -401,6 +401,7 @@
   }
   .r-status.status-done{background:rgba(43,174,114,0.15);color:var(--buy);}
   .r-status.status-progress{background:rgba(198,161,83,0.15);color:var(--gold);}
+  .r-status.status-suspended{background:rgba(193,73,74,0.15);color:var(--sell);}
   .request-card .r-detail{font-size:13.5px;color:var(--text-dim);white-space:pre-wrap;}
   .r-subservice{
     font-size:11.5px;color:var(--text-dim);margin-top:-4px;margin-bottom:8px;
@@ -1034,6 +1035,7 @@
 
     <div class="panel-tabs">
       <button type="button" id="panelTabOverview" class="panel-tab active">Overview</button>
+      <button type="button" id="panelTabLicenses" class="panel-tab">Licenses</button>
       <button type="button" id="panelTabProfile" class="panel-tab">Profile</button>
       <button type="button" id="panelTabPayments" class="panel-tab">Payments</button>
     </div>
@@ -1059,6 +1061,13 @@
       <a href="#request" id="newRequestBtn" class="btn btn-gold new-request-btn">+ Log a new request</a>
       <div id="requestsList" class="requests-list">
         <p class="text-dim-note">Loading your requests…</p>
+      </div>
+    </div>
+
+    <div id="panelLicensesView" style="display:none;">
+      <div class="dash-section-label" style="margin-top:0;">Your licenses</div>
+      <div id="licensesList" class="requests-list">
+        <p class="text-dim-note">Loading your licenses…</p>
       </div>
     </div>
 
@@ -1225,6 +1234,7 @@
       document.getElementById('profName').textContent = user.displayName || '—';
       document.getElementById('profEmail').textContent = user.email || '—';
       loadRequests(user.uid);
+      loadLicenses(user.uid);
 
       // Pre-fill and hide name/contact on the intake form since we already know them
       document.getElementById('f-name').value = user.displayName || '';
@@ -1266,19 +1276,22 @@
 
   // Overview / Profile / Payments tab switch inside the drawer
   const panelTabOverview = document.getElementById('panelTabOverview');
+  const panelTabLicenses = document.getElementById('panelTabLicenses');
   const panelTabProfile = document.getElementById('panelTabProfile');
   const panelTabPayments = document.getElementById('panelTabPayments');
   const panelOverviewView = document.getElementById('panelOverviewView');
+  const panelLicensesView = document.getElementById('panelLicensesView');
   const panelProfileView = document.getElementById('panelProfileView');
   const panelPaymentsView = document.getElementById('panelPaymentsView');
 
   function showTab(tab){
-    [panelTabOverview, panelTabProfile, panelTabPayments].forEach(t => t.classList.remove('active'));
-    [panelOverviewView, panelProfileView, panelPaymentsView].forEach(v => v.style.display = 'none');
+    [panelTabOverview, panelTabLicenses, panelTabProfile, panelTabPayments].forEach(t => t.classList.remove('active'));
+    [panelOverviewView, panelLicensesView, panelProfileView, panelPaymentsView].forEach(v => v.style.display = 'none');
     tab.el.classList.add('active');
     tab.view.style.display = 'block';
   }
   panelTabOverview.addEventListener('click', () => showTab({el: panelTabOverview, view: panelOverviewView}));
+  panelTabLicenses.addEventListener('click', () => showTab({el: panelTabLicenses, view: panelLicensesView}));
   panelTabProfile.addEventListener('click', () => showTab({el: panelTabProfile, view: panelProfileView}));
   panelTabPayments.addEventListener('click', () => showTab({el: panelTabPayments, view: panelPaymentsView}));
 
@@ -1313,6 +1326,39 @@
     });
     document.getElementById('notifDot').style.display = 'none';
     if ('clearAppBadge' in navigator) navigator.clearAppBadge().catch(() => {});
+  }
+
+  function loadLicenses(uid) {
+    const licensesList = document.getElementById('licensesList');
+    const q = query(collection(db, 'licenses'), where('uid', '==', uid));
+    onSnapshot(q, (snapshot) => {
+      if (snapshot.empty) {
+        licensesList.innerHTML = '<p class="text-dim-note">No licenses yet — these appear here once a purchase or rental is confirmed.</p>';
+        return;
+      }
+      licensesList.innerHTML = '';
+      snapshot.forEach((doc) => {
+        const d = doc.data();
+        const statusClass = (d.status || '').toLowerCase() === 'active' ? 'status-done' :
+                             (d.status || '').toLowerCase() === 'suspended' ? 'status-suspended' : 'status-progress';
+        const platformDetail = d.platform === 'TradingView'
+          ? `TradingView username: ${d.tradingViewUsername || '—'}`
+          : `MT5 account: ${d.mt5AccountNumber || '—'}`;
+        const card = document.createElement('div');
+        card.className = 'request-card';
+        card.innerHTML = `
+          <div class="r-top">
+            <span class="r-service">${d.product || 'Product'}</span>
+            <span class="r-status ${statusClass}">${d.status || 'Unknown'}</span>
+          </div>
+          <div class="r-subservice">${d.platform || ''} ${d.productVersion ? '· v' + d.productVersion : ''}</div>
+          <div class="r-detail">${platformDetail}</div>
+          <div class="r-detail">Subscription: ${d.subscriptionType || '—'}</div>
+          <div class="r-date">${d.expiryDate ? 'Expires ' + d.expiryDate : 'Lifetime license'}</div>
+        `;
+        licensesList.appendChild(card);
+      });
+    });
   }
 
   function loadRequests(uid) {
