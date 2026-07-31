@@ -499,6 +499,36 @@
     justify-content:flex-start;
   }
   .sub-nav-inner span{font-size:15px;font-weight:600;color:var(--text);white-space:nowrap;}
+  .admin-link{
+    margin-left:auto;font-size:12.5px;font-weight:700;color:var(--gold);
+    font-family:'JetBrains Mono',monospace;white-space:nowrap;
+  }
+  .admin-tabs{display:flex;gap:8px;margin-bottom:32px;max-width:400px;}
+  .admin-create-box{
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    padding:24px;margin-bottom:36px;
+  }
+  .admin-req-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    padding:20px 22px;margin-bottom:14px;
+  }
+  .admin-req-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+  .admin-req-title{font-weight:600;font-size:14.5px;}
+  .admin-req-meta{font-size:12px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
+  .admin-req-detail{font-size:13px;color:var(--text-dim);margin-bottom:14px;white-space:pre-wrap;}
+  .admin-edit-row{display:grid;grid-template-columns:140px 1fr;gap:10px;margin-bottom:8px;}
+  @media (max-width:600px){.admin-edit-row{grid-template-columns:1fr;}}
+  .admin-edit-row select,
+  .admin-edit-row input,
+  .admin-edit-row textarea{
+    background:var(--panel-2);border:1px solid var(--line);border-radius:4px;
+    padding:8px 10px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;
+  }
+  .admin-save-btn{
+    background:var(--gold);color:#0C121C;border:none;font-weight:700;font-size:12.5px;
+    padding:8px 16px;border-radius:4px;cursor:pointer;margin-top:6px;
+  }
+  .admin-save-msg{font-size:11.5px;color:var(--buy);margin-left:10px;}
   @media (max-width:420px){
     .sub-nav-inner span{font-size:13px;}
     .nav-cta a.btn{padding:9px 12px;font-size:12px;}
@@ -594,6 +624,7 @@
     <div class="sub-nav-inner">
       <button type="button" id="kebabBtn" class="kebab-btn menu-btn" aria-label="Open dashboard">☰<span id="notifDot" class="notif-dot" style="display:none;"></span></button>
       <span id="navGreetingText"></span>
+      <a href="#admin" id="adminLink" class="admin-link" style="display:none;">Admin Panel →</a>
     </div>
   </div>
 </nav>
@@ -1022,6 +1053,75 @@
   </div>
 </footer>
 
+<section id="admin" style="display:none;">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Owner only</span>
+      <h2>Admin Panel</h2>
+      <p>Manage all client requests and licenses in one place.</p>
+    </div>
+
+    <div class="admin-tabs">
+      <button type="button" id="adminTabRequests" class="auth-tab active">All Requests</button>
+      <button type="button" id="adminTabLicenses" class="auth-tab">Licenses</button>
+    </div>
+
+    <div id="adminRequestsView">
+      <div id="adminRequestsList" class="requests-list"></div>
+    </div>
+
+    <div id="adminLicensesView" style="display:none;">
+      <div class="admin-create-box">
+        <div class="dash-section-label" style="margin-top:0;">Create a license</div>
+        <form id="createLicenseForm" class="intake-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="lic-uid">Client's User ID (uid)</label>
+              <input type="text" id="lic-uid" required placeholder="Copy from a request in the list above">
+            </div>
+            <div class="form-group">
+              <label for="lic-product">Product</label>
+              <input type="text" id="lic-product" required placeholder="e.g. Kingdom Trader Autobot">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="lic-platform">Platform</label>
+              <select id="lic-platform">
+                <option>MT5</option>
+                <option>TradingView</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="lic-account">MT5 Account # / TradingView Username</label>
+              <input type="text" id="lic-account" placeholder="Depends on platform chosen">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="lic-subtype">Subscription type</label>
+              <select id="lic-subtype">
+                <option>Lifetime</option>
+                <option>Monthly</option>
+                <option>Rental</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="lic-expiry">Expiry date (blank = lifetime)</label>
+              <input type="text" id="lic-expiry" placeholder="e.g. 2026-12-31">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-gold">Create license</button>
+          <div id="createLicenseMsg" class="text-dim-note" style="margin-top:10px;"></div>
+        </form>
+      </div>
+
+      <div class="dash-section-label">All licenses</div>
+      <div id="adminLicensesList" class="requests-list"></div>
+    </div>
+  </div>
+</section>
+
 <div id="drawerBackdrop" class="drawer-backdrop"></div>
 <div id="dashboardDrawer" class="dashboard-drawer">
   <div class="drawer-inner">
@@ -1125,7 +1225,7 @@
     signOut, onAuthStateChanged, updateProfile
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
-    getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp
+    getFirestore, collection, addDoc, doc, updateDoc, query, where, orderBy, onSnapshot, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -1236,6 +1336,20 @@
       loadRequests(user.uid);
       loadLicenses(user.uid);
 
+      // Owner check -> show Admin Panel link and load admin data
+      const ADMIN_EMAIL = 'thekingdomtrader7@gmail.com';
+      const adminLink = document.getElementById('adminLink');
+      const adminSection = document.getElementById('admin');
+      if (user.email === ADMIN_EMAIL) {
+        adminLink.style.display = 'inline';
+        adminSection.style.display = 'block';
+        loadAdminRequests();
+        loadAdminLicenses();
+      } else {
+        adminLink.style.display = 'none';
+        adminSection.style.display = 'none';
+      }
+
       // Pre-fill and hide name/contact on the intake form since we already know them
       document.getElementById('f-name').value = user.displayName || '';
       document.getElementById('f-contact').value = user.email || '';
@@ -1248,6 +1362,7 @@
       authBox.style.display = 'block';
       nameContactRow.style.display = 'grid';
       loggedInNote.style.display = 'none';
+      document.getElementById('admin').style.display = 'none';
       closeDrawer();
     }
   });
@@ -1439,6 +1554,153 @@
       console.error('Could not save request to dashboard:', err);
     }
   };
+
+  // ===== ADMIN PANEL =====
+  const adminTabRequests = document.getElementById('adminTabRequests');
+  const adminTabLicenses = document.getElementById('adminTabLicenses');
+  const adminRequestsView = document.getElementById('adminRequestsView');
+  const adminLicensesView = document.getElementById('adminLicensesView');
+  adminTabRequests.addEventListener('click', () => {
+    adminTabRequests.classList.add('active'); adminTabLicenses.classList.remove('active');
+    adminRequestsView.style.display = 'block'; adminLicensesView.style.display = 'none';
+  });
+  adminTabLicenses.addEventListener('click', () => {
+    adminTabLicenses.classList.add('active'); adminTabRequests.classList.remove('active');
+    adminLicensesView.style.display = 'block'; adminRequestsView.style.display = 'none';
+  });
+
+  function loadAdminRequests() {
+    const list = document.getElementById('adminRequestsList');
+    onSnapshot(collection(db, 'requests'), (snapshot) => {
+      const docs = snapshot.docs.slice().sort((a, b) => {
+        const ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
+        const tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
+        return tb - ta;
+      });
+      if (docs.length === 0) {
+        list.innerHTML = '<p class="text-dim-note">No requests yet.</p>';
+        return;
+      }
+      list.innerHTML = '';
+      docs.forEach((docSnap) => {
+        const d = docSnap.data();
+        const card = document.createElement('div');
+        card.className = 'admin-req-card';
+        card.innerHTML = `
+          <div class="admin-req-top">
+            <span class="admin-req-title">${(d.title || d.service || 'Inquiry').replace(/</g,'&lt;')}</span>
+            <span class="r-status status-progress">${d.status || 'Received'}</span>
+          </div>
+          <div class="admin-req-meta">Ticket: ${d.ticketId || '—'} · uid: ${d.uid}</div>
+          <div class="admin-req-meta">${d.name || ''} · ${d.contact || ''} · ${d.service || ''} · ${d.platform || ''}</div>
+          <div class="admin-req-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
+          <div class="admin-edit-row">
+            <label>Status</label>
+            <select class="admin-status-input">
+              <option ${d.status==='Received'?'selected':''}>Received</option>
+              <option ${d.status==='In Progress'?'selected':''}>In Progress</option>
+              <option ${d.status==='Completed'?'selected':''}>Completed</option>
+            </select>
+          </div>
+          <div class="admin-edit-row">
+            <label>Note to client</label>
+            <textarea class="admin-note-input" rows="2">${d.note || ''}</textarea>
+          </div>
+          <div class="admin-edit-row">
+            <label>Delivery link</label>
+            <input type="text" class="admin-link-input" value="${d.deliveryLink || ''}" placeholder="Google Drive link">
+          </div>
+          <button type="button" class="admin-save-btn">Save changes</button>
+          <span class="admin-save-msg"></span>
+        `;
+        card.querySelector('.admin-save-btn').addEventListener('click', async () => {
+          const status = card.querySelector('.admin-status-input').value;
+          const note = card.querySelector('.admin-note-input').value;
+          const deliveryLink = card.querySelector('.admin-link-input').value;
+          const msg = card.querySelector('.admin-save-msg');
+          try {
+            await updateDoc(doc(db, 'requests', docSnap.id), { status, note, deliveryLink });
+            msg.textContent = 'Saved ✓';
+            setTimeout(() => msg.textContent = '', 2000);
+          } catch (err) {
+            msg.textContent = 'Error: ' + err.message;
+          }
+        });
+        list.appendChild(card);
+      });
+    });
+  }
+
+  function loadAdminLicenses() {
+    const list = document.getElementById('adminLicensesList');
+    onSnapshot(collection(db, 'licenses'), (snapshot) => {
+      if (snapshot.empty) {
+        list.innerHTML = '<p class="text-dim-note">No licenses created yet.</p>';
+        return;
+      }
+      list.innerHTML = '';
+      snapshot.forEach((docSnap) => {
+        const d = docSnap.data();
+        const card = document.createElement('div');
+        card.className = 'admin-req-card';
+        card.innerHTML = `
+          <div class="admin-req-top">
+            <span class="admin-req-title">${d.product || 'Product'}</span>
+            <span class="r-status status-progress">${d.status || 'Active'}</span>
+          </div>
+          <div class="admin-req-meta">uid: ${d.uid} · ${d.platform || ''}</div>
+          <div class="admin-req-detail">${d.platform === 'TradingView' ? 'TV: ' + (d.tradingViewUsername||'—') : 'MT5: ' + (d.mt5AccountNumber||'—')} · ${d.subscriptionType || ''} · Expires: ${d.expiryDate || 'Lifetime'}</div>
+          <div class="admin-edit-row">
+            <label>Status</label>
+            <select class="admin-lic-status-input">
+              <option ${d.status==='Active'?'selected':''}>Active</option>
+              <option ${d.status==='Suspended'?'selected':''}>Suspended</option>
+              <option ${d.status==='Expired'?'selected':''}>Expired</option>
+            </select>
+          </div>
+          <button type="button" class="admin-save-btn">Update status</button>
+          <span class="admin-save-msg"></span>
+        `;
+        card.querySelector('.admin-save-btn').addEventListener('click', async () => {
+          const status = card.querySelector('.admin-lic-status-input').value;
+          const msg = card.querySelector('.admin-save-msg');
+          try {
+            await updateDoc(doc(db, 'licenses', docSnap.id), { status });
+            msg.textContent = 'Saved ✓';
+            setTimeout(() => msg.textContent = '', 2000);
+          } catch (err) {
+            msg.textContent = 'Error: ' + err.message;
+          }
+        });
+        list.appendChild(card);
+      });
+    });
+  }
+
+  document.getElementById('createLicenseForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('createLicenseMsg');
+    const platform = document.getElementById('lic-platform').value;
+    const account = document.getElementById('lic-account').value;
+    try {
+      await addDoc(collection(db, 'licenses'), {
+        uid: document.getElementById('lic-uid').value.trim(),
+        product: document.getElementById('lic-product').value,
+        platform: platform,
+        mt5AccountNumber: platform === 'MT5' ? account : '',
+        tradingViewUsername: platform === 'TradingView' ? account : '',
+        subscriptionType: document.getElementById('lic-subtype').value,
+        expiryDate: document.getElementById('lic-expiry').value,
+        status: 'Active',
+        createdAt: serverTimestamp()
+      });
+      msg.textContent = 'License created ✓';
+      document.getElementById('createLicenseForm').reset();
+      setTimeout(() => msg.textContent = '', 3000);
+    } catch (err) {
+      msg.textContent = 'Error: ' + err.message;
+    }
+  });
 </script>
 
 <script>
