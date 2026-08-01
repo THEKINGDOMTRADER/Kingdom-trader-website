@@ -1072,6 +1072,25 @@
 
     <div id="adminLicensesView" style="display:none;">
       <div class="admin-create-box">
+        <div class="dash-section-label" style="margin-top:0;">Product files (for pre-built bots)</div>
+        <p class="text-dim-note" style="margin-bottom:14px;">Save each bot's Drive link once here — use "Attach known file" on a request to pull it in instantly, instead of retyping it every time.</p>
+        <form id="productFileForm" class="intake-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="pf-name">Product name (must match exactly, e.g. request title)</label>
+              <input type="text" id="pf-name" required placeholder="e.g. NY Session FVG — Purchase">
+            </div>
+            <div class="form-group">
+              <label for="pf-link">Google Drive link</label>
+              <input type="text" id="pf-link" required placeholder="https://drive.google.com/...">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-ghost">Save product file</button>
+          <div id="productFileMsg" class="text-dim-note" style="margin-top:10px;"></div>
+        </form>
+      </div>
+
+      <div class="admin-create-box">
         <div class="dash-section-label" style="margin-top:0;">Create a license</div>
         <form id="createLicenseForm" class="intake-form">
           <div class="form-row">
@@ -1080,11 +1099,15 @@
               <input type="text" id="lic-uid" required placeholder="Copy from a request in the list above">
             </div>
             <div class="form-group">
-              <label for="lic-product">Product</label>
-              <input type="text" id="lic-product" required placeholder="e.g. Kingdom Trader Autobot">
+              <label for="lic-ticket">Ticket ID (optional link to request)</label>
+              <input type="text" id="lic-ticket" placeholder="e.g. KT-M3X2-A9F">
             </div>
           </div>
           <div class="form-row">
+            <div class="form-group">
+              <label for="lic-product">Product</label>
+              <input type="text" id="lic-product" required placeholder="e.g. Kingdom Trader Autobot">
+            </div>
             <div class="form-group">
               <label for="lic-platform">Platform</label>
               <select id="lic-platform">
@@ -1092,6 +1115,8 @@
                 <option>TradingView</option>
               </select>
             </div>
+          </div>
+          <div class="form-row">
             <div class="form-group">
               <label for="lic-account">MT5 Account # / TradingView Username</label>
               <input type="text" id="lic-account" placeholder="Depends on platform chosen">
@@ -1225,7 +1250,7 @@
     signOut, onAuthStateChanged, updateProfile
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
-    getFirestore, collection, addDoc, doc, updateDoc, query, where, orderBy, onSnapshot, serverTimestamp
+    getFirestore, collection, addDoc, doc, updateDoc, getDoc, setDoc, query, where, orderBy, onSnapshot, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -1611,9 +1636,33 @@
             <input type="text" class="admin-link-input" value="${d.deliveryLink || ''}" placeholder="Google Drive link">
           </div>
           <button type="button" class="admin-save-btn">Save changes</button>
+          <button type="button" class="admin-save-btn admin-attach-btn" style="background:var(--panel-2);color:var(--text);border:1px solid var(--line);">Attach known file</button>
+          <button type="button" class="admin-save-btn admin-genlic-btn" style="background:var(--buy);color:#fff;">Generate license →</button>
           <span class="admin-save-msg"></span>
         `;
-        card.querySelector('.admin-save-btn').addEventListener('click', async () => {
+        card.querySelector('.admin-attach-btn').addEventListener('click', async () => {
+          const msg = card.querySelector('.admin-save-msg');
+          try {
+            const fileDoc = await getDoc(doc(db, 'productFiles', d.title || d.service || ''));
+            if (fileDoc.exists()) {
+              card.querySelector('.admin-link-input').value = fileDoc.data().driveLink || '';
+              msg.textContent = 'Link filled — click Save changes to apply.';
+            } else {
+              msg.textContent = 'No saved file found for "' + (d.title || d.service) + '" — add one in Product Files below.';
+            }
+          } catch (err) {
+            msg.textContent = 'Error: ' + err.message;
+          }
+        });
+        card.querySelector('.admin-genlic-btn').addEventListener('click', () => {
+          document.getElementById('lic-uid').value = d.uid || '';
+          document.getElementById('lic-ticket').value = d.ticketId || '';
+          document.getElementById('lic-product').value = d.title || d.service || '';
+          document.getElementById('lic-platform').value = (d.platform === 'TradingView') ? 'TradingView' : 'MT5';
+          adminTabLicenses.click();
+          document.getElementById('createLicenseForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        card.querySelector('.admin-save-btn:not(.admin-attach-btn):not(.admin-genlic-btn)').addEventListener('click', async () => {
           const status = card.querySelector('.admin-status-input').value;
           const note = card.querySelector('.admin-note-input').value;
           const deliveryLink = card.querySelector('.admin-link-input').value;
@@ -1677,6 +1726,21 @@
     });
   }
 
+  document.getElementById('productFileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('productFileMsg');
+    const name = document.getElementById('pf-name').value.trim();
+    const link = document.getElementById('pf-link').value.trim();
+    try {
+      await setDoc(doc(db, 'productFiles', name), { driveLink: link, updatedAt: serverTimestamp() });
+      msg.textContent = 'Saved ✓ — "Attach known file" will now find this.';
+      document.getElementById('productFileForm').reset();
+      setTimeout(() => msg.textContent = '', 3000);
+    } catch (err) {
+      msg.textContent = 'Error: ' + err.message;
+    }
+  });
+
   document.getElementById('createLicenseForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const msg = document.getElementById('createLicenseMsg');
@@ -1685,6 +1749,7 @@
     try {
       await addDoc(collection(db, 'licenses'), {
         uid: document.getElementById('lic-uid').value.trim(),
+        ticketId: document.getElementById('lic-ticket').value.trim(),
         product: document.getElementById('lic-product').value,
         platform: platform,
         mt5AccountNumber: platform === 'MT5' ? account : '',
