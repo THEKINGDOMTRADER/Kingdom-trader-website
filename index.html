@@ -292,6 +292,14 @@
   .spec-item .l{font-size:12px;color:var(--text-dim);margin-top:6px;}
 
   /* Bots */
+  .bots-scroll-box{
+    max-height:640px;overflow-y:auto;overscroll-behavior:contain;
+    padding:4px 4px 4px 0;
+    scrollbar-width:thin;scrollbar-color:var(--gold-soft) var(--panel);
+  }
+  .bots-scroll-box::-webkit-scrollbar{width:8px;}
+  .bots-scroll-box::-webkit-scrollbar-track{background:var(--panel);border-radius:4px;}
+  .bots-scroll-box::-webkit-scrollbar-thumb{background:var(--gold-soft);border-radius:4px;}
   .bots{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
   @media (max-width:900px){.bots{grid-template-columns:1fr 1fr;}}
   @media (max-width:600px){.bots{grid-template-columns:1fr;}}
@@ -828,47 +836,8 @@
       <h2>Bots ready to deploy.</h2>
       <p>Entry-level pricing to get our first traders on board — rates rise as track record builds.</p>
     </div>
-    <div class="bots">
-      <div class="bot-card" data-expandable="true" data-bot-name="NY Session FVG" data-bot-price="60" data-bot-rent-price="10" data-bot-platform="MT5">
-        <div class="bot-top">
-          <h4 style="margin-bottom:0;">NY Session FVG</h4>
-          <span class="bot-tag tag-buy">EURUSD</span>
-        </div>
-        <p>New York session bias with fair-value-gap entries, 2:1 RR targeting.</p>
-        <div class="bot-detail">
-          <div class="bot-detail-row"><span class="l">Strengths</span><span class="v">Clean session-timed entries, avoids low-liquidity chop</span></div>
-          <div class="bot-detail-row"><span class="l">Buy price</span><span class="v">$60 (standard license, up to 6 accounts)</span></div>
-          <div class="bot-detail-row"><span class="l">Rental</span><span class="v">$10/month, cancel anytime</span></div>
-          <div class="bot-detail-row"><span class="l">Platform</span><span class="v">MT5</span></div>
-        </div>
-        <div class="bot-foot">
-          <span class="bot-price">from $60 / $10 mo</span>
-          <div class="bot-actions">
-            <button type="button" class="bot-buy-btn" data-action="rent">Rent</button>
-            <button type="button" class="bot-buy-btn primary" data-action="buy">Buy</button>
-          </div>
-        </div>
-      </div>
-      <div class="bot-card" data-expandable="true" data-bot-name="Momentum Candle v6" data-bot-price="75" data-bot-rent-price="12" data-bot-platform="MT5">
-        <div class="bot-top">
-          <h4 style="margin-bottom:0;">Momentum Candle v6</h4>
-          <span class="bot-tag tag-sell">GBPUSD</span>
-        </div>
-        <p>Dual pattern-trigger entries with account-risk sizing and directional lock.</p>
-        <div class="bot-detail">
-          <div class="bot-detail-row"><span class="l">Strengths</span><span class="v">Built-in 3% risk sizing, directional bias lock prevents overtrading</span></div>
-          <div class="bot-detail-row"><span class="l">Buy price</span><span class="v">$75 (standard license, up to 6 accounts)</span></div>
-          <div class="bot-detail-row"><span class="l">Rental</span><span class="v">$12/month, cancel anytime</span></div>
-          <div class="bot-detail-row"><span class="l">Platform</span><span class="v">MT5</span></div>
-        </div>
-        <div class="bot-foot">
-          <span class="bot-price">from $75 / $12 mo</span>
-          <div class="bot-actions">
-            <button type="button" class="bot-buy-btn" data-action="rent">Rent</button>
-            <button type="button" class="bot-buy-btn primary" data-action="buy">Buy</button>
-          </div>
-        </div>
-      </div>
+    <div class="bots-scroll-box">
+    <div class="bots" id="botsContainer">
       <div class="bot-card">
         <div class="bot-top">
           <h4 style="margin-bottom:0;">Your Strategy Here</h4>
@@ -880,6 +849,7 @@
           <a href="https://wa.me/256774077467" class="bot-link" target="_blank" rel="noopener">Enquire →</a>
         </div>
       </div>
+    </div>
     </div>
   </div>
 </section>
@@ -932,11 +902,14 @@
         <div class="form-group">
           <label for="f-rental-duration">Rental duration</label>
           <select id="f-rental-duration">
-            <option>7 days</option>
-            <option selected>30 days</option>
-            <option>60 days</option>
-            <option>90 days</option>
+            <option value="7">7 days</option>
+            <option value="14">14 days</option>
+            <option value="30" selected>30 days</option>
+            <option value="60">60 days</option>
+            <option value="90">90 days</option>
+            <option value="365">1 year</option>
           </select>
+          <span id="rentalEstimateNote" class="form-helper-note" style="margin:4px 0 0;padding:0;border:none;"></span>
         </div>
       </div>
       <div id="accountFieldRow" class="form-row" style="display:none;">
@@ -1072,6 +1045,7 @@
     <div class="admin-tabs">
       <button type="button" id="adminTabRequests" class="auth-tab active">All Requests</button>
       <button type="button" id="adminTabLicenses" class="auth-tab">Licenses</button>
+      <button type="button" id="adminTabProducts" class="auth-tab">Products</button>
     </div>
 
     <div id="adminRequestsView">
@@ -1161,6 +1135,65 @@
 
       <div class="dash-section-label">All licenses</div>
       <div id="adminLicensesList" class="requests-list"></div>
+    </div>
+
+    <div id="adminProductsView" style="display:none;">
+      <div class="admin-create-box">
+        <div class="dash-section-label" style="margin-top:0;">Add / update a product</div>
+        <p class="text-dim-note" style="margin-bottom:14px;">Editing a product name that already exists will update it instead of creating a duplicate.</p>
+        <form id="productForm" class="intake-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prod-name">Product name</label>
+              <input type="text" id="prod-name" required placeholder="e.g. Kingdom Trader Surfer — Golden Bag">
+            </div>
+            <div class="form-group">
+              <label for="prod-pair">Pair / tag</label>
+              <input type="text" id="prod-pair" required placeholder="e.g. EURUSD">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prod-platform">Platform</label>
+              <select id="prod-platform">
+                <option>MT5</option>
+                <option>MT4</option>
+                <option>TradingView</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="prod-active">Visible on site?</label>
+              <select id="prod-active">
+                <option value="true">Yes — show in catalog</option>
+                <option value="false">No — hide for now</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group form-group-full">
+            <label for="prod-desc">Short description</label>
+            <input type="text" id="prod-desc" required placeholder="One line describing the strategy">
+          </div>
+          <div class="form-group form-group-full">
+            <label for="prod-strengths">Strengths (shown when expanded)</label>
+            <input type="text" id="prod-strengths" placeholder="What makes this bot stand out">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prod-buyprice">Buy price ($)</label>
+              <input type="number" id="prod-buyprice" required placeholder="e.g. 270">
+            </div>
+            <div class="form-group">
+              <label for="prod-rentprice">Rent price per month ($)</label>
+              <input type="number" id="prod-rentprice" required placeholder="e.g. 35">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-gold">Save product</button>
+          <div id="productMsg" class="text-dim-note" style="margin-top:10px;"></div>
+        </form>
+      </div>
+
+      <div class="dash-section-label">All products</div>
+      <div id="adminProductsList" class="requests-list"></div>
     </div>
   </div>
 </section>
@@ -1354,6 +1387,48 @@
   document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
   // Auth state -> toggle Auth box vs Dashboard, and load this user's requests
+  // ===== PUBLIC BOT CATALOG (loads for everyone, logged in or not) =====
+  function renderProductCard(name, d) {
+    const card = document.createElement('div');
+    card.className = 'bot-card';
+    card.setAttribute('data-expandable', 'true');
+    card.dataset.botName = name;
+    card.dataset.botPrice = d.buyPrice || 0;
+    card.dataset.botRentPrice = d.rentPrice || 0;
+    card.dataset.botPlatform = d.platform || 'MT5';
+    card.innerHTML = `
+      <div class="bot-top">
+        <h4 style="margin-bottom:0;">${name}</h4>
+        <span class="bot-tag tag-buy">${d.pair || ''}</span>
+      </div>
+      <p>${d.description || ''}</p>
+      <div class="bot-detail">
+        <div class="bot-detail-row"><span class="l">Strengths</span><span class="v">${d.strengths || '—'}</span></div>
+        <div class="bot-detail-row"><span class="l">Buy price</span><span class="v">$${d.buyPrice || 0} (standard license, up to 6 accounts)</span></div>
+        <div class="bot-detail-row"><span class="l">Rental</span><span class="v">$${d.rentPrice || 0}/month, cancel anytime</span></div>
+        <div class="bot-detail-row"><span class="l">Platform</span><span class="v">${d.platform || 'MT5'}</span></div>
+      </div>
+      <div class="bot-foot">
+        <span class="bot-price">from $${d.buyPrice || 0} / $${d.rentPrice || 0} mo</span>
+        <div class="bot-actions">
+          <button type="button" class="bot-buy-btn" data-action="rent">Rent</button>
+          <button type="button" class="bot-buy-btn primary" data-action="buy">Buy</button>
+        </div>
+      </div>
+    `;
+    return card;
+  }
+
+  onSnapshot(query(collection(db, 'products'), where('active', '==', true)), (snapshot) => {
+    const container = document.getElementById('botsContainer');
+    container.querySelectorAll('.bot-card[data-dynamic="true"]').forEach(el => el.remove());
+    snapshot.forEach((docSnap) => {
+      const card = renderProductCard(docSnap.id, docSnap.data());
+      card.setAttribute('data-dynamic', 'true');
+      container.insertBefore(card, container.firstChild);
+    });
+  });
+
   function getGreeting(name) {
     const hour = new Date().getHours();
     const timeGreeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -1388,6 +1463,7 @@
         adminSection.style.display = 'block';
         loadAdminRequests();
         loadAdminLicenses();
+        loadAdminProducts();
       } else {
         adminLink.style.display = 'none';
         adminSection.style.display = 'none';
@@ -1650,16 +1726,19 @@
   // ===== ADMIN PANEL =====
   const adminTabRequests = document.getElementById('adminTabRequests');
   const adminTabLicenses = document.getElementById('adminTabLicenses');
+  const adminTabProducts = document.getElementById('adminTabProducts');
   const adminRequestsView = document.getElementById('adminRequestsView');
   const adminLicensesView = document.getElementById('adminLicensesView');
-  adminTabRequests.addEventListener('click', () => {
-    adminTabRequests.classList.add('active'); adminTabLicenses.classList.remove('active');
-    adminRequestsView.style.display = 'block'; adminLicensesView.style.display = 'none';
-  });
-  adminTabLicenses.addEventListener('click', () => {
-    adminTabLicenses.classList.add('active'); adminTabRequests.classList.remove('active');
-    adminLicensesView.style.display = 'block'; adminRequestsView.style.display = 'none';
-  });
+  const adminProductsView = document.getElementById('adminProductsView');
+  function showAdminTab(tabEl, viewEl){
+    [adminTabRequests, adminTabLicenses, adminTabProducts].forEach(t => t.classList.remove('active'));
+    [adminRequestsView, adminLicensesView, adminProductsView].forEach(v => v.style.display = 'none');
+    tabEl.classList.add('active');
+    viewEl.style.display = 'block';
+  }
+  adminTabRequests.addEventListener('click', () => showAdminTab(adminTabRequests, adminRequestsView));
+  adminTabLicenses.addEventListener('click', () => showAdminTab(adminTabLicenses, adminLicensesView));
+  adminTabProducts.addEventListener('click', () => showAdminTab(adminTabProducts, adminProductsView));
 
   function loadAdminRequests() {
     const list = document.getElementById('adminRequestsList');
@@ -1824,6 +1903,70 @@
       });
     });
   }
+
+  function loadAdminProducts() {
+    const list = document.getElementById('adminProductsList');
+    onSnapshot(collection(db, 'products'), (snapshot) => {
+      if (snapshot.empty) {
+        list.innerHTML = '<p class="text-dim-note">No products added yet — use the form above.</p>';
+        return;
+      }
+      list.innerHTML = '';
+      snapshot.forEach((docSnap) => {
+        const d = docSnap.data();
+        const card = document.createElement('div');
+        card.className = 'admin-req-card';
+        card.innerHTML = `
+          <div class="admin-req-top">
+            <span class="admin-req-title">${docSnap.id}</span>
+            <span class="r-status ${d.active !== false ? 'status-done' : 'status-suspended'}">${d.active !== false ? 'Visible' : 'Hidden'}</span>
+          </div>
+          <div class="admin-req-meta">${d.pair || ''} · ${d.platform || ''} · Buy $${d.buyPrice || 0} / Rent $${d.rentPrice || 0} mo</div>
+          <div class="admin-req-detail">${(d.description || '').replace(/</g,'&lt;')}</div>
+          <button type="button" class="admin-save-btn admin-editprod-btn">Edit</button>
+          <button type="button" class="admin-save-btn admin-toggleprod-btn" style="background:var(--panel-2);color:var(--text);border:1px solid var(--line);">${d.active !== false ? 'Hide from site' : 'Show on site'}</button>
+        `;
+        card.querySelector('.admin-editprod-btn').addEventListener('click', () => {
+          document.getElementById('prod-name').value = docSnap.id;
+          document.getElementById('prod-pair').value = d.pair || '';
+          document.getElementById('prod-platform').value = d.platform || 'MT5';
+          document.getElementById('prod-active').value = String(d.active !== false);
+          document.getElementById('prod-desc').value = d.description || '';
+          document.getElementById('prod-strengths').value = d.strengths || '';
+          document.getElementById('prod-buyprice').value = d.buyPrice || '';
+          document.getElementById('prod-rentprice').value = d.rentPrice || '';
+          document.getElementById('productForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        card.querySelector('.admin-toggleprod-btn').addEventListener('click', async () => {
+          await updateDoc(doc(db, 'products', docSnap.id), { active: !(d.active !== false) });
+        });
+        list.appendChild(card);
+      });
+    });
+  }
+
+  document.getElementById('productForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('productMsg');
+    const name = document.getElementById('prod-name').value.trim();
+    try {
+      await setDoc(doc(db, 'products', name), {
+        pair: document.getElementById('prod-pair').value,
+        platform: document.getElementById('prod-platform').value,
+        active: document.getElementById('prod-active').value === 'true',
+        description: document.getElementById('prod-desc').value,
+        strengths: document.getElementById('prod-strengths').value,
+        buyPrice: Number(document.getElementById('prod-buyprice').value),
+        rentPrice: Number(document.getElementById('prod-rentprice').value),
+        updatedAt: serverTimestamp()
+      });
+      msg.textContent = 'Saved ✓ — live on the site now.';
+      document.getElementById('productForm').reset();
+      setTimeout(() => msg.textContent = '', 3000);
+    } catch (err) {
+      msg.textContent = 'Error: ' + err.message;
+    }
+  });
 
   document.getElementById('productFileForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -2008,23 +2151,34 @@ if ('serviceWorker' in navigator) {
 }
 
 // Expandable bot catalog cards
-document.querySelectorAll('.bot-card[data-expandable="true"]').forEach(card => {
-  card.addEventListener('click', (e) => {
-    if (e.target.closest('.bot-buy-btn')) return; // don't toggle when clicking Buy/Rent
-    card.classList.toggle('expanded');
-  });
-});
+// Event delegation on the bot catalog container -> works for both static and dynamically-loaded cards
+function updateRentalEstimate() {
+  const rentalRow = document.getElementById('rentalDurationRow');
+  const monthlyRate = parseFloat(rentalRow.dataset.monthlyRate || '0');
+  const botName = rentalRow.dataset.botName || '';
+  const platform = rentalRow.dataset.platform || '';
+  const days = parseInt(document.getElementById('f-rental-duration').value, 10);
+  if (!monthlyRate || !days) return;
 
-// Buy / Rent buttons -> pre-fill the request form and scroll to it
-document.querySelectorAll('.bot-buy-btn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const card = btn.closest('.bot-card');
+  // Rough tiered discount: shorter terms cost slightly more per day, longer terms get a discount
+  const multipliers = { 7: 1.10, 14: 1.05, 30: 1.00, 60: 0.95, 90: 0.90, 365: 0.75 };
+  const mult = multipliers[days] || 1;
+  const estimate = Math.round((monthlyRate / 30) * days * mult);
+
+  document.getElementById('rentalEstimateNote').textContent = `Estimated: $${estimate} for ${days} days (final price confirmed by us).`;
+  document.getElementById('f-strategy').value = `Requesting to rent: ${botName} (${platform}) — ${days} days, est. $${estimate}`;
+}
+document.getElementById('f-rental-duration').addEventListener('change', updateRentalEstimate);
+
+document.getElementById('botsContainer').addEventListener('click', (e) => {
+  const buyBtn = e.target.closest('.bot-buy-btn');
+  if (buyBtn) {
+    const card = buyBtn.closest('.bot-card');
     const botName = card.dataset.botName;
     const buyPrice = card.dataset.botPrice;
     const rentPrice = card.dataset.botRentPrice;
     const platform = card.dataset.botPlatform;
-    const action = btn.dataset.action; // 'buy' or 'rent'
+    const action = buyBtn.dataset.action; // 'buy' or 'rent'
 
     document.getElementById('f-title').value = `${botName} — ${action === 'buy' ? 'Purchase' : 'Rental'}`;
 
@@ -2049,14 +2203,21 @@ document.querySelectorAll('.bot-buy-btn').forEach(btn => {
     document.getElementById('accountFieldRow').style.display = 'flex';
     if (action === 'rent') {
       rentalRow.style.display = 'flex';
-      document.getElementById('f-strategy').value = `Requesting to rent: ${botName} (${platform}) — $${rentPrice}/month`;
+      rentalRow.dataset.monthlyRate = rentPrice;
+      rentalRow.dataset.botName = botName;
+      rentalRow.dataset.platform = platform;
+      updateRentalEstimate();
     } else {
       rentalRow.style.display = 'none';
       document.getElementById('f-strategy').value = `Requesting to buy: ${botName} (${platform}) — $${buyPrice} one-time`;
     }
 
     document.getElementById('request').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
+    return;
+  }
+
+  const card = e.target.closest('.bot-card[data-expandable="true"]');
+  if (card) card.classList.toggle('expanded');
 });
 
 // Show custom-build pricing note when that service is selected
