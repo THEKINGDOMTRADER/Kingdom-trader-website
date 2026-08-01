@@ -417,6 +417,7 @@
     padding:12px;border-radius:5px;margin-top:12px;text-decoration:none;
   }
   .download-btn:hover{opacity:0.9;}
+  .locked-btn{background:var(--gold);color:#0C121C;border:none;cursor:pointer;font-family:inherit;font-size:13.5px;}
   .r-note{
     background:rgba(198,161,83,0.08);border-left:2px solid var(--gold);
     padding:10px 12px;margin-top:12px;font-size:13px;color:var(--text);white-space:pre-wrap;
@@ -938,6 +939,13 @@
           </select>
         </div>
       </div>
+      <div id="accountFieldRow" class="form-row" style="display:none;">
+        <div class="form-group form-group-full">
+          <label for="f-account">MT5 account number / TradingView username (for this order)</label>
+          <input type="text" id="f-account" placeholder="The account/username you'll run this bot on">
+          <span class="form-helper-note" style="margin:4px 0 0;padding:0;border:none;">Standard tier — up to 6 accounts per bot. You can add or remove accounts later from your Licenses tab.</span>
+        </div>
+      </div>
       <div class="form-group form-group-full">
         <label for="f-strategy">Describe your strategy (or what you're looking for)</label>
         <textarea id="f-strategy" rows="5" required placeholder="Entry rules, exit rules, risk per trade — as much detail as you have. If you're after a pre-built bot instead, just tell us what pair/style you're interested in."></textarea>
@@ -1067,6 +1075,16 @@
     </div>
 
     <div id="adminRequestsView">
+      <div class="form-group" style="max-width:260px;margin-bottom:20px;">
+        <label for="adminStatusFilter">Filter by status</label>
+        <select id="adminStatusFilter">
+          <option value="">All requests</option>
+          <option value="Awaiting Payment">Awaiting Payment (pending)</option>
+          <option value="Received">Received</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
+      </div>
       <div id="adminRequestsList" class="requests-list"></div>
     </div>
 
@@ -1250,7 +1268,7 @@
     signOut, onAuthStateChanged, updateProfile
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
-    getFirestore, collection, addDoc, doc, updateDoc, getDoc, setDoc, query, where, orderBy, onSnapshot, serverTimestamp
+    getFirestore, collection, addDoc, doc, updateDoc, getDoc, getDocs, setDoc, query, where, orderBy, onSnapshot, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -1435,6 +1453,13 @@
   panelTabProfile.addEventListener('click', () => showTab({el: panelTabProfile, view: panelProfileView}));
   panelTabPayments.addEventListener('click', () => showTab({el: panelTabPayments, view: panelPaymentsView}));
 
+  // Locked download button (payment not yet confirmed) -> jump to Payments tab
+  document.getElementById('requestsList').addEventListener('click', (e) => {
+    const btn = e.target.closest('.locked-btn');
+    if (!btn) return;
+    panelTabPayments.click();
+  });
+
   // Track which notes the client has already seen, using localStorage
   let currentDocs = [];
   function checkUnreadNotes() {
@@ -1547,7 +1572,8 @@
           ${d.title ? `<div class="r-subservice">${d.service || ''}</div>` : ''}
           <div class="r-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
           ${d.note ? `<div class="r-note"><span class="r-note-label">Message from The Kingdom Trader ${localStorage.getItem('seenNote_' + doc.id) !== d.note ? '<span class="new-tag">New</span>' : ''}</span>${d.note.replace(/</g,'&lt;')}</div>` : ''}
-          ${d.deliveryLink ? `<a href="${d.deliveryLink.replace(/"/g,'')}" target="_blank" rel="noopener" class="download-btn">⬇ Download your file</a>` : ''}
+          ${d.deliveryLink && d.status === 'Completed' ? `<a href="${d.deliveryLink.replace(/"/g,'')}" target="_blank" rel="noopener" class="download-btn">⬇ Download your file</a>` : ''}
+          ${d.deliveryLink && d.status === 'Awaiting Payment' ? `<button type="button" class="download-btn locked-btn" data-ticket="${d.ticketId || ''}">🔒 Complete payment to unlock</button>` : ''}
           <div class="r-date">Submitted ${date}</div>
         `;
         requestsList.appendChild(card);
@@ -1562,6 +1588,26 @@
     try {
       const service = document.getElementById('f-service').value;
       const title = document.getElementById('f-title').value.trim() || service;
+      const accountNumber = document.getElementById('f-account').value.trim();
+      const platform = document.getElementById('f-platform').value;
+
+      // Check if this exact title matches a known pre-built product file
+      let deliveryLink = '';
+      let note = "Thanks for reaching out! We've received your request and will review it shortly. We'll update you here as soon as there's progress.";
+      let status = 'Received';
+      let matchedProduct = false;
+      try {
+        const fileDoc = await getDoc(doc(db, 'productFiles', title));
+        if (fileDoc.exists() && fileDoc.data().driveLink) {
+          deliveryLink = fileDoc.data().driveLink;
+          note = "Thanks for your order! Your license and file are ready — head to the Payments tab to complete payment, then send us your payment screenshot + this ticket ID on WhatsApp to unlock your download.";
+          status = 'Awaiting Payment';
+          matchedProduct = true;
+        }
+      } catch (lookupErr) {
+        console.log('Product file lookup skipped:', lookupErr);
+      }
+
       await addDoc(collection(db, 'requests'), {
         uid: user.uid,
         ticketId: ticketId,
@@ -1569,12 +1615,33 @@
         name: document.getElementById('f-name').value,
         contact: document.getElementById('f-contact').value,
         service: service,
-        platform: document.getElementById('f-platform').value,
+        platform: platform,
+        accountNumber: accountNumber,
+        tier: 'Standard',
         strategy: document.getElementById('f-strategy').value,
-        status: 'Received',
-        note: "Thanks for reaching out! We've received your request and will review it shortly. We'll update you here as soon as there's progress.",
+        status: status,
+        note: note,
+        deliveryLink: deliveryLink,
         createdAt: serverTimestamp()
       });
+
+      // Auto-create a matching license, locked until payment is confirmed
+      if (matchedProduct) {
+        await addDoc(collection(db, 'licenses'), {
+          uid: user.uid,
+          ticketId: ticketId,
+          product: title,
+          platform: platform,
+          mt5AccountNumber: platform !== 'TradingView' ? accountNumber : '',
+          tradingViewUsername: platform === 'TradingView' ? accountNumber : '',
+          accounts: accountNumber ? [accountNumber] : [],
+          maxSlots: 6,
+          subscriptionType: service.includes('Rent') ? 'Rental' : 'Lifetime',
+          expiryDate: '',
+          status: 'Pending Payment',
+          createdAt: serverTimestamp()
+        });
+      }
     } catch (err) {
       console.error('Could not save request to dashboard:', err);
     }
@@ -1596,14 +1663,23 @@
 
   function loadAdminRequests() {
     const list = document.getElementById('adminRequestsList');
+    const filterSelect = document.getElementById('adminStatusFilter');
+    if (!filterSelect.dataset.wired) {
+      filterSelect.addEventListener('change', () => loadAdminRequests());
+      filterSelect.dataset.wired = 'true';
+    }
     onSnapshot(collection(db, 'requests'), (snapshot) => {
-      const docs = snapshot.docs.slice().sort((a, b) => {
+      const filterValue = filterSelect.value;
+      let docs = snapshot.docs.slice().sort((a, b) => {
         const ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
         const tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
         return tb - ta;
       });
+      if (filterValue) {
+        docs = docs.filter(d => (d.data().status || 'Received') === filterValue);
+      }
       if (docs.length === 0) {
-        list.innerHTML = '<p class="text-dim-note">No requests yet.</p>';
+        list.innerHTML = '<p class="text-dim-note">No requests match this filter.</p>';
         return;
       }
       list.innerHTML = '';
@@ -1619,10 +1695,12 @@
           <div class="admin-req-meta">Ticket: ${d.ticketId || '—'} · uid: ${d.uid}</div>
           <div class="admin-req-meta">${d.name || ''} · ${d.contact || ''} · ${d.service || ''} · ${d.platform || ''}</div>
           <div class="admin-req-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
+          ${d.accountNumber ? `<div class="admin-req-meta">Account: ${d.accountNumber} · Tier: ${d.tier || 'Standard'}</div>` : ''}
           <div class="admin-edit-row">
             <label>Status</label>
             <select class="admin-status-input">
               <option ${d.status==='Received'?'selected':''}>Received</option>
+              <option ${d.status==='Awaiting Payment'?'selected':''}>Awaiting Payment</option>
               <option ${d.status==='In Progress'?'selected':''}>In Progress</option>
               <option ${d.status==='Completed'?'selected':''}>Completed</option>
             </select>
@@ -1638,6 +1716,7 @@
           <button type="button" class="admin-save-btn">Save changes</button>
           <button type="button" class="admin-save-btn admin-attach-btn" style="background:var(--panel-2);color:var(--text);border:1px solid var(--line);">Attach known file</button>
           <button type="button" class="admin-save-btn admin-genlic-btn" style="background:var(--buy);color:#fff;">Generate license →</button>
+          ${d.status === 'Awaiting Payment' ? `<button type="button" class="admin-save-btn admin-confirmpay-btn" style="background:var(--sell);color:#fff;">✓ Confirm payment received</button>` : ''}
           <span class="admin-save-msg"></span>
         `;
         card.querySelector('.admin-attach-btn').addEventListener('click', async () => {
@@ -1662,7 +1741,27 @@
           adminTabLicenses.click();
           document.getElementById('createLicenseForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
-        card.querySelector('.admin-save-btn:not(.admin-attach-btn):not(.admin-genlic-btn)').addEventListener('click', async () => {
+        const confirmPayBtn = card.querySelector('.admin-confirmpay-btn');
+        if (confirmPayBtn) {
+          confirmPayBtn.addEventListener('click', async () => {
+            const msg = card.querySelector('.admin-save-msg');
+            try {
+              await updateDoc(doc(db, 'requests', docSnap.id), {
+                status: 'Completed',
+                note: "Payment confirmed! Your download is now unlocked below."
+              });
+              // Find and activate the matching license by ticketId
+              const licSnap = await getDocs(query(collection(db, 'licenses'), where('ticketId', '==', d.ticketId || '__none__')));
+              licSnap.forEach(async (licDoc) => {
+                await updateDoc(doc(db, 'licenses', licDoc.id), { status: 'Active' });
+              });
+              msg.textContent = 'Payment confirmed — request and license unlocked ✓';
+            } catch (err) {
+              msg.textContent = 'Error: ' + err.message;
+            }
+          });
+        }
+        card.querySelector('.admin-save-btn:not(.admin-attach-btn):not(.admin-genlic-btn):not(.admin-confirmpay-btn)').addEventListener('click', async () => {
           const status = card.querySelector('.admin-status-input').value;
           const note = card.querySelector('.admin-note-input').value;
           const deliveryLink = card.querySelector('.admin-link-input').value;
@@ -1857,7 +1956,9 @@ Press OK to send, or Cancel to go back and edit.`;
       service: service,
       platform: platform,
       title: title,
-      strategy: strategy
+      strategy: strategy,
+      accountNumber: document.getElementById('f-account') ? document.getElementById('f-account').value : '',
+      tier: 'Standard'
     })
   }).catch(err => console.log('Sheet log failed (non-critical):', err));
 
@@ -1945,6 +2046,7 @@ document.querySelectorAll('.bot-buy-btn').forEach(btn => {
     }
 
     const rentalRow = document.getElementById('rentalDurationRow');
+    document.getElementById('accountFieldRow').style.display = 'flex';
     if (action === 'rent') {
       rentalRow.style.display = 'flex';
       document.getElementById('f-strategy').value = `Requesting to rent: ${botName} (${platform}) — $${rentPrice}/month`;
@@ -1960,7 +2062,10 @@ document.querySelectorAll('.bot-buy-btn').forEach(btn => {
 // Show custom-build pricing note when that service is selected
 document.getElementById('f-service').addEventListener('change', function() {
   const note = document.getElementById('customBuildNote');
-  note.style.display = this.value.includes('Custom Strategy Automation') ? 'block' : 'none';
+  const isCustom = this.value.includes('Custom Strategy Automation');
+  note.style.display = isCustom ? 'block' : 'none';
+  const isBuyOrRent = this.value.includes('Buy a pre-built bot') || this.value.includes('Rent a pre-built bot');
+  document.getElementById('accountFieldRow').style.display = isBuyOrRent ? 'flex' : 'none';
 });
 </script>
 
