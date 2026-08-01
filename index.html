@@ -311,7 +311,7 @@
   .bot-detail{
     max-height:0;overflow:hidden;transition:max-height .3s ease;
   }
-  .bot-card.expanded .bot-detail{max-height:300px;margin-bottom:16px;}
+  .bot-card.expanded .bot-detail{max-height:520px;margin-bottom:16px;}
   .bot-detail-row{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-top:1px solid var(--line);}
   .bot-detail-row .l{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;color:var(--text-dim);}
   .bot-detail-row .v{font-size:13px;color:var(--text);}
@@ -1388,6 +1388,12 @@
 
   // Auth state -> toggle Auth box vs Dashboard, and load this user's requests
   // ===== PUBLIC BOT CATALOG (loads for everyone, logged in or not) =====
+  const RENTAL_MULTIPLIERS = { 7: 1.10, 14: 1.05, 30: 1.00, 60: 0.95, 90: 0.90, 365: 0.75 };
+  const RENTAL_LABELS = { 7: '7 days', 14: '14 days', 30: '30 days', 60: '60 days', 90: '90 days', 365: '1 year' };
+  function computeRentalPrice(monthlyRate, days) {
+    return Math.round((monthlyRate / 30) * days * (RENTAL_MULTIPLIERS[days] || 1));
+  }
+
   function renderProductCard(name, d) {
     const card = document.createElement('div');
     card.className = 'bot-card';
@@ -1396,6 +1402,9 @@
     card.dataset.botPrice = d.buyPrice || 0;
     card.dataset.botRentPrice = d.rentPrice || 0;
     card.dataset.botPlatform = d.platform || 'MT5';
+    const rentRows = Object.keys(RENTAL_LABELS).map(days =>
+      `<div class="bot-detail-row"><span class="l">${RENTAL_LABELS[days]}</span><span class="v">$${computeRentalPrice(d.rentPrice || 0, days)}</span></div>`
+    ).join('');
     card.innerHTML = `
       <div class="bot-top">
         <h4 style="margin-bottom:0;">${name}</h4>
@@ -1405,8 +1414,9 @@
       <div class="bot-detail">
         <div class="bot-detail-row"><span class="l">Strengths</span><span class="v">${d.strengths || '—'}</span></div>
         <div class="bot-detail-row"><span class="l">Buy price</span><span class="v">$${d.buyPrice || 0} (standard license, up to 6 accounts)</span></div>
-        <div class="bot-detail-row"><span class="l">Rental</span><span class="v">$${d.rentPrice || 0}/month, cancel anytime</span></div>
         <div class="bot-detail-row"><span class="l">Platform</span><span class="v">${d.platform || 'MT5'}</span></div>
+        <div class="bot-detail-row" style="border-top:1px solid var(--gold-soft);padding-top:10px;margin-top:4px;"><span class="l">Rental pricing (all durations)</span><span class="v"></span></div>
+        ${rentRows}
       </div>
       <div class="bot-foot">
         <span class="bot-price">from $${d.buyPrice || 0} / $${d.rentPrice || 0} mo</span>
