@@ -450,6 +450,11 @@
     display:block;font-family:'JetBrains Mono',monospace;font-size:10px;
     text-transform:uppercase;color:var(--gold);margin-bottom:4px;
   }
+  .amount-due-box{
+    background:rgba(198,161,83,0.1);border:1px solid var(--gold);border-radius:5px;
+    padding:10px 14px;margin-top:10px;font-size:13.5px;color:var(--text);
+  }
+  .amount-due-box strong{color:var(--gold);font-size:16px;}
   .new-tag{
     background:var(--sell);color:#fff;font-size:9px;padding:2px 6px;
     border-radius:3px;margin-left:8px;letter-spacing:0.03em;
@@ -470,6 +475,10 @@
   .pay-method-collapsed .pay-method-top::after{
     content:'Tap to reveal';margin-left:auto;font-size:10.5px;color:var(--text-dim);
     font-family:'JetBrains Mono',monospace;text-transform:uppercase;
+  }
+  .copy-btn{
+    background:var(--gold);color:#0C121C;border:none;font-size:10.5px;font-weight:700;
+    padding:3px 9px;border-radius:3px;cursor:pointer;margin-left:6px;
   }
   .pay-badge{
     display:inline-flex;align-items:center;justify-content:center;
@@ -899,6 +908,7 @@
       <div class="form-group form-group-full">
         <label for="f-title">Give this request a short name</label>
         <input type="text" id="f-title" placeholder="e.g. My NY Breakout EA, or GBPUSD Bot Rental">
+        <input type="hidden" id="f-botname" value="">
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -1226,6 +1236,10 @@
               <input type="number" id="prod-rentprice" required placeholder="e.g. 35">
             </div>
           </div>
+          <div class="form-group form-group-full">
+            <label for="prod-downloadlink">Google Drive download link (attach once — every order for this bot uses it automatically)</label>
+            <input type="text" id="prod-downloadlink" placeholder="https://drive.google.com/...">
+          </div>
           <button type="submit" class="btn btn-gold">Save product</button>
           <div id="productMsg" class="text-dim-note" style="margin-top:10px;"></div>
         </form>
@@ -1301,28 +1315,28 @@
             <span class="pay-badge badge-mtn">MTN</span>
             <div class="pay-method-name">MTN Mobile Money</div>
           </div>
-          <div class="pay-method-detail pay-method-hidden">+256 774 077 467 — Musasizi Ezekiel Wasswa</div>
+          <div class="pay-method-detail pay-method-hidden"><span class="copy-value">+256 774 077 467</span> — Musasizi Ezekiel Wasswa <button type="button" class="copy-btn">Copy</button></div>
         </div>
         <div class="pay-method pay-method-collapsed">
           <div class="pay-method-top pay-method-toggle">
             <span class="pay-badge badge-airtel">Airtel</span>
             <div class="pay-method-name">Airtel Money</div>
           </div>
-          <div class="pay-method-detail pay-method-hidden">+256 758 662 069 — Musasizi Ezekiel Wasswa</div>
+          <div class="pay-method-detail pay-method-hidden"><span class="copy-value">+256 758 662 069</span> — Musasizi Ezekiel Wasswa <button type="button" class="copy-btn">Copy</button></div>
         </div>
         <div class="pay-method pay-method-collapsed">
           <div class="pay-method-top pay-method-toggle">
             <span class="pay-badge badge-bank">🏦</span>
             <div class="pay-method-name">Bank Transfer</div>
           </div>
-          <div class="pay-method-detail pay-method-hidden">Equity Bank — Acc No. 1047103395482 — Musasizi Ezekiel Wasswa</div>
+          <div class="pay-method-detail pay-method-hidden">Equity Bank — Acc No. <span class="copy-value">1047103395482</span> — Musasizi Ezekiel Wasswa <button type="button" class="copy-btn">Copy</button></div>
         </div>
         <div class="pay-method pay-method-collapsed">
           <div class="pay-method-top pay-method-toggle">
             <span class="pay-badge badge-binance">₿</span>
             <div class="pay-method-name">Crypto (USDT — TRC20 network only)</div>
           </div>
-          <div class="pay-method-detail pay-method-hidden" style="word-break:break-all;">TNSSYjWaFMCaDbbrrBfdYPdsjouVyNpmab</div>
+          <div class="pay-method-detail pay-method-hidden" style="word-break:break-all;"><span class="copy-value">TNSSYjWaFMCaDbbrrBfdYPdsjouVyNpmab</span> <button type="button" class="copy-btn">Copy</button></div>
           <div class="pay-method-warning pay-method-hidden">⚠ Confirm TRC20 network before sending — wrong network = lost funds.</div>
         </div>
       </div>
@@ -1668,8 +1682,8 @@
         return;
       }
       licensesList.innerHTML = '';
-      snapshot.forEach((doc) => {
-        const d = doc.data();
+      snapshot.forEach((licSnap) => {
+        const d = licSnap.data();
         const statusClass = (d.status || '').toLowerCase() === 'active' ? 'status-done' :
                              (d.status || '').toLowerCase() === 'suspended' ? 'status-suspended' : 'status-progress';
         const platformDetail = d.platform === 'TradingView'
@@ -1677,6 +1691,7 @@
           : `MT5 account: ${d.mt5AccountNumber || '—'}`;
         const card = document.createElement('div');
         card.className = 'request-card';
+        const isRental = d.subscriptionType === 'Rental';
         card.innerHTML = `
           <div class="r-top">
             <span class="r-service">${d.product || 'Product'}</span>
@@ -1686,7 +1701,63 @@
           <div class="r-detail">${platformDetail}</div>
           <div class="r-detail">Subscription: ${d.subscriptionType || '—'}</div>
           <div class="r-date">${d.expiryDate ? 'Expires ' + d.expiryDate : 'Lifetime license'}</div>
+          ${isRental ? `
+            <div class="admin-edit-row" style="margin-top:12px;">
+              <label>Renew for</label>
+              <select class="renew-duration-select">
+                <option value="7">7 days</option>
+                <option value="14">14 days</option>
+                <option value="30" selected>30 days</option>
+                <option value="60">60 days</option>
+                <option value="90">90 days</option>
+                <option value="365">1 year</option>
+              </select>
+            </div>
+            <button type="button" class="btn btn-gold renew-btn" style="margin-top:8px;">Renew license</button>
+            <span class="admin-save-msg"></span>
+          ` : ''}
         `;
+        if (isRental) {
+          card.querySelector('.renew-btn').addEventListener('click', async () => {
+            const days = parseInt(card.querySelector('.renew-duration-select').value, 10);
+            const msg = card.querySelector('.admin-save-msg');
+            try {
+              const productDoc = await getDoc(doc(db, 'products', d.product));
+              const rentPrice = productDoc.exists() ? (productDoc.data().rentPrice || 0) : 0;
+              const amount = computeRentalPrice(rentPrice, days);
+
+              if (!window.confirm(`Renew ${d.product} for ${days} days — $${amount}?\n\nThis will create a renewal request. Go to Payments to complete it, then send us your ticket ID on WhatsApp.`)) {
+                return;
+              }
+
+              const ticketId = 'KT-' + Date.now().toString(36).slice(-4).toUpperCase() + '-' + Math.random().toString(36).slice(-3).toUpperCase();
+
+              await addDoc(collection(db, 'requests'), {
+                uid: uid,
+                ticketId: ticketId,
+                title: `${d.product} — Renewal`,
+                name: auth.currentUser.displayName || '',
+                contact: auth.currentUser.email || '',
+                service: 'Renew license',
+                platform: d.platform,
+                accountNumber: d.mt5AccountNumber || d.tradingViewUsername || '',
+                tier: 'Standard',
+                strategy: `Renewal request for ${days} days`,
+                status: 'Awaiting Payment',
+                note: `Renewal request received — you owe $${amount}. Head to the Payments tab to complete payment, then send us your ticket ID on WhatsApp.`,
+                deliveryLink: '',
+                amountDue: amount,
+                durationDays: days,
+                renewalForLicenseId: licSnap.id,
+                createdAt: serverTimestamp()
+              });
+
+              msg.textContent = 'Renewal request created — check "Your requests" above to pay.';
+            } catch (err) {
+              msg.textContent = 'Error: ' + err.message;
+            }
+          });
+        }
         licensesList.appendChild(card);
       });
     });
@@ -1738,6 +1809,7 @@
           ${d.title ? `<div class="r-subservice">${d.service || ''}</div>` : ''}
           <div class="r-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
           ${d.note ? `<div class="r-note"><span class="r-note-label">Message from The Kingdom Trader ${localStorage.getItem('seenNote_' + doc.id) !== d.note ? '<span class="new-tag">New</span>' : ''}</span>${d.note.replace(/</g,'&lt;')}</div>` : ''}
+          ${d.status === 'Awaiting Payment' && d.amountDue ? `<div class="amount-due-box">Amount due: <strong>$${d.amountDue}</strong>${d.expiryDate ? ' · Covers until ' + d.expiryDate : ''}</div>` : ''}
           ${d.deliveryLink && d.status === 'Completed' ? `<a href="${d.deliveryLink.replace(/"/g,'')}" target="_blank" rel="noopener" class="download-btn">⬇ Download your file</a>` : ''}
           ${d.deliveryLink && d.status === 'Completed' ? `<button type="button" class="install-guide-toggle">📖 How to install (${d.platform || 'MT5'}) — tap to expand</button><div class="install-guide-content">${getInstallGuide(d.platform)}</div>` : ''}
           ${d.deliveryLink && d.status === 'Awaiting Payment' ? `<button type="button" class="download-btn locked-btn" data-ticket="${d.ticketId || ''}">🔒 Complete payment to unlock</button>` : ''}
@@ -1755,24 +1827,44 @@
     try {
       const service = document.getElementById('f-service').value;
       const title = document.getElementById('f-title').value.trim() || service;
+      const botName = document.getElementById('f-botname').value.trim();
       const accountNumber = document.getElementById('f-account').value.trim();
       const platform = document.getElementById('f-platform').value;
+      const isRental = service.includes('Rent');
+      const durationDays = isRental ? parseInt(document.getElementById('f-rental-duration').value, 10) : 0;
 
-      // Check if this exact title matches a known pre-built product file
       let deliveryLink = '';
       let note = "Thanks for reaching out! We've received your request and will review it shortly. We'll update you here as soon as there's progress.";
       let status = 'Received';
       let matchedProduct = false;
-      try {
-        const fileDoc = await getDoc(doc(db, 'productFiles', title));
-        if (fileDoc.exists() && fileDoc.data().driveLink) {
-          deliveryLink = fileDoc.data().driveLink;
-          note = "Thanks for your order! Your license and file are ready — head to the Payments tab to complete payment, then send us your payment screenshot + this ticket ID on WhatsApp to unlock your download.";
-          status = 'Awaiting Payment';
-          matchedProduct = true;
+      let amountDue = 0;
+      let expiryDate = '';
+
+      if (botName) {
+        try {
+          const productDoc = await getDoc(doc(db, 'products', botName));
+          if (productDoc.exists()) {
+            const p = productDoc.data();
+            deliveryLink = p.downloadLink || '';
+            matchedProduct = !!deliveryLink;
+
+            if (isRental) {
+              amountDue = computeRentalPrice(p.rentPrice || 0, durationDays);
+              const expiry = new Date();
+              expiry.setDate(expiry.getDate() + durationDays);
+              expiryDate = expiry.toISOString().split('T')[0]; // YYYY-MM-DD
+            } else {
+              amountDue = p.buyPrice || 0;
+            }
+
+            if (matchedProduct) {
+              note = `Thanks for your order! Your license and file are ready — you owe $${amountDue}. Head to the Payments tab to complete payment, then send us your payment screenshot + this ticket ID on WhatsApp to unlock your download.`;
+              status = 'Awaiting Payment';
+            }
+          }
+        } catch (lookupErr) {
+          console.log('Product lookup skipped:', lookupErr);
         }
-      } catch (lookupErr) {
-        console.log('Product file lookup skipped:', lookupErr);
       }
 
       await addDoc(collection(db, 'requests'), {
@@ -1789,6 +1881,9 @@
         status: status,
         note: note,
         deliveryLink: deliveryLink,
+        amountDue: amountDue,
+        durationDays: durationDays,
+        expiryDate: expiryDate,
         createdAt: serverTimestamp()
       });
 
@@ -1797,14 +1892,15 @@
         await addDoc(collection(db, 'licenses'), {
           uid: user.uid,
           ticketId: ticketId,
-          product: title,
+          product: botName || title,
           platform: platform,
           mt5AccountNumber: platform !== 'TradingView' ? accountNumber : '',
           tradingViewUsername: platform === 'TradingView' ? accountNumber : '',
           accounts: accountNumber ? [accountNumber] : [],
           maxSlots: 6,
-          subscriptionType: service.includes('Rent') ? 'Rental' : 'Lifetime',
-          expiryDate: '',
+          subscriptionType: isRental ? 'Rental' : 'Lifetime',
+          expiryDate: expiryDate,
+          amountDue: amountDue,
           status: 'Pending Payment',
           createdAt: serverTimestamp()
         });
@@ -1877,6 +1973,7 @@
             <span class="r-status status-progress">${d.status || 'Received'}</span>
           </div>
           <div class="admin-req-meta">Ticket: ${d.ticketId || '—'} · uid: ${d.uid}</div>
+          ${d.amountDue ? `<div class="admin-req-meta" style="color:var(--gold);font-weight:700;">Amount due: $${d.amountDue}${d.expiryDate ? ' · Covers until ' + d.expiryDate : ''}</div>` : ''}
           <div class="admin-req-meta">${d.name || ''} · ${d.contact || ''} · ${d.service || ''} · ${d.platform || ''}</div>
           <div class="admin-req-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
           ${d.accountNumber ? `<div class="admin-req-meta">Account: ${d.accountNumber} · Tier: ${d.tier || 'Standard'}</div>` : ''}
@@ -1932,14 +2029,28 @@
             try {
               await updateDoc(doc(db, 'requests', docSnap.id), {
                 status: 'Completed',
-                note: "Payment confirmed! Your download is now unlocked below."
+                note: d.renewalForLicenseId ? "Payment confirmed! Your license has been renewed." : "Payment confirmed! Your download is now unlocked below."
               });
-              // Find and activate the matching license by ticketId
-              const licSnap = await getDocs(query(collection(db, 'licenses'), where('ticketId', '==', d.ticketId || '__none__')));
-              licSnap.forEach(async (licDoc) => {
-                await updateDoc(doc(db, 'licenses', licDoc.id), { status: 'Active' });
-              });
-              msg.textContent = 'Payment confirmed — request and license unlocked ✓';
+
+              if (d.renewalForLicenseId) {
+                // Renewal: extend the existing license's expiry instead of creating a new one
+                const licDocRef = doc(db, 'licenses', d.renewalForLicenseId);
+                const licSnapshot = await getDoc(licDocRef);
+                if (licSnapshot.exists()) {
+                  const currentExpiry = licSnapshot.data().expiryDate;
+                  const baseDate = currentExpiry && new Date(currentExpiry) > new Date() ? new Date(currentExpiry) : new Date();
+                  baseDate.setDate(baseDate.getDate() + (d.durationDays || 30));
+                  const newExpiry = baseDate.toISOString().split('T')[0];
+                  await updateDoc(licDocRef, { expiryDate: newExpiry, status: 'Active' });
+                }
+              } else {
+                // New purchase/rental: find and activate the matching license by ticketId
+                const licQuerySnap = await getDocs(query(collection(db, 'licenses'), where('ticketId', '==', d.ticketId || '__none__')));
+                licQuerySnap.forEach(async (licDoc) => {
+                  await updateDoc(doc(db, 'licenses', licDoc.id), { status: 'Active' });
+                });
+              }
+              msg.textContent = 'Payment confirmed ✓';
             } catch (err) {
               msg.textContent = 'Error: ' + err.message;
             }
@@ -2040,6 +2151,7 @@
           document.getElementById('prod-strengths').value = d.strengths || '';
           document.getElementById('prod-buyprice').value = d.buyPrice || '';
           document.getElementById('prod-rentprice').value = d.rentPrice || '';
+          document.getElementById('prod-downloadlink').value = d.downloadLink || '';
           document.getElementById('productForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
         card.querySelector('.admin-toggleprod-btn').addEventListener('click', async () => {
@@ -2065,6 +2177,7 @@
         advantages: document.getElementById('prod-advantages').value,
         buyPrice: Number(document.getElementById('prod-buyprice').value),
         rentPrice: Number(document.getElementById('prod-rentprice').value),
+        downloadLink: document.getElementById('prod-downloadlink').value.trim(),
         updatedAt: serverTimestamp()
       });
       msg.textContent = 'Saved ✓ — live on the site now.';
@@ -2288,6 +2401,18 @@ document.querySelectorAll('.pay-method-toggle').forEach(toggle => {
   });
 });
 
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const value = btn.closest('.pay-method-detail').querySelector('.copy-value').textContent;
+    navigator.clipboard.writeText(value.trim()).then(() => {
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = original, 1500);
+    }).catch(() => { btn.textContent = 'Failed'; });
+  });
+});
+
 document.getElementById('botsContainer').addEventListener('click', (e) => {
   const buyBtn = e.target.closest('.bot-buy-btn');
   if (buyBtn) {
@@ -2299,6 +2424,7 @@ document.getElementById('botsContainer').addEventListener('click', (e) => {
     const action = buyBtn.dataset.action; // 'buy' or 'rent'
 
     document.getElementById('f-title').value = `${botName} — ${action === 'buy' ? 'Purchase' : 'Rental'}`;
+    document.getElementById('f-botname').value = botName;
 
     const serviceSelect = document.getElementById('f-service');
     const targetOption = action === 'buy' ? 'Buy a pre-built bot' : 'Rent a pre-built bot';
@@ -2345,6 +2471,7 @@ document.getElementById('f-service').addEventListener('change', function() {
   note.style.display = isCustom ? 'block' : 'none';
   const isBuyOrRent = this.value.includes('Buy a pre-built bot') || this.value.includes('Rent a pre-built bot');
   document.getElementById('accountFieldRow').style.display = isBuyOrRent ? 'flex' : 'none';
+  if (!isBuyOrRent) document.getElementById('f-botname').value = '';
 });
 </script>
 
