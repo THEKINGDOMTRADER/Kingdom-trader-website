@@ -323,6 +323,11 @@
   .tag-sell{background:rgba(193,73,74,0.15);color:var(--sell);}
   .bot-card h4{font-size:17px;margin-bottom:8px;}
   .bot-card p{font-size:13px;color:var(--text-dim);margin-bottom:18px;}
+  .win-rate-badge{
+    display:inline-block;background:rgba(43,174,114,0.12);color:var(--buy);
+    font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:3px;
+    margin-bottom:10px;font-family:'JetBrains Mono',monospace;
+  }
   .bot-foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:16px;}
   .bot-price{font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:14px;}
   .bot-link{font-size:12.5px;color:var(--text-dim);}
@@ -426,6 +431,17 @@
   }
   .download-btn:hover{opacity:0.9;}
   .locked-btn{background:var(--gold);color:#0C121C;border:none;cursor:pointer;font-family:inherit;font-size:13.5px;}
+  .install-guide-toggle{
+    width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--text);
+    font-size:12.5px;padding:10px;border-radius:5px;margin-top:8px;cursor:pointer;text-align:left;
+    font-family:inherit;
+  }
+  .install-guide-content{
+    display:none;font-size:12.5px;color:var(--text-dim);padding:12px 4px 4px;
+  }
+  .install-guide-content.open{display:block;}
+  .install-guide-content ol{padding-left:20px;}
+  .install-guide-content li{margin-bottom:8px;}
   .r-note{
     background:rgba(198,161,83,0.08);border-left:2px solid var(--gold);
     padding:10px 12px;margin-top:12px;font-size:13px;color:var(--text);white-space:pre-wrap;
@@ -448,6 +464,13 @@
   .pay-method-name{font-size:13.5px;font-weight:600;color:var(--gold);}
   .pay-method-detail{font-size:12.5px;color:var(--text-dim);margin-top:3px;}
   .pay-method-top{display:flex;align-items:center;gap:10px;}
+  .pay-method-toggle{cursor:pointer;}
+  .pay-method-toggle:hover .pay-badge{filter:brightness(1.1);}
+  .pay-method-hidden{display:none;}
+  .pay-method-collapsed .pay-method-top::after{
+    content:'Tap to reveal';margin-left:auto;font-size:10.5px;color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;
+  }
   .pay-badge{
     display:inline-flex;align-items:center;justify-content:center;
     min-width:38px;height:24px;padding:0 8px;border-radius:4px;
@@ -1049,15 +1072,21 @@
     </div>
 
     <div id="adminRequestsView">
-      <div class="form-group" style="max-width:260px;margin-bottom:20px;">
-        <label for="adminStatusFilter">Filter by status</label>
-        <select id="adminStatusFilter">
-          <option value="">All requests</option>
-          <option value="Awaiting Payment">Awaiting Payment (pending)</option>
-          <option value="Received">Received</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
-        </select>
+      <div class="form-row" style="margin-bottom:20px;">
+        <div class="form-group">
+          <label for="adminSearchFilter">Search by ticket ID or name</label>
+          <input type="text" id="adminSearchFilter" placeholder="e.g. KT-M3X2-A9F or client name">
+        </div>
+        <div class="form-group">
+          <label for="adminStatusFilter">Filter by status</label>
+          <select id="adminStatusFilter">
+            <option value="">All requests</option>
+            <option value="Awaiting Payment">Awaiting Payment (pending)</option>
+            <option value="Received">Received</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
       </div>
       <div id="adminRequestsList" class="requests-list"></div>
     </div>
@@ -1179,6 +1208,16 @@
           </div>
           <div class="form-row">
             <div class="form-group">
+              <label for="prod-winrate">Win rate (%, based on your backtest/live data)</label>
+              <input type="number" id="prod-winrate" placeholder="e.g. 68">
+            </div>
+            <div class="form-group">
+              <label for="prod-advantages">Key advantages</label>
+              <input type="text" id="prod-advantages" placeholder="e.g. Low drawdown, works in trending markets">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
               <label for="prod-buyprice">Buy price ($)</label>
               <input type="number" id="prod-buyprice" required placeholder="e.g. 270">
             </div>
@@ -1255,35 +1294,36 @@
 
     <div id="panelPaymentsView" style="display:none;">
       <div class="dash-section-label" style="margin-top:0;">Accepted payment methods</div>
+      <p class="text-dim-note" style="margin-bottom:14px;">Tap a method to reveal the number/details.</p>
       <div class="pay-methods">
-        <div class="pay-method">
-          <div class="pay-method-top">
+        <div class="pay-method pay-method-collapsed">
+          <div class="pay-method-top pay-method-toggle">
             <span class="pay-badge badge-mtn">MTN</span>
             <div class="pay-method-name">MTN Mobile Money</div>
           </div>
-          <div class="pay-method-detail">+256 774 077 467 — Musasizi Ezekiel Wasswa</div>
+          <div class="pay-method-detail pay-method-hidden">+256 774 077 467 — Musasizi Ezekiel Wasswa</div>
         </div>
-        <div class="pay-method">
-          <div class="pay-method-top">
+        <div class="pay-method pay-method-collapsed">
+          <div class="pay-method-top pay-method-toggle">
             <span class="pay-badge badge-airtel">Airtel</span>
             <div class="pay-method-name">Airtel Money</div>
           </div>
-          <div class="pay-method-detail">+256 758 662 069 — Musasizi Ezekiel Wasswa</div>
+          <div class="pay-method-detail pay-method-hidden">+256 758 662 069 — Musasizi Ezekiel Wasswa</div>
         </div>
-        <div class="pay-method">
-          <div class="pay-method-top">
+        <div class="pay-method pay-method-collapsed">
+          <div class="pay-method-top pay-method-toggle">
             <span class="pay-badge badge-bank">🏦</span>
             <div class="pay-method-name">Bank Transfer</div>
           </div>
-          <div class="pay-method-detail">Equity Bank — Acc No. 1047103395482 — Musasizi Ezekiel Wasswa</div>
+          <div class="pay-method-detail pay-method-hidden">Equity Bank — Acc No. 1047103395482 — Musasizi Ezekiel Wasswa</div>
         </div>
-        <div class="pay-method">
-          <div class="pay-method-top">
+        <div class="pay-method pay-method-collapsed">
+          <div class="pay-method-top pay-method-toggle">
             <span class="pay-badge badge-binance">₿</span>
             <div class="pay-method-name">Crypto (USDT — TRC20 network only)</div>
           </div>
-          <div class="pay-method-detail" style="word-break:break-all;">TNSSYjWaFMCaDbbrrBfdYPdsjouVyNpmab</div>
-          <div class="pay-method-warning">⚠ Confirm TRC20 network before sending — wrong network = lost funds.</div>
+          <div class="pay-method-detail pay-method-hidden" style="word-break:break-all;">TNSSYjWaFMCaDbbrrBfdYPdsjouVyNpmab</div>
+          <div class="pay-method-warning pay-method-hidden">⚠ Confirm TRC20 network before sending — wrong network = lost funds.</div>
         </div>
       </div>
       <p class="text-dim-note" style="margin-top:16px;">When paying, please include your <strong>Ticket ID</strong> (shown on your request above) as the payment reference or reason — this helps us match your payment quickly. Confirm your preferred method with us on WhatsApp before paying.</p>
@@ -1394,6 +1434,37 @@
     return Math.round((monthlyRate / 30) * days * (RENTAL_MULTIPLIERS[days] || 1));
   }
 
+  function getInstallGuide(platform) {
+    const guides = {
+      'MT5': `
+        <ol>
+          <li>Download the .ex5 file from the link above and save it somewhere easy to find.</li>
+          <li>Open MetaTrader 5 → click <strong>File</strong> → <strong>Open Data Folder</strong>.</li>
+          <li>Go into <strong>MQL5 → Experts</strong>, and copy your downloaded file into that folder.</li>
+          <li>Close and reopen MT5 (or right-click "Expert Advisors" in the Navigator panel → Refresh).</li>
+          <li>Drag the EA from the Navigator panel onto your chart.</li>
+          <li>In the popup, go to the "Common" tab and tick <strong>"Allow Algo Trading"</strong>, then click OK.</li>
+          <li>Check the top-right of your chart — a smiley face icon means it's running correctly.</li>
+        </ol>`,
+      'MT4': `
+        <ol>
+          <li>Download the .ex4 file from the link above.</li>
+          <li>Open MetaTrader 4 → click <strong>File</strong> → <strong>Open Data Folder</strong>.</li>
+          <li>Go into <strong>MQL4 → Experts</strong>, and copy your downloaded file into that folder.</li>
+          <li>Restart MT4, or right-click "Expert Advisors" in the Navigator → Refresh.</li>
+          <li>Drag the EA onto your chart, enable <strong>"Allow live trading"</strong> in the popup, click OK.</li>
+        </ol>`,
+      'TradingView': `
+        <ol>
+          <li>Message us your exact TradingView username (case-sensitive) if you haven't already.</li>
+          <li>We'll grant your account invite-only access directly on TradingView — this usually takes a few hours.</li>
+          <li>Once granted, open TradingView → search for the script by name in the indicators list under "Invite-only scripts."</li>
+          <li>Click "Add to Chart."</li>
+        </ol>`
+    };
+    return guides[platform] || guides['MT5'];
+  }
+
   function renderProductCard(name, d) {
     const card = document.createElement('div');
     card.className = 'bot-card';
@@ -1410,8 +1481,11 @@
         <h4 style="margin-bottom:0;">${name}</h4>
         <span class="bot-tag tag-buy">${d.pair || ''}</span>
       </div>
+      ${d.winRate ? `<div class="win-rate-badge">📈 ${d.winRate}% win rate</div>` : ''}
       <p>${d.description || ''}</p>
       <div class="bot-detail">
+        ${d.winRate ? `<div class="bot-detail-row"><span class="l">Win rate</span><span class="v">${d.winRate}%</span></div>` : ''}
+        ${d.advantages ? `<div class="bot-detail-row"><span class="l">Advantages</span><span class="v">${d.advantages}</span></div>` : ''}
         <div class="bot-detail-row"><span class="l">Strengths</span><span class="v">${d.strengths || '—'}</span></div>
         <div class="bot-detail-row"><span class="l">Buy price</span><span class="v">$${d.buyPrice || 0} (standard license, up to 6 accounts)</span></div>
         <div class="bot-detail-row"><span class="l">Platform</span><span class="v">${d.platform || 'MT5'}</span></div>
@@ -1541,9 +1615,15 @@
 
   // Locked download button (payment not yet confirmed) -> jump to Payments tab
   document.getElementById('requestsList').addEventListener('click', (e) => {
-    const btn = e.target.closest('.locked-btn');
-    if (!btn) return;
-    panelTabPayments.click();
+    const lockedBtn = e.target.closest('.locked-btn');
+    if (lockedBtn) {
+      panelTabPayments.click();
+      return;
+    }
+    const guideBtn = e.target.closest('.install-guide-toggle');
+    if (guideBtn) {
+      guideBtn.nextElementSibling.classList.toggle('open');
+    }
   });
 
   // Track which notes the client has already seen, using localStorage
@@ -1659,6 +1739,7 @@
           <div class="r-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
           ${d.note ? `<div class="r-note"><span class="r-note-label">Message from The Kingdom Trader ${localStorage.getItem('seenNote_' + doc.id) !== d.note ? '<span class="new-tag">New</span>' : ''}</span>${d.note.replace(/</g,'&lt;')}</div>` : ''}
           ${d.deliveryLink && d.status === 'Completed' ? `<a href="${d.deliveryLink.replace(/"/g,'')}" target="_blank" rel="noopener" class="download-btn">⬇ Download your file</a>` : ''}
+          ${d.deliveryLink && d.status === 'Completed' ? `<button type="button" class="install-guide-toggle">📖 How to install (${d.platform || 'MT5'}) — tap to expand</button><div class="install-guide-content">${getInstallGuide(d.platform)}</div>` : ''}
           ${d.deliveryLink && d.status === 'Awaiting Payment' ? `<button type="button" class="download-btn locked-btn" data-ticket="${d.ticketId || ''}">🔒 Complete payment to unlock</button>` : ''}
           <div class="r-date">Submitted ${date}</div>
         `;
@@ -1753,12 +1834,18 @@
   function loadAdminRequests() {
     const list = document.getElementById('adminRequestsList');
     const filterSelect = document.getElementById('adminStatusFilter');
+    const searchInput = document.getElementById('adminSearchFilter');
     if (!filterSelect.dataset.wired) {
       filterSelect.addEventListener('change', () => loadAdminRequests());
       filterSelect.dataset.wired = 'true';
     }
+    if (!searchInput.dataset.wired) {
+      searchInput.addEventListener('input', () => loadAdminRequests());
+      searchInput.dataset.wired = 'true';
+    }
     onSnapshot(collection(db, 'requests'), (snapshot) => {
       const filterValue = filterSelect.value;
+      const searchValue = searchInput.value.trim().toLowerCase();
       let docs = snapshot.docs.slice().sort((a, b) => {
         const ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
         const tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
@@ -1766,6 +1853,14 @@
       });
       if (filterValue) {
         docs = docs.filter(d => (d.data().status || 'Received') === filterValue);
+      }
+      if (searchValue) {
+        docs = docs.filter(d => {
+          const data = d.data();
+          const ticket = (data.ticketId || '').toLowerCase();
+          const name = (data.name || '').toLowerCase();
+          return ticket.includes(searchValue) || name.includes(searchValue);
+        });
       }
       if (docs.length === 0) {
         list.innerHTML = '<p class="text-dim-note">No requests match this filter.</p>';
@@ -1966,6 +2061,8 @@
         active: document.getElementById('prod-active').value === 'true',
         description: document.getElementById('prod-desc').value,
         strengths: document.getElementById('prod-strengths').value,
+        winRate: document.getElementById('prod-winrate').value ? Number(document.getElementById('prod-winrate').value) : null,
+        advantages: document.getElementById('prod-advantages').value,
         buyPrice: Number(document.getElementById('prod-buyprice').value),
         rentPrice: Number(document.getElementById('prod-rentprice').value),
         updatedAt: serverTimestamp()
@@ -2179,6 +2276,17 @@ function updateRentalEstimate() {
   document.getElementById('f-strategy').value = `Requesting to rent: ${botName} (${platform}) — ${days} days, est. $${estimate}`;
 }
 document.getElementById('f-rental-duration').addEventListener('change', updateRentalEstimate);
+
+// Tap-to-reveal payment method details
+document.querySelectorAll('.pay-method-toggle').forEach(toggle => {
+  toggle.addEventListener('click', () => {
+    const method = toggle.closest('.pay-method');
+    method.classList.toggle('pay-method-collapsed');
+    method.querySelectorAll('.pay-method-hidden').forEach(el => {
+      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    });
+  });
+});
 
 document.getElementById('botsContainer').addEventListener('click', (e) => {
   const buyBtn = e.target.closest('.bot-buy-btn');
