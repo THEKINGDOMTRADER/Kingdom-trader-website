@@ -386,6 +386,17 @@
     padding:12px 14px;border-radius:5px;margin-top:14px;
   }
   .auth-error:not(:empty){display:block;}
+  .forgot-pw-link{
+    display:block;background:none;border:none;color:var(--text-dim);
+    font-size:12.5px;text-align:center;margin:10px auto 0;cursor:pointer;
+    text-decoration:underline;
+  }
+  .forgot-pw-link:hover{color:var(--gold);}
+  .reset-msg{
+    display:none;color:var(--buy);background:rgba(43,174,114,0.12);font-size:13px;
+    padding:10px 14px;border-radius:5px;margin-top:12px;text-align:center;
+  }
+  .reset-msg:not(:empty){display:block;}
   .password-wrap{position:relative;display:flex;}
   .password-wrap input{flex:1;padding-right:60px;}
   .toggle-pw{
@@ -988,7 +999,9 @@
           </div>
         </div>
         <button type="submit" class="btn btn-gold btn-lg">Log in</button>
+        <button type="button" id="forgotPasswordBtn" class="forgot-pw-link">Forgot password?</button>
         <div id="loginError" class="auth-error"></div>
+        <div id="resetMsg" class="reset-msg"></div>
       </form>
 
       <form id="registerForm" class="intake-form auth-form" style="display:none;">
@@ -1352,7 +1365,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    signOut, onAuthStateChanged, updateProfile
+    signOut, onAuthStateChanged, updateProfile, sendPasswordResetEmail
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
     getFirestore, collection, addDoc, doc, updateDoc, getDoc, getDocs, setDoc, query, where, orderBy, onSnapshot, serverTimestamp
@@ -1439,6 +1452,27 @@
 
   // Logout
   document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+
+  // Forgot password -> Firebase sends the reset email automatically
+  document.getElementById('forgotPasswordBtn').addEventListener('click', async () => {
+    const email = document.getElementById('login-email').value.trim();
+    const errBox = document.getElementById('loginError');
+    const resetMsg = document.getElementById('resetMsg');
+    errBox.textContent = '';
+    resetMsg.textContent = '';
+
+    if (!email) {
+      errBox.textContent = 'Type your email above first, then tap "Forgot password?" again.';
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      resetMsg.textContent = `Reset link sent to ${email} — check your inbox (and spam folder) and follow the link to set a new password.`;
+    } catch (err) {
+      errBox.textContent = friendlyAuthError(err);
+    }
+  });
 
   // Auth state -> toggle Auth box vs Dashboard, and load this user's requests
   // ===== PUBLIC BOT CATALOG (loads for everyone, logged in or not) =====
