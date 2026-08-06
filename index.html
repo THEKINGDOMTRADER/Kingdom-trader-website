@@ -328,6 +328,11 @@
     font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:3px;
     margin-bottom:10px;font-family:'JetBrains Mono',monospace;
   }
+  .platform-badges-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+  .platform-mini-badge{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--text-dim);
+    font-size:10px;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:3px;
+  }
   .bot-foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:16px;}
   .bot-price{font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:14px;}
   .bot-link{font-size:12.5px;color:var(--text-dim);}
@@ -350,6 +355,13 @@
     font-size:12.5px;color:var(--text-dim);margin:-12px 0 20px;
     padding:8px 12px;border-left:2px solid var(--gold-soft);
   }
+  .platform-checkbox-group{display:flex;gap:16px;flex-wrap:wrap;}
+  .platform-checkbox{
+    display:flex;align-items:center;gap:6px;font-size:13.5px;color:var(--text);
+    background:var(--panel);border:1px solid var(--line);padding:8px 14px;
+    border-radius:5px;cursor:pointer;
+  }
+  .platform-checkbox input{accent-color:var(--gold);}
   .form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
   @media (max-width:700px){.form-row{grid-template-columns:1fr;}}
   .form-group{display:flex;flex-direction:column;gap:8px;}
@@ -431,6 +443,11 @@
     font-size:11.5px;color:var(--text-dim);margin-top:-4px;margin-bottom:8px;
     font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.03em;
   }
+  .progress-box{margin:10px 0;}
+  .progress-top{display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);margin-bottom:6px;}
+  .progress-track{background:var(--panel-2);border-radius:4px;height:8px;overflow:hidden;}
+  .progress-fill{background:var(--gold);height:100%;transition:width .3s ease;}
+  .progress-eta{font-size:11.5px;color:var(--gold);margin-top:5px;font-family:'JetBrains Mono',monospace;}
   .r-ticket{
     font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);
     letter-spacing:0.03em;margin-bottom:8px;
@@ -931,15 +948,16 @@
             <option>Not sure yet — just enquiring</option>
           </select>
         </div>
-        <div class="form-group">
-          <label for="f-platform">Preferred platform</label>
-          <select id="f-platform">
-            <option>MT4</option>
-            <option>MT5</option>
-            <option>TradingView</option>
-            <option>Not sure yet</option>
-          </select>
+      </div>
+      <div class="form-group form-group-full">
+        <label>Platform(s) needed</label>
+        <div class="platform-checkbox-group" id="platformCheckboxGroup">
+          <label class="platform-checkbox"><input type="checkbox" class="f-platform-cb" value="MT4"> MT4</label>
+          <label class="platform-checkbox"><input type="checkbox" class="f-platform-cb" value="MT5" checked> MT5</label>
+          <label class="platform-checkbox"><input type="checkbox" class="f-platform-cb" value="TradingView"> TradingView</label>
         </div>
+        <input type="hidden" id="f-platform" value="MT5">
+        <span id="comboPriceNote" class="form-helper-note" style="margin:6px 0 0;padding:0;border:none;display:none;"></span>
       </div>
       <p id="customBuildNote" class="form-helper-note" style="display:none;">We'll review your strategy's complexity and follow up with final pricing — the price shown on the site is a starting point, not the final quote.</p>
       <div id="rentalDurationRow" class="form-row" style="display:none;">
@@ -957,10 +975,8 @@
         </div>
       </div>
       <div id="accountFieldRow" class="form-row" style="display:none;">
-        <div class="form-group form-group-full">
-          <label for="f-account">MT5 account number / TradingView username (for this order)</label>
-          <input type="text" id="f-account" placeholder="The account/username you'll run this bot on">
-          <span class="form-helper-note" style="margin:4px 0 0;padding:0;border:none;">Standard tier — up to 6 accounts per bot. You can add or remove accounts later from your Licenses tab.</span>
+        <div class="form-group form-group-full" id="accountsContainer">
+          <span class="form-helper-note" style="margin:4px 0 8px;padding:0;border:none;">Standard tier — up to 6 accounts per platform. You can add or remove accounts later from your Licenses tab.</span>
         </div>
       </div>
       <div class="form-group form-group-full">
@@ -1110,6 +1126,14 @@
             <option value="Completed">Completed</option>
           </select>
         </div>
+        <div class="form-group">
+          <label for="adminTypeFilter">Filter by type</label>
+          <select id="adminTypeFilter">
+            <option value="">All types</option>
+            <option value="custom">Custom Builds</option>
+            <option value="bot">Bot Orders (Buy/Rent)</option>
+          </select>
+        </div>
       </div>
       <div id="adminRequestsList" class="requests-list"></div>
     </div>
@@ -1205,13 +1229,14 @@
             </div>
           </div>
           <div class="form-row">
-            <div class="form-group">
-              <label for="prod-platform">Platform</label>
-              <select id="prod-platform">
-                <option>MT5</option>
-                <option>MT4</option>
-                <option>TradingView</option>
-              </select>
+            <div class="form-group form-group-full">
+              <label>Available on which platform(s)? (select all that apply)</label>
+              <div class="platform-checkbox-group">
+                <label class="platform-checkbox"><input type="checkbox" class="prod-platform-cb" value="MT5"> MT5</label>
+                <label class="platform-checkbox"><input type="checkbox" class="prod-platform-cb" value="MT4"> MT4</label>
+                <label class="platform-checkbox"><input type="checkbox" class="prod-platform-cb" value="TradingView"> TradingView</label>
+              </div>
+              <span class="form-helper-note" style="margin:6px 0 0;padding:0;border:none;">Multi-platform bots are priced higher automatically (client pays more the more platforms they select) — no extra pricing setup needed from you.</span>
             </div>
             <div class="form-group">
               <label for="prod-active">Visible on site?</label>
@@ -1219,6 +1244,22 @@
                 <option value="true">Yes — show in catalog</option>
                 <option value="false">No — hide for now</option>
               </select>
+            </div>
+          </div>
+          <div class="form-row" id="platformLinksRow">
+            <div class="form-group">
+              <label for="prod-link-mt5">MT5 download link</label>
+              <input type="text" id="prod-link-mt5" placeholder="https://drive.google.com/...">
+            </div>
+            <div class="form-group">
+              <label for="prod-link-mt4">MT4 download link</label>
+              <input type="text" id="prod-link-mt4" placeholder="https://drive.google.com/...">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prod-link-tv">TradingView download link (or leave blank — access is invite-only)</label>
+              <input type="text" id="prod-link-tv" placeholder="https://drive.google.com/... (optional)">
             </div>
           </div>
           <div class="form-group form-group-full">
@@ -1248,10 +1289,6 @@
               <label for="prod-rentprice">Rent price per month ($)</label>
               <input type="number" id="prod-rentprice" required placeholder="e.g. 35">
             </div>
-          </div>
-          <div class="form-group form-group-full">
-            <label for="prod-downloadlink">Google Drive download link (attach once — every order for this bot uses it automatically)</label>
-            <input type="text" id="prod-downloadlink" placeholder="https://drive.google.com/...">
           </div>
           <button type="submit" class="btn btn-gold">Save product</button>
           <div id="productMsg" class="text-dim-note" style="margin-top:10px;"></div>
@@ -1482,6 +1519,24 @@
     return Math.round((monthlyRate / 30) * days * (RENTAL_MULTIPLIERS[days] || 1));
   }
 
+  function renderProgressBar(d) {
+    const progress = d.buildProgress || 0;
+    let etaText = '';
+    if (d.estimatedCompletionDate) {
+      const eta = new Date(d.estimatedCompletionDate);
+      const now = new Date();
+      const diffDays = Math.ceil((eta - now) / (1000 * 60 * 60 * 24));
+      etaText = diffDays > 0 ? `${diffDays} day${diffDays === 1 ? '' : 's'} remaining` :
+                diffDays === 0 ? 'Due today' : 'Running slightly behind schedule';
+    }
+    return `
+      <div class="progress-box">
+        <div class="progress-top"><span>Build progress</span><span>${progress}%</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:${progress}%;"></div></div>
+        ${etaText ? `<div class="progress-eta">${etaText}</div>` : ''}
+      </div>`;
+  }
+
   function getInstallGuide(platform) {
     const guides = {
       'MT5': `
@@ -1513,6 +1568,8 @@
     return guides[platform] || guides['MT5'];
   }
 
+  const PLATFORM_PRICE_MULTIPLIER = { 1: 1.0, 2: 1.6, 3: 2.1 }; // combo pricing: more platforms = higher total, but cheaper than buying separately
+
   function renderProductCard(name, d) {
     const card = document.createElement('div');
     card.className = 'bot-card';
@@ -1520,24 +1577,28 @@
     card.dataset.botName = name;
     card.dataset.botPrice = d.buyPrice || 0;
     card.dataset.botRentPrice = d.rentPrice || 0;
-    card.dataset.botPlatform = d.platform || 'MT5';
+    card.dataset.botPlatforms = JSON.stringify(d.platforms || ['MT5']);
+    const platforms = d.platforms || ['MT5'];
+    const platformBadges = platforms.map(p => `<span class="platform-mini-badge">${p}</span>`).join('');
     const rentRows = Object.keys(RENTAL_LABELS).map(days =>
-      `<div class="bot-detail-row"><span class="l">${RENTAL_LABELS[days]}</span><span class="v">$${computeRentalPrice(d.rentPrice || 0, days)}</span></div>`
+      `<div class="bot-detail-row"><span class="l">${RENTAL_LABELS[days]}</span><span class="v">$${computeRentalPrice(d.rentPrice || 0, days)} (1 platform)</span></div>`
     ).join('');
     card.innerHTML = `
       <div class="bot-top">
         <h4 style="margin-bottom:0;">${name}</h4>
         <span class="bot-tag tag-buy">${d.pair || ''}</span>
       </div>
+      <div class="platform-badges-row">${platformBadges}</div>
       ${d.winRate ? `<div class="win-rate-badge">📈 ${d.winRate}% win rate</div>` : ''}
       <p>${d.description || ''}</p>
       <div class="bot-detail">
         ${d.winRate ? `<div class="bot-detail-row"><span class="l">Win rate</span><span class="v">${d.winRate}%</span></div>` : ''}
         ${d.advantages ? `<div class="bot-detail-row"><span class="l">Advantages</span><span class="v">${d.advantages}</span></div>` : ''}
         <div class="bot-detail-row"><span class="l">Strengths</span><span class="v">${d.strengths || '—'}</span></div>
-        <div class="bot-detail-row"><span class="l">Buy price</span><span class="v">$${d.buyPrice || 0} (standard license, up to 6 accounts)</span></div>
-        <div class="bot-detail-row"><span class="l">Platform</span><span class="v">${d.platform || 'MT5'}</span></div>
-        <div class="bot-detail-row" style="border-top:1px solid var(--gold-soft);padding-top:10px;margin-top:4px;"><span class="l">Rental pricing (all durations)</span><span class="v"></span></div>
+        <div class="bot-detail-row"><span class="l">Buy price</span><span class="v">$${d.buyPrice || 0} for 1 platform, up to 6 accounts</span></div>
+        ${platforms.length > 1 ? `<div class="bot-detail-row"><span class="l">Buy — all ${platforms.length} platforms</span><span class="v">$${Math.round((d.buyPrice||0) * (PLATFORM_PRICE_MULTIPLIER[platforms.length] || 1))}</span></div>` : ''}
+        <div class="bot-detail-row"><span class="l">Available on</span><span class="v">${platforms.join(', ')}</span></div>
+        <div class="bot-detail-row" style="border-top:1px solid var(--gold-soft);padding-top:10px;margin-top:4px;"><span class="l">Rental pricing (1 platform, all durations)</span><span class="v"></span></div>
         ${rentRows}
       </div>
       <div class="bot-foot">
@@ -1842,6 +1903,7 @@
           </div>
           ${d.title ? `<div class="r-subservice">${d.service || ''}</div>` : ''}
           <div class="r-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
+          ${(d.service || '').includes('Custom') && d.status !== 'Completed' ? renderProgressBar(d) : ''}
           ${d.note ? `<div class="r-note"><span class="r-note-label">Message from The Kingdom Trader ${localStorage.getItem('seenNote_' + doc.id) !== d.note ? '<span class="new-tag">New</span>' : ''}</span>${d.note.replace(/</g,'&lt;')}</div>` : ''}
           ${d.status === 'Awaiting Payment' && d.amountDue ? `<div class="amount-due-box">Amount due: <strong>$${d.amountDue}</strong>${d.expiryDate ? ' · Covers until ' + d.expiryDate : ''}</div>` : ''}
           ${d.deliveryLink && d.status === 'Completed' ? `<a href="${d.deliveryLink.replace(/"/g,'')}" target="_blank" rel="noopener" class="download-btn">⬇ Download your file</a>` : ''}
@@ -1862,37 +1924,46 @@
       const service = document.getElementById('f-service').value;
       const title = document.getElementById('f-title').value.trim() || service;
       const botName = document.getElementById('f-botname').value.trim();
-      const accountNumber = document.getElementById('f-account').value.trim();
-      const platform = document.getElementById('f-platform').value;
+      const platform = document.getElementById('f-platform').value; // comma-joined list, e.g. "MT5, MT4"
+      const selectedPlatforms = Array.from(document.querySelectorAll('.f-platform-cb:checked')).map(cb => cb.value);
+      const accounts = {};
+      document.querySelectorAll('.f-account-dynamic').forEach(input => {
+        accounts[input.dataset.platform] = input.value.trim();
+      });
       const isRental = service.includes('Rent');
       const durationDays = isRental ? parseInt(document.getElementById('f-rental-duration').value, 10) : 0;
+      const platformMultiplier = { 1: 1.0, 2: 1.6, 3: 2.1 };
 
-      let deliveryLink = '';
       let note = "Thanks for reaching out! We've received your request and will review it shortly. We'll update you here as soon as there's progress.";
       let status = 'Received';
       let matchedProduct = false;
       let amountDue = 0;
       let expiryDate = '';
+      let deliveryLink = ''; // kept for backward-compatible single-link display on older records
+      let productData = null;
 
       if (botName) {
         try {
           const productDoc = await getDoc(doc(db, 'products', botName));
           if (productDoc.exists()) {
-            const p = productDoc.data();
-            deliveryLink = p.downloadLink || '';
-            matchedProduct = !!deliveryLink;
+            productData = productDoc.data();
+            const n = selectedPlatforms.length || 1;
+            const mult = platformMultiplier[n] || (1 + 0.55 * (n - 1));
 
             if (isRental) {
-              amountDue = computeRentalPrice(p.rentPrice || 0, durationDays);
+              amountDue = Math.round(computeRentalPrice(productData.rentPrice || 0, durationDays) * mult);
               const expiry = new Date();
               expiry.setDate(expiry.getDate() + durationDays);
-              expiryDate = expiry.toISOString().split('T')[0]; // YYYY-MM-DD
+              expiryDate = expiry.toISOString().split('T')[0];
             } else {
-              amountDue = p.buyPrice || 0;
+              amountDue = Math.round((productData.buyPrice || 0) * mult);
             }
 
+            matchedProduct = selectedPlatforms.some(p => productData.downloadLinks && productData.downloadLinks[p]);
+            deliveryLink = selectedPlatforms.length === 1 && productData.downloadLinks ? (productData.downloadLinks[selectedPlatforms[0]] || '') : '';
+
             if (matchedProduct) {
-              note = `Thanks for your order! Your license and file are ready — you owe $${amountDue}. Head to the Payments tab to complete payment, then send us your payment screenshot + this ticket ID on WhatsApp to unlock your download.`;
+              note = `Thanks for your order! Your license(s) and file(s) are ready — you owe $${amountDue}. Head to the Payments tab to complete payment, then send us your payment screenshot + this ticket ID on WhatsApp to unlock your download.`;
               status = 'Awaiting Payment';
             }
           }
@@ -1909,7 +1980,8 @@
         contact: document.getElementById('f-contact').value,
         service: service,
         platform: platform,
-        accountNumber: accountNumber,
+        platforms: selectedPlatforms,
+        accounts: accounts,
         tier: 'Standard',
         strategy: document.getElementById('f-strategy').value,
         status: status,
@@ -1921,23 +1993,28 @@
         createdAt: serverTimestamp()
       });
 
-      // Auto-create a matching license, locked until payment is confirmed
-      if (matchedProduct) {
-        await addDoc(collection(db, 'licenses'), {
-          uid: user.uid,
-          ticketId: ticketId,
-          product: botName || title,
-          platform: platform,
-          mt5AccountNumber: platform !== 'TradingView' ? accountNumber : '',
-          tradingViewUsername: platform === 'TradingView' ? accountNumber : '',
-          accounts: accountNumber ? [accountNumber] : [],
-          maxSlots: 6,
-          subscriptionType: isRental ? 'Rental' : 'Lifetime',
-          expiryDate: expiryDate,
-          amountDue: amountDue,
-          status: 'Pending Payment',
-          createdAt: serverTimestamp()
-        });
+      // Auto-create one locked license PER platform selected, each with its own file link
+      if (matchedProduct && productData) {
+        for (const p of selectedPlatforms) {
+          const link = (productData.downloadLinks && productData.downloadLinks[p]) || '';
+          if (!link) continue; // skip platforms this product doesn't actually have a file for
+          await addDoc(collection(db, 'licenses'), {
+            uid: user.uid,
+            ticketId: ticketId,
+            product: botName || title,
+            platform: p,
+            mt5AccountNumber: p !== 'TradingView' ? (accounts[p] || '') : '',
+            tradingViewUsername: p === 'TradingView' ? (accounts[p] || '') : '',
+            accounts: accounts[p] ? [accounts[p]] : [],
+            maxSlots: 6,
+            subscriptionType: isRental ? 'Rental' : 'Lifetime',
+            expiryDate: expiryDate,
+            amountDue: amountDue,
+            deliveryLink: link,
+            status: 'Pending Payment',
+            createdAt: serverTimestamp()
+          });
+        }
       }
     } catch (err) {
       console.error('Could not save request to dashboard:', err);
@@ -1964,10 +2041,15 @@
   function loadAdminRequests() {
     const list = document.getElementById('adminRequestsList');
     const filterSelect = document.getElementById('adminStatusFilter');
+    const typeFilterSelect = document.getElementById('adminTypeFilter');
     const searchInput = document.getElementById('adminSearchFilter');
     if (!filterSelect.dataset.wired) {
       filterSelect.addEventListener('change', () => loadAdminRequests());
       filterSelect.dataset.wired = 'true';
+    }
+    if (!typeFilterSelect.dataset.wired) {
+      typeFilterSelect.addEventListener('change', () => loadAdminRequests());
+      typeFilterSelect.dataset.wired = 'true';
     }
     if (!searchInput.dataset.wired) {
       searchInput.addEventListener('input', () => loadAdminRequests());
@@ -1975,6 +2057,7 @@
     }
     onSnapshot(collection(db, 'requests'), (snapshot) => {
       const filterValue = filterSelect.value;
+      const typeValue = typeFilterSelect.value;
       const searchValue = searchInput.value.trim().toLowerCase();
       let docs = snapshot.docs.slice().sort((a, b) => {
         const ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
@@ -1983,6 +2066,12 @@
       });
       if (filterValue) {
         docs = docs.filter(d => (d.data().status || 'Received') === filterValue);
+      }
+      if (typeValue) {
+        docs = docs.filter(d => {
+          const isCustom = (d.data().service || '').includes('Custom');
+          return typeValue === 'custom' ? isCustom : !isCustom;
+        });
       }
       if (searchValue) {
         docs = docs.filter(d => {
@@ -2020,6 +2109,20 @@
               <option ${d.status==='Completed'?'selected':''}>Completed</option>
             </select>
           </div>
+          ${(d.service || '').includes('Custom') ? `
+            <div class="admin-edit-row">
+              <label>Build progress (%)</label>
+              <input type="number" class="admin-progress-input" min="0" max="100" value="${d.buildProgress || 0}">
+            </div>
+            <div class="admin-edit-row">
+              <label>Est. completion date</label>
+              <input type="text" class="admin-eta-input" value="${d.estimatedCompletionDate || ''}" placeholder="e.g. 2026-09-20">
+            </div>
+            <div class="admin-edit-row">
+              <label>Final price ($)</label>
+              <input type="number" class="admin-finalprice-input" value="${d.amountDue || ''}" placeholder="Depends on strategy complexity">
+            </div>
+          ` : ''}
           <div class="admin-edit-row">
             <label>Note to client</label>
             <textarea class="admin-note-input" rows="2">${d.note || ''}</textarea>
@@ -2029,11 +2132,54 @@
             <input type="text" class="admin-link-input" value="${d.deliveryLink || ''}" placeholder="Google Drive link">
           </div>
           <button type="button" class="admin-save-btn">Save changes</button>
+          ${(d.service || '').includes('Custom') ? `<button type="button" class="admin-save-btn admin-sendpay-btn" style="background:var(--sell);color:#fff;">💰 Send for payment</button>` : ''}
           <button type="button" class="admin-save-btn admin-attach-btn" style="background:var(--panel-2);color:var(--text);border:1px solid var(--line);">Attach known file</button>
           <button type="button" class="admin-save-btn admin-genlic-btn" style="background:var(--buy);color:#fff;">Generate license →</button>
           ${d.status === 'Awaiting Payment' ? `<button type="button" class="admin-save-btn admin-confirmpay-btn" style="background:var(--sell);color:#fff;">✓ Confirm payment received</button>` : ''}
           <span class="admin-save-msg"></span>
         `;
+        const sendPayBtn = card.querySelector('.admin-sendpay-btn');
+        if (sendPayBtn) {
+          sendPayBtn.addEventListener('click', async () => {
+            const msg = card.querySelector('.admin-save-msg');
+            const price = parseFloat(card.querySelector('.admin-finalprice-input').value);
+            const link = card.querySelector('.admin-link-input').value.trim();
+            if (!price || !link) {
+              msg.textContent = 'Enter a final price and attach a delivery link first.';
+              return;
+            }
+            try {
+              await updateDoc(doc(db, 'requests', docSnap.id), {
+                status: 'Awaiting Payment',
+                amountDue: price,
+                deliveryLink: link,
+                note: `Your custom build is ready! You owe $${price}. Head to the Payments tab to complete payment, then send us your payment screenshot + this ticket ID on WhatsApp to unlock your download.`
+              });
+              const platformsForLicense = (d.platforms && d.platforms.length) ? d.platforms : [d.platform || 'MT5'];
+              for (const p of platformsForLicense) {
+                await addDoc(collection(db, 'licenses'), {
+                  uid: d.uid,
+                  ticketId: d.ticketId || '',
+                  product: d.title || d.service,
+                  platform: p,
+                  mt5AccountNumber: p !== 'TradingView' ? ((d.accounts && d.accounts[p]) || '') : '',
+                  tradingViewUsername: p === 'TradingView' ? ((d.accounts && d.accounts[p]) || '') : '',
+                  accounts: (d.accounts && d.accounts[p]) ? [d.accounts[p]] : [],
+                  maxSlots: 6,
+                  subscriptionType: 'Lifetime',
+                  expiryDate: '',
+                  amountDue: price,
+                  deliveryLink: link,
+                  status: 'Pending Payment',
+                  createdAt: serverTimestamp()
+                });
+              }
+              msg.textContent = 'Sent for payment — license(s) created, awaiting confirmation ✓';
+            } catch (err) {
+              msg.textContent = 'Error: ' + err.message;
+            }
+          });
+        }
         card.querySelector('.admin-attach-btn').addEventListener('click', async () => {
           const msg = card.querySelector('.admin-save-msg');
           try {
@@ -2090,13 +2236,18 @@
             }
           });
         }
-        card.querySelector('.admin-save-btn:not(.admin-attach-btn):not(.admin-genlic-btn):not(.admin-confirmpay-btn)').addEventListener('click', async () => {
+        card.querySelector('.admin-save-btn:not(.admin-attach-btn):not(.admin-genlic-btn):not(.admin-confirmpay-btn):not(.admin-sendpay-btn)').addEventListener('click', async () => {
           const status = card.querySelector('.admin-status-input').value;
           const note = card.querySelector('.admin-note-input').value;
           const deliveryLink = card.querySelector('.admin-link-input').value;
           const msg = card.querySelector('.admin-save-msg');
+          const updateData = { status, note, deliveryLink };
+          const progressInput = card.querySelector('.admin-progress-input');
+          const etaInput = card.querySelector('.admin-eta-input');
+          if (progressInput) updateData.buildProgress = Number(progressInput.value) || 0;
+          if (etaInput) updateData.estimatedCompletionDate = etaInput.value.trim();
           try {
-            await updateDoc(doc(db, 'requests', docSnap.id), { status, note, deliveryLink });
+            await updateDoc(doc(db, 'requests', docSnap.id), updateData);
             msg.textContent = 'Saved ✓';
             setTimeout(() => msg.textContent = '', 2000);
           } catch (err) {
@@ -2171,7 +2322,7 @@
             <span class="admin-req-title">${docSnap.id}</span>
             <span class="r-status ${d.active !== false ? 'status-done' : 'status-suspended'}">${d.active !== false ? 'Visible' : 'Hidden'}</span>
           </div>
-          <div class="admin-req-meta">${d.pair || ''} · ${d.platform || ''} · Buy $${d.buyPrice || 0} / Rent $${d.rentPrice || 0} mo</div>
+          <div class="admin-req-meta">${d.pair || ''} · ${(d.platforms || []).join(', ')} · Buy $${d.buyPrice || 0} / Rent $${d.rentPrice || 0} mo</div>
           <div class="admin-req-detail">${(d.description || '').replace(/</g,'&lt;')}</div>
           <button type="button" class="admin-save-btn admin-editprod-btn">Edit</button>
           <button type="button" class="admin-save-btn admin-toggleprod-btn" style="background:var(--panel-2);color:var(--text);border:1px solid var(--line);">${d.active !== false ? 'Hide from site' : 'Show on site'}</button>
@@ -2179,13 +2330,19 @@
         card.querySelector('.admin-editprod-btn').addEventListener('click', () => {
           document.getElementById('prod-name').value = docSnap.id;
           document.getElementById('prod-pair').value = d.pair || '';
-          document.getElementById('prod-platform').value = d.platform || 'MT5';
+          document.querySelectorAll('.prod-platform-cb').forEach(cb => {
+            cb.checked = (d.platforms || []).includes(cb.value);
+          });
           document.getElementById('prod-active').value = String(d.active !== false);
           document.getElementById('prod-desc').value = d.description || '';
           document.getElementById('prod-strengths').value = d.strengths || '';
+          document.getElementById('prod-winrate').value = d.winRate || '';
+          document.getElementById('prod-advantages').value = d.advantages || '';
           document.getElementById('prod-buyprice').value = d.buyPrice || '';
           document.getElementById('prod-rentprice').value = d.rentPrice || '';
-          document.getElementById('prod-downloadlink').value = d.downloadLink || '';
+          document.getElementById('prod-link-mt5').value = (d.downloadLinks && d.downloadLinks.MT5) || '';
+          document.getElementById('prod-link-mt4').value = (d.downloadLinks && d.downloadLinks.MT4) || '';
+          document.getElementById('prod-link-tv').value = (d.downloadLinks && d.downloadLinks.TradingView) || '';
           document.getElementById('productForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
         card.querySelector('.admin-toggleprod-btn').addEventListener('click', async () => {
@@ -2200,10 +2357,15 @@
     e.preventDefault();
     const msg = document.getElementById('productMsg');
     const name = document.getElementById('prod-name').value.trim();
+    const selectedPlatforms = Array.from(document.querySelectorAll('.prod-platform-cb:checked')).map(cb => cb.value);
+    if (selectedPlatforms.length === 0) {
+      msg.textContent = 'Select at least one platform.';
+      return;
+    }
     try {
       await setDoc(doc(db, 'products', name), {
         pair: document.getElementById('prod-pair').value,
-        platform: document.getElementById('prod-platform').value,
+        platforms: selectedPlatforms,
         active: document.getElementById('prod-active').value === 'true',
         description: document.getElementById('prod-desc').value,
         strengths: document.getElementById('prod-strengths').value,
@@ -2211,7 +2373,11 @@
         advantages: document.getElementById('prod-advantages').value,
         buyPrice: Number(document.getElementById('prod-buyprice').value),
         rentPrice: Number(document.getElementById('prod-rentprice').value),
-        downloadLink: document.getElementById('prod-downloadlink').value.trim(),
+        downloadLinks: {
+          MT5: document.getElementById('prod-link-mt5').value.trim(),
+          MT4: document.getElementById('prod-link-mt4').value.trim(),
+          TradingView: document.getElementById('prod-link-tv').value.trim()
+        },
         updatedAt: serverTimestamp()
       });
       msg.textContent = 'Saved ✓ — live on the site now.';
@@ -2354,8 +2520,9 @@ Press OK to send, or Cancel to go back and edit.`;
       platform: platform,
       title: title,
       strategy: strategy,
-      accountNumber: document.getElementById('f-account') ? document.getElementById('f-account').value : '',
-      tier: 'Standard'
+      accountNumber: Array.from(document.querySelectorAll('.f-account-dynamic')).map(i => i.dataset.platform + ': ' + i.value).join(' | '),
+      tier: 'Standard',
+      type: service.includes('Custom') ? 'Custom Build' : 'Bot Order'
     })
   }).catch(err => console.log('Sheet log failed (non-critical):', err));
 
@@ -2406,23 +2573,67 @@ if ('serviceWorker' in navigator) {
 
 // Expandable bot catalog cards
 // Event delegation on the bot catalog container -> works for both static and dynamically-loaded cards
+const PLATFORM_MULTIPLIER_LOCAL = { 1: 1.0, 2: 1.6, 3: 2.1 };
+
+function getSelectedPlatforms() {
+  return Array.from(document.querySelectorAll('.f-platform-cb:checked')).map(cb => cb.value);
+}
+
+function updateAccountFieldsAndPricing() {
+  const checked = getSelectedPlatforms();
+  document.getElementById('f-platform').value = checked.join(', ');
+
+  const container = document.getElementById('accountsContainer');
+  container.querySelectorAll('.dynamic-account-input').forEach(el => el.remove());
+  checked.forEach(platform => {
+    const wrap = document.createElement('div');
+    wrap.className = 'dynamic-account-input';
+    wrap.style.marginTop = '10px';
+    wrap.innerHTML = `<label style="display:block;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;">${platform} account/username</label><input type="text" class="f-account-dynamic" data-platform="${platform}" placeholder="Account number or username for ${platform}">`;
+    container.appendChild(wrap);
+  });
+
+  const rentalRow = document.getElementById('rentalDurationRow');
+  const isRent = rentalRow.dataset.isRent === 'true';
+  const comboNote = document.getElementById('comboPriceNote');
+  const botName = rentalRow.dataset.botName || '';
+
+  if (rentalRow.dataset.baseBuyPrice) {
+    if (isRent) {
+      updateRentalEstimate();
+    } else {
+      const n = checked.length || 1;
+      const mult = PLATFORM_MULTIPLIER_LOCAL[n] || (1 + 0.55 * (n - 1));
+      const buyPrice = parseFloat(rentalRow.dataset.baseBuyPrice);
+      const total = Math.round(buyPrice * mult);
+      comboNote.style.display = 'block';
+      comboNote.textContent = n > 1 ? `${n} platforms selected — total price: $${total}` : `Price: $${buyPrice}`;
+      document.getElementById('f-strategy').value = `Requesting to buy: ${botName} (${checked.join(', ')}) — $${total} one-time`;
+    }
+  }
+}
+
 function updateRentalEstimate() {
   const rentalRow = document.getElementById('rentalDurationRow');
-  const monthlyRate = parseFloat(rentalRow.dataset.monthlyRate || '0');
+  const monthlyRate = parseFloat(rentalRow.dataset.baseRentPrice || '0');
   const botName = rentalRow.dataset.botName || '';
-  const platform = rentalRow.dataset.platform || '';
+  const checked = getSelectedPlatforms();
+  const n = checked.length || 1;
+  const platformMult = PLATFORM_MULTIPLIER_LOCAL[n] || (1 + 0.55 * (n - 1));
   const days = parseInt(document.getElementById('f-rental-duration').value, 10);
   if (!monthlyRate || !days) return;
 
-  // Rough tiered discount: shorter terms cost slightly more per day, longer terms get a discount
-  const multipliers = { 7: 1.10, 14: 1.05, 30: 1.00, 60: 0.95, 90: 0.90, 365: 0.75 };
-  const mult = multipliers[days] || 1;
-  const estimate = Math.round((monthlyRate / 30) * days * mult);
+  const durationMultipliers = { 7: 1.10, 14: 1.05, 30: 1.00, 60: 0.95, 90: 0.90, 365: 0.75 };
+  const durMult = durationMultipliers[days] || 1;
+  const estimate = Math.round((monthlyRate / 30) * days * durMult * platformMult);
 
-  document.getElementById('rentalEstimateNote').textContent = `Estimated: $${estimate} for ${days} days (final price confirmed by us).`;
-  document.getElementById('f-strategy').value = `Requesting to rent: ${botName} (${platform}) — ${days} days, est. $${estimate}`;
+  document.getElementById('rentalEstimateNote').textContent = `Estimated: $${estimate} for ${days} days${n > 1 ? ' across ' + n + ' platforms' : ''} (final price confirmed by us).`;
+  document.getElementById('f-strategy').value = `Requesting to rent: ${botName} (${checked.join(', ')}) — ${days} days, est. $${estimate}`;
 }
 document.getElementById('f-rental-duration').addEventListener('change', updateRentalEstimate);
+document.querySelectorAll('.f-platform-cb').forEach(cb => {
+  cb.addEventListener('change', updateAccountFieldsAndPricing);
+});
 
 // Tap-to-reveal payment method details
 document.querySelectorAll('.pay-method-toggle').forEach(toggle => {
@@ -2452,9 +2663,9 @@ document.getElementById('botsContainer').addEventListener('click', (e) => {
   if (buyBtn) {
     const card = buyBtn.closest('.bot-card');
     const botName = card.dataset.botName;
-    const buyPrice = card.dataset.botPrice;
-    const rentPrice = card.dataset.botRentPrice;
-    const platform = card.dataset.botPlatform;
+    const buyPrice = parseFloat(card.dataset.botPrice);
+    const rentPrice = parseFloat(card.dataset.botRentPrice);
+    const supportedPlatforms = JSON.parse(card.dataset.botPlatforms || '["MT5"]');
     const action = buyBtn.dataset.action; // 'buy' or 'rent'
 
     document.getElementById('f-title').value = `${botName} — ${action === 'buy' ? 'Purchase' : 'Rental'}`;
@@ -2469,27 +2680,28 @@ document.getElementById('botsContainer').addEventListener('click', (e) => {
       }
     }
 
-    const platformSelect = document.getElementById('f-platform');
-    for (const opt of platformSelect.options) {
-      if (opt.value === platform || opt.textContent === platform) {
-        platformSelect.value = opt.value;
-        break;
-      }
-    }
+    // Constrain platform checkboxes to only what this bot supports
+    document.querySelectorAll('.f-platform-cb').forEach(cb => {
+      const supported = supportedPlatforms.includes(cb.value);
+      cb.disabled = !supported;
+      cb.parentElement.style.opacity = supported ? '1' : '0.35';
+      cb.checked = supported && supportedPlatforms[0] === cb.value; // default: just the first supported one checked
+    });
 
     const rentalRow = document.getElementById('rentalDurationRow');
     document.getElementById('accountFieldRow').style.display = 'flex';
+    rentalRow.dataset.baseBuyPrice = buyPrice;
+    rentalRow.dataset.baseRentPrice = rentPrice;
+    rentalRow.dataset.botName = botName;
+    rentalRow.dataset.isRent = (action === 'rent') ? 'true' : 'false';
+
     if (action === 'rent') {
       rentalRow.style.display = 'flex';
-      rentalRow.dataset.monthlyRate = rentPrice;
-      rentalRow.dataset.botName = botName;
-      rentalRow.dataset.platform = platform;
-      updateRentalEstimate();
     } else {
       rentalRow.style.display = 'none';
-      document.getElementById('f-strategy').value = `Requesting to buy: ${botName} (${platform}) — $${buyPrice} one-time`;
     }
 
+    updateAccountFieldsAndPricing();
     document.getElementById('request').scrollIntoView({ behavior: 'smooth', block: 'start' });
     return;
   }
@@ -2504,8 +2716,18 @@ document.getElementById('f-service').addEventListener('change', function() {
   const isCustom = this.value.includes('Custom Strategy Automation');
   note.style.display = isCustom ? 'block' : 'none';
   const isBuyOrRent = this.value.includes('Buy a pre-built bot') || this.value.includes('Rent a pre-built bot');
-  document.getElementById('accountFieldRow').style.display = isBuyOrRent ? 'flex' : 'none';
+  document.getElementById('accountFieldRow').style.display = (isBuyOrRent || isCustom) ? 'flex' : 'none';
   if (!isBuyOrRent) document.getElementById('f-botname').value = '';
+  if (isCustom) {
+    // Custom builds aren't tied to a product - client can freely pick any platform(s)
+    document.querySelectorAll('.f-platform-cb').forEach(cb => {
+      cb.disabled = false;
+      cb.parentElement.style.opacity = '1';
+    });
+    document.getElementById('comboPriceNote').style.display = 'none';
+    updateAccountFieldsAndPricing();
+  }
+  document.getElementById('rentalDurationRow').style.display = 'none';
 });
 </script>
 
