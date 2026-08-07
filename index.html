@@ -1908,7 +1908,9 @@
           ${d.note ? `<div class="r-note"><span class="r-note-label">Message from The Kingdom Trader ${localStorage.getItem('seenNote_' + doc.id) !== d.note ? '<span class="new-tag">New</span>' : ''}</span>${d.note.replace(/</g,'&lt;')}</div>` : ''}
           ${d.status === 'Awaiting Payment' && d.amountDue ? `<div class="amount-due-box">Amount due: <strong>$${d.amountDue}</strong>${d.expiryDate ? ' · Covers until ' + d.expiryDate : ''}</div>` : ''}
           ${d.deliveryLink && d.status === 'Completed' ? `<a href="${d.deliveryLink.replace(/"/g,'')}" target="_blank" rel="noopener" class="download-btn">⬇ Download your file</a>` : ''}
-          ${d.deliveryLink && d.status === 'Completed' ? `<button type="button" class="install-guide-toggle">📖 How to install (${d.platform || 'MT5'}) — tap to expand</button><div class="install-guide-content">${getInstallGuide(d.platform)}</div>` : ''}
+          ${d.tvAccessGranted && d.status === 'Completed' ? `<div class="download-btn" style="background:var(--buy);color:#fff;cursor:default;">✅ TradingView access granted</div>` : ''}
+          ${((d.platforms && d.platforms.includes('TradingView')) || d.platform === 'TradingView') && !d.tvAccessGranted && d.status === 'Completed' ? `<div class="amount-due-box">TradingView access is being set up — you'll be notified here once it's active.</div>` : ''}
+          ${(d.deliveryLink || d.tvAccessGranted) && d.status === 'Completed' ? `<button type="button" class="install-guide-toggle">📖 How to install (${d.platform || 'MT5'}) — tap to expand</button><div class="install-guide-content">${getInstallGuide(d.platform)}</div>` : ''}
           ${d.deliveryLink && d.status === 'Awaiting Payment' ? `<button type="button" class="download-btn locked-btn" data-ticket="${d.ticketId || ''}">🔒 Complete payment to unlock</button>` : ''}
           <div class="r-date">Submitted ${date}</div>
         `;
@@ -2102,6 +2104,10 @@
           ${d.amountDue ? `<div class="admin-req-meta" style="color:var(--gold);font-weight:700;">Amount due: $${d.amountDue}${d.expiryDate ? ' · Covers until ' + d.expiryDate : ''}</div>` : ''}
           <div class="admin-req-meta">${d.name || ''} · ${d.contact || ''} · ${d.service || ''} · ${d.platform || ''}</div>
           <div class="admin-req-detail">${(d.strategy || '').replace(/</g,'&lt;')}</div>
+          ${((d.platforms && d.platforms.includes('TradingView')) || d.platform === 'TradingView') ? `
+            <div class="admin-req-meta" style="color:var(--gold);">TradingView username: ${(d.accounts && d.accounts.TradingView) || d.accountNumber || '—'}${d.tvAccessGranted ? ' · ✅ Access already granted' : ' · ⚠ Not yet granted'}</div>
+            <button type="button" class="admin-save-btn admin-tvgrant-btn" style="background:${d.tvAccessGranted ? 'var(--panel-2)' : 'var(--buy)'};color:${d.tvAccessGranted ? 'var(--text)' : '#fff'};${d.tvAccessGranted ? 'border:1px solid var(--line);' : ''}">${d.tvAccessGranted ? '↺ Mark as not granted' : '✅ Mark TradingView access as granted'}</button>
+          ` : ''}
           ${d.accountNumber ? `<div class="admin-req-meta">Account: ${d.accountNumber} · Tier: ${d.tier || 'Standard'}</div>` : ''}
           <div class="admin-edit-row">
             <label>Status</label>
@@ -2178,6 +2184,22 @@
                 });
               }
               msg.textContent = 'Sent for payment — license(s) created, awaiting confirmation ✓';
+            } catch (err) {
+              msg.textContent = 'Error: ' + err.message;
+            }
+          });
+        }
+        const tvGrantBtn = card.querySelector('.admin-tvgrant-btn');
+        if (tvGrantBtn) {
+          tvGrantBtn.addEventListener('click', async () => {
+            const msg = card.querySelector('.admin-save-msg');
+            try {
+              const newState = !d.tvAccessGranted;
+              await updateDoc(doc(db, 'requests', docSnap.id), {
+                tvAccessGranted: newState,
+                note: newState ? "Your TradingView access has been granted! Search for the script under your Indicators → Invite-only scripts list." : d.note
+              });
+              msg.textContent = newState ? 'Marked as granted ✓' : 'Marked as not granted.';
             } catch (err) {
               msg.textContent = 'Error: ' + err.message;
             }
