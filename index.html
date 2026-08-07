@@ -1247,21 +1247,22 @@
             </div>
           </div>
           <div class="form-row" id="platformLinksRow">
-            <div class="form-group">
-              <label for="prod-link-mt5">MT5 download link</label>
+            <div class="form-group" id="linkWrap-MT5" style="display:none;">
+              <label for="prod-link-mt5">MT5 download link (required — you selected MT5)</label>
               <input type="text" id="prod-link-mt5" placeholder="https://drive.google.com/...">
             </div>
-            <div class="form-group">
-              <label for="prod-link-mt4">MT4 download link</label>
+            <div class="form-group" id="linkWrap-MT4" style="display:none;">
+              <label for="prod-link-mt4">MT4 download link (required — you selected MT4)</label>
               <input type="text" id="prod-link-mt4" placeholder="https://drive.google.com/...">
             </div>
           </div>
           <div class="form-row">
-            <div class="form-group">
-              <label for="prod-link-tv">TradingView download link (or leave blank — access is invite-only)</label>
+            <div class="form-group" id="linkWrap-TradingView" style="display:none;">
+              <label for="prod-link-tv">TradingView link (optional — access is usually invite-only, granted directly on TradingView)</label>
               <input type="text" id="prod-link-tv" placeholder="https://drive.google.com/... (optional)">
             </div>
           </div>
+          <p id="noPlatformNote" class="form-helper-note">Select at least one platform above to reveal its download link field.</p>
           <div class="form-group form-group-full">
             <label for="prod-desc">Short description</label>
             <input type="text" id="prod-desc" required placeholder="One line describing the strategy">
@@ -2038,6 +2039,7 @@
   adminTabLicenses.addEventListener('click', () => showAdminTab(adminTabLicenses, adminLicensesView));
   adminTabProducts.addEventListener('click', () => showAdminTab(adminTabProducts, adminProductsView));
 
+  let unsubAdminRequests = null;
   function loadAdminRequests() {
     const list = document.getElementById('adminRequestsList');
     const filterSelect = document.getElementById('adminStatusFilter');
@@ -2055,7 +2057,8 @@
       searchInput.addEventListener('input', () => loadAdminRequests());
       searchInput.dataset.wired = 'true';
     }
-    onSnapshot(collection(db, 'requests'), (snapshot) => {
+    if (unsubAdminRequests) unsubAdminRequests(); // close the previous listener before opening a new one
+    unsubAdminRequests = onSnapshot(collection(db, 'requests'), (snapshot) => {
       const filterValue = filterSelect.value;
       const typeValue = typeFilterSelect.value;
       const searchValue = searchInput.value.trim().toLowerCase();
@@ -2194,13 +2197,48 @@
             msg.textContent = 'Error: ' + err.message;
           }
         });
-        card.querySelector('.admin-genlic-btn').addEventListener('click', () => {
-          document.getElementById('lic-uid').value = d.uid || '';
-          document.getElementById('lic-ticket').value = d.ticketId || '';
-          document.getElementById('lic-product').value = d.title || d.service || '';
-          document.getElementById('lic-platform').value = (d.platform === 'TradingView') ? 'TradingView' : 'MT5';
-          adminTabLicenses.click();
-          document.getElementById('createLicenseForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        card.querySelector('.admin-genlic-btn').addEventListener('click', async () => {
+          const msg = card.querySelector('.admin-save-msg');
+          const btn = card.querySelector('.admin-genlic-btn');
+          btn.disabled = true;
+          btn.textContent = 'Generating…';
+          try {
+            const platformsForLicense = (d.platforms && d.platforms.length) ? d.platforms : [d.platform || 'MT5'];
+            const linkInput = card.querySelector('.admin-link-input').value.trim();
+
+            for (const p of platformsForLicense) {
+              const perPlatformLink = linkInput || (d.deliveryLink || '');
+              await addDoc(collection(db, 'licenses'), {
+                uid: d.uid,
+                ticketId: d.ticketId || '',
+                product: d.title || d.service,
+                platform: p,
+                mt5AccountNumber: p !== 'TradingView' ? ((d.accounts && d.accounts[p]) || d.accountNumber || '') : '',
+                tradingViewUsername: p === 'TradingView' ? ((d.accounts && d.accounts[p]) || d.accountNumber || '') : '',
+                accounts: (d.accounts && d.accounts[p]) ? [d.accounts[p]] : (d.accountNumber ? [d.accountNumber] : []),
+                maxSlots: 6,
+                subscriptionType: (d.service || '').includes('Rent') ? 'Rental' : 'Lifetime',
+                expiryDate: d.expiryDate || '',
+                amountDue: d.amountDue || 0,
+                deliveryLink: perPlatformLink,
+                status: 'Pending Payment',
+                createdAt: serverTimestamp()
+              });
+            }
+
+            // Move the request into "Awaiting Payment" so the Confirm-payment button appears next
+            if (d.status !== 'Completed') {
+              await updateDoc(doc(db, 'requests', docSnap.id), { status: 'Awaiting Payment' });
+            }
+
+            msg.textContent = `License(s) generated for ${platformsForLicense.join(', ')} ✓ — now ready to confirm payment.`;
+            btn.textContent = 'Generate license →';
+            btn.disabled = false;
+          } catch (err) {
+            msg.textContent = 'Error: ' + err.message;
+            btn.textContent = 'Generate license →';
+            btn.disabled = false;
+          }
         });
         const confirmPayBtn = card.querySelector('.admin-confirmpay-btn');
         if (confirmPayBtn) {
@@ -2343,6 +2381,7 @@
           document.getElementById('prod-link-mt5').value = (d.downloadLinks && d.downloadLinks.MT5) || '';
           document.getElementById('prod-link-mt4').value = (d.downloadLinks && d.downloadLinks.MT4) || '';
           document.getElementById('prod-link-tv').value = (d.downloadLinks && d.downloadLinks.TradingView) || '';
+          updateProductLinkVisibility();
           document.getElementById('productForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
         card.querySelector('.admin-toggleprod-btn').addEventListener('click', async () => {
@@ -2361,6 +2400,16 @@
     if (selectedPlatforms.length === 0) {
       msg.textContent = 'Select at least one platform.';
       return;
+    }
+    // Require a download link for every selected platform except TradingView (invite-only access, link optional)
+    const linkFieldMap = { MT5: 'prod-link-mt5', MT4: 'prod-link-mt4' };
+    for (const p of selectedPlatforms) {
+      if (p === 'TradingView') continue;
+      const val = document.getElementById(linkFieldMap[p]).value.trim();
+      if (!val) {
+        msg.textContent = `You selected ${p} — please add its download link before saving.`;
+        return;
+      }
     }
     try {
       await setDoc(doc(db, 'products', name), {
@@ -2386,6 +2435,17 @@
     } catch (err) {
       msg.textContent = 'Error: ' + err.message;
     }
+  });
+
+  function updateProductLinkVisibility() {
+    const checked = Array.from(document.querySelectorAll('.prod-platform-cb:checked')).map(cb => cb.value);
+    ['MT5', 'MT4', 'TradingView'].forEach(p => {
+      document.getElementById('linkWrap-' + p).style.display = checked.includes(p) ? 'flex' : 'none';
+    });
+    document.getElementById('noPlatformNote').style.display = checked.length === 0 ? 'block' : 'none';
+  }
+  document.querySelectorAll('.prod-platform-cb').forEach(cb => {
+    cb.addEventListener('change', updateProductLinkVisibility);
   });
 
   document.getElementById('productFileForm').addEventListener('submit', async (e) => {
