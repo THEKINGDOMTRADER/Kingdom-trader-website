@@ -300,6 +300,17 @@
   .bots-scroll-box::-webkit-scrollbar{width:8px;}
   .bots-scroll-box::-webkit-scrollbar-track{background:var(--panel);border-radius:4px;}
   .bots-scroll-box::-webkit-scrollbar-thumb{background:var(--gold-soft);border-radius:4px;}
+  .platform-section{margin-bottom:36px;}
+  .platform-section:last-child{margin-bottom:0;}
+  .platform-section-title{
+    font-family:'JetBrains Mono',monospace;font-size:13px;text-transform:uppercase;
+    letter-spacing:0.08em;color:var(--gold);margin-bottom:16px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .coming-soon-tag{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--text-dim);
+    font-size:10px;padding:2px 8px;border-radius:3px;text-transform:none;letter-spacing:0;
+  }
   .bots{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
   @media (max-width:900px){.bots{grid-template-columns:1fr 1fr;}}
   @media (max-width:600px){.bots{grid-template-columns:1fr;}}
@@ -866,24 +877,24 @@
     <div class="section-head">
       <span class="eyebrow">Built on real logic</span>
       <h2>Not a black box. Here's what's inside.</h2>
-      <p>Our own flagship system uses New York session bias with fair-value-gap entries — the same standard we hold custom builds to.</p>
+      <p>Every Kingdom Trader system is built on real ICT market structure — order blocks, fair value gaps, session bias — the same standard we hold every custom build to.</p>
     </div>
     <div class="spec-strip">
       <div class="spec-item">
-        <div class="v">2:1</div>
-        <div class="l">Target risk-to-reward ratio</div>
-      </div>
-      <div class="spec-item">
-        <div class="v">NY</div>
-        <div class="l">Session-bias entry window</div>
-      </div>
-      <div class="spec-item">
-        <div class="v">FVG</div>
-        <div class="l">Fair value gap entry logic</div>
+        <div class="v">FVG · OB</div>
+        <div class="l">Fair value gap & order block logic</div>
       </div>
       <div class="spec-item">
         <div class="v">MT5</div>
-        <div class="l">Compiled &amp; visually verified</div>
+        <div class="l">Compiled & verified</div>
+      </div>
+      <div class="spec-item">
+        <div class="v">TV</div>
+        <div class="l">TradingView, invite-only access</div>
+      </div>
+      <div class="spec-item">
+        <div class="v">MT4</div>
+        <div class="l">Coming soon</div>
       </div>
     </div>
   </div>
@@ -897,16 +908,35 @@
       <p>Entry-level pricing to get our first traders on board — rates rise as track record builds.</p>
     </div>
     <div class="bots-scroll-box">
-    <div class="bots" id="botsContainer">
-      <div class="bot-card">
-        <div class="bot-top">
-          <h4 style="margin-bottom:0;">Your Strategy Here</h4>
-          <span class="bot-tag tag-buy">Custom</span>
+    <div id="botsContainer">
+      <div class="platform-section">
+        <h3 class="platform-section-title">MT5</h3>
+        <div class="bots" id="mt5BotsGrid"></div>
+      </div>
+      <div class="platform-section">
+        <h3 class="platform-section-title">TradingView</h3>
+        <div class="bots" id="tvBotsGrid"></div>
+      </div>
+      <div class="platform-section">
+        <h3 class="platform-section-title">MT4 <span class="coming-soon-tag">Coming soon</span></h3>
+        <div class="bots" id="mt4BotsGrid">
+          <p class="text-dim-note">MT4 bots are in development — check back soon, or message us to be notified first.</p>
         </div>
-        <p>Not seeing what you trade? This is where a custom build starts.</p>
-        <div class="bot-foot">
-          <span class="bot-price">From $80</span>
-          <a href="https://wa.me/256774077467" class="bot-link" target="_blank" rel="noopener">Enquire →</a>
+      </div>
+      <div class="platform-section">
+        <h3 class="platform-section-title">Or go custom</h3>
+        <div class="bots">
+          <div class="bot-card">
+            <div class="bot-top">
+              <h4 style="margin-bottom:0;">Your Strategy Here</h4>
+              <span class="bot-tag tag-buy">Custom</span>
+            </div>
+            <p>Not seeing what you trade? This is where a custom build starts.</p>
+            <div class="bot-foot">
+              <span class="bot-price">From $80</span>
+              <a href="https://wa.me/256774077467" class="bot-link" target="_blank" rel="noopener">Enquire →</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1339,6 +1369,14 @@
 
       <div class="dash-section-label" id="requestsLabel">Your requests</div>
       <a href="#request" id="newRequestBtn" class="btn btn-gold new-request-btn">+ Log a new request</a>
+      <div class="form-group" style="max-width:220px;margin-bottom:14px;">
+        <label for="clientTypeFilter">Filter</label>
+        <select id="clientTypeFilter">
+          <option value="">All requests</option>
+          <option value="custom">Custom Builds</option>
+          <option value="bot">Bot Orders</option>
+        </select>
+      </div>
       <div id="requestsList" class="requests-list">
         <p class="text-dim-note">Loading your requests…</p>
       </div>
@@ -1614,13 +1652,30 @@
   }
 
   onSnapshot(query(collection(db, 'products'), where('active', '==', true)), (snapshot) => {
-    const container = document.getElementById('botsContainer');
-    container.querySelectorAll('.bot-card[data-dynamic="true"]').forEach(el => el.remove());
+    const mt5Grid = document.getElementById('mt5BotsGrid');
+    const tvGrid = document.getElementById('tvBotsGrid');
+    document.querySelectorAll('.bot-card[data-dynamic="true"]').forEach(el => el.remove());
+
+    let mt5Count = 0, tvCount = 0;
     snapshot.forEach((docSnap) => {
-      const card = renderProductCard(docSnap.id, docSnap.data());
-      card.setAttribute('data-dynamic', 'true');
-      container.insertBefore(card, container.firstChild);
+      const d = docSnap.data();
+      const platforms = d.platforms || ['MT5'];
+      if (platforms.includes('MT5')) {
+        const card = renderProductCard(docSnap.id, d);
+        card.setAttribute('data-dynamic', 'true');
+        mt5Grid.appendChild(card);
+        mt5Count++;
+      }
+      if (platforms.includes('TradingView')) {
+        const card = renderProductCard(docSnap.id, d);
+        card.setAttribute('data-dynamic', 'true');
+        tvGrid.appendChild(card);
+        tvCount++;
+      }
     });
+
+    if (mt5Count === 0) mt5Grid.innerHTML = '<p class="text-dim-note">No MT5 bots published yet.</p>';
+    if (tvCount === 0) tvGrid.innerHTML = '<p class="text-dim-note">No TradingView bots published yet.</p>';
   });
 
   function getGreeting(name) {
@@ -1861,6 +1916,11 @@
 
   function loadRequests(uid) {
     const requestsList = document.getElementById('requestsList');
+    const typeFilter = document.getElementById('clientTypeFilter');
+    if (!typeFilter.dataset.wired) {
+      typeFilter.addEventListener('change', () => renderFilteredRequests());
+      typeFilter.dataset.wired = 'true';
+    }
     const q = query(collection(db, 'requests'), where('uid', '==', uid));
     onSnapshot(q, (snapshot) => {
       // Sort newest-first on our side, since we're not using orderBy in the query
@@ -1872,7 +1932,7 @@
       currentDocs = docs;
       checkUnreadNotes();
 
-      // Update stats
+      // Update stats (always reflects ALL requests, regardless of the list filter below)
       let total = 0, active = 0, done = 0;
       docs.forEach((doc) => {
         total++;
@@ -1884,7 +1944,22 @@
       document.getElementById('statActive').textContent = active;
       document.getElementById('statDone').textContent = done;
 
-      if (docs.length === 0) {
+      renderFilteredRequests();
+    });
+  }
+
+  function renderFilteredRequests() {
+    const requestsList = document.getElementById('requestsList');
+    const typeValue = document.getElementById('clientTypeFilter').value;
+    let docs = currentDocs;
+    if (typeValue) {
+      docs = docs.filter(d => {
+        const isCustom = (d.data().service || '').includes('Custom');
+        return typeValue === 'custom' ? isCustom : !isCustom;
+      });
+    }
+
+    if (docs.length === 0) {
         requestsList.innerHTML = '<p class="text-dim-note">No requests yet — use the "Get started" form above and it\'ll appear here.</p>';
         return;
       }
@@ -1916,7 +1991,6 @@
         `;
         requestsList.appendChild(card);
       });
-    });
   }
 
   // Expose a callable save function (called only after the user confirms, from the other script)
