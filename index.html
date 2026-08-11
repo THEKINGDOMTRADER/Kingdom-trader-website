@@ -1245,6 +1245,21 @@
 
     <div id="adminProductsView" style="display:none;">
       <div class="admin-create-box">
+        <div class="dash-section-label" style="margin-top:0;">Exchange rate (USD → UGX)</div>
+        <p class="text-dim-note" style="margin-bottom:14px;">Used to calculate the exact UGX amount for MarzPay payments. Update whenever the rate meaningfully shifts — weekly is usually enough.</p>
+        <form id="exchangeRateForm" class="intake-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="ex-rate">1 USD = ? UGX</label>
+              <input type="number" id="ex-rate" required placeholder="e.g. 3700">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-gold">Save rate</button>
+          <div id="exRateMsg" class="text-dim-note" style="margin-top:10px;"></div>
+        </form>
+      </div>
+
+      <div class="admin-create-box">
         <div class="dash-section-label" style="margin-top:0;">Add / update a product</div>
         <p class="text-dim-note" style="margin-bottom:14px;">Editing a product name that already exists will update it instead of creating a duplicate.</p>
         <form id="productForm" class="intake-form">
@@ -1713,6 +1728,7 @@
         loadAdminRequests();
         loadAdminLicenses();
         loadAdminProducts();
+        loadExchangeRate();
       } else {
         adminLink.style.display = 'none';
         adminSection.style.display = 'none';
@@ -2438,6 +2454,32 @@
       });
     });
   }
+
+  async function loadExchangeRate() {
+    try {
+      const rateDoc = await getDoc(doc(db, 'settings', 'exchangeRate'));
+      if (rateDoc.exists()) {
+        document.getElementById('ex-rate').value = rateDoc.data().usdToUgx || '';
+      }
+    } catch (err) {
+      console.log('Could not load exchange rate:', err);
+    }
+  }
+
+  document.getElementById('exchangeRateForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('exRateMsg');
+    try {
+      await setDoc(doc(db, 'settings', 'exchangeRate'), {
+        usdToUgx: Number(document.getElementById('ex-rate').value),
+        updatedAt: serverTimestamp()
+      });
+      msg.textContent = 'Saved ✓';
+      setTimeout(() => msg.textContent = '', 3000);
+    } catch (err) {
+      msg.textContent = 'Error: ' + err.message;
+    }
+  });
 
   function loadAdminProducts() {
     const list = document.getElementById('adminProductsList');
