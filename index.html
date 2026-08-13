@@ -1810,7 +1810,7 @@
       try {
         const res = await fetch('https://eo58fg1ynk6ao86.m.pipedream.net', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ ticketId: ticketId, amountUSD: amount })
         });
         const data = await res.json();
