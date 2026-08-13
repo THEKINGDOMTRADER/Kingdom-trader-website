@@ -500,6 +500,16 @@
   }
   .request-card .r-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);margin-top:10px;}
   .text-dim-note{color:var(--text-dim);font-size:14px;}
+  .auto-pay-banner{
+    display:flex;gap:14px;align-items:flex-start;
+    background:rgba(43,174,114,0.08);border:1px solid var(--buy);border-radius:6px;
+    padding:16px;
+  }
+  .auto-pay-icon{
+    width:36px;height:36px;border-radius:50%;background:rgba(43,174,114,0.15);
+    color:var(--buy);display:flex;align-items:center;justify-content:center;
+    font-size:16px;flex-shrink:0;
+  }
   .pay-methods{display:flex;flex-direction:column;gap:10px;}
   .pay-method{
     background:var(--panel);border:1px solid var(--line);border-radius:5px;
@@ -1412,22 +1422,15 @@
 
     <div id="panelPaymentsView" style="display:none;">
       <div class="dash-section-label" style="margin-top:0;">Accepted payment methods</div>
-      <p class="text-dim-note" style="margin-bottom:14px;">Tap a method to reveal the number/details.</p>
+      <div class="auto-pay-banner">
+        <div class="auto-pay-icon">⚡</div>
+        <div>
+          <div class="pay-method-name" style="margin-bottom:4px;">Mobile Money & Card — Automatic</div>
+          <p class="text-dim-note" style="margin:0;">Tap <strong>"Pay to unlock"</strong> on any request above — you'll be taken straight to a secure checkout page to pay by MTN, Airtel, or card. Your download unlocks automatically the moment payment goes through, no need to message us.</p>
+        </div>
+      </div>
+      <p class="text-dim-note" style="margin:16px 0 8px;">Prefer a manual method instead?</p>
       <div class="pay-methods">
-        <div class="pay-method pay-method-collapsed">
-          <div class="pay-method-top pay-method-toggle">
-            <span class="pay-badge badge-mtn">MTN</span>
-            <div class="pay-method-name">MTN Mobile Money</div>
-          </div>
-          <div class="pay-method-detail pay-method-hidden"><span class="copy-value">+256 774 077 467</span> — Musasizi Ezekiel Wasswa <button type="button" class="copy-btn">Copy</button></div>
-        </div>
-        <div class="pay-method pay-method-collapsed">
-          <div class="pay-method-top pay-method-toggle">
-            <span class="pay-badge badge-airtel">Airtel</span>
-            <div class="pay-method-name">Airtel Money</div>
-          </div>
-          <div class="pay-method-detail pay-method-hidden"><span class="copy-value">+256 758 662 069</span> — Musasizi Ezekiel Wasswa <button type="button" class="copy-btn">Copy</button></div>
-        </div>
         <div class="pay-method pay-method-collapsed">
           <div class="pay-method-top pay-method-toggle">
             <span class="pay-badge badge-bank">🏦</span>
