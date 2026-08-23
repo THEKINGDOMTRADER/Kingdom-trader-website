@@ -1797,34 +1797,83 @@
   panelTabProfile.addEventListener('click', () => showTab({el: panelTabProfile, view: panelProfileView}));
   panelTabPayments.addEventListener('click', () => showTab({el: panelTabPayments, view: panelPaymentsView}));
 
-  // Locked download button -> create a personalized MarzPay payment link and redirect
+  // Pay widget -> choose Mobile Money or Card, then trigger a MarzPay payment
   document.getElementById('requestsList').addEventListener('click', async (e) => {
-    const lockedBtn = e.target.closest('.locked-btn');
-    if (lockedBtn) {
-      const ticketId = lockedBtn.dataset.ticket;
-      const amount = lockedBtn.dataset.amount;
-      const msgEl = lockedBtn.nextElementSibling;
-      lockedBtn.disabled = true;
-      lockedBtn.textContent = 'Setting up payment…';
-      if (msgEl) msgEl.textContent = '';
+    const startBtn = e.target.closest('.pay-start-btn');
+    if (startBtn) {
+      startBtn.style.display = 'none';
+      startBtn.closest('.pay-widget').querySelector('.pay-method-choice').style.display = 'block';
+      return;
+    }
+    const chooseBtn = e.target.closest('.pay-choose-btn');
+    if (chooseBtn) {
+      const widget = chooseBtn.closest('.pay-widget');
+      const method = chooseBtn.dataset.method;
+      const ticketId = widget.dataset.ticket;
+      const amount = widget.dataset.amount;
+      const errMsg = widget.querySelector('.pay-error-msg');
+      errMsg.style.display = 'none';
+      if (method === 'mobile_money') {
+        widget.querySelector('.pay-method-choice').style.display = 'none';
+        widget.querySelector('.pay-phone-entry').style.display = 'block';
+        return;
+      }
+      chooseBtn.disabled = true;
+      chooseBtn.textContent = 'Redirecting...';
       try {
         const res = await fetch('https://eo58fg1ynk6ao86.m.pipedream.net', {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ ticketId: ticketId, amountUSD: amount })
+          body: JSON.stringify({ ticketId, amountUSD: amount, paymentMethod: 'card' })
         });
         const data = await res.json();
-        if (data.paymentUrl) {
-          window.location.href = data.paymentUrl;
+        if (data.redirectUrl) {
+          window.location.href = data.redirectUrl;
         } else {
-          lockedBtn.disabled = false;
-          lockedBtn.textContent = `🔒 Pay $${amount} to unlock`;
-          if (msgEl) msgEl.textContent = 'Could not set up payment — try again, or pay via a method in the Payments tab.';
+          throw new Error('No redirect URL returned');
         }
       } catch (err) {
-        lockedBtn.disabled = false;
-        lockedBtn.textContent = `🔒 Pay $${amount} to unlock`;
-        if (msgEl) msgEl.textContent = 'Network error — try again, or use a method in the Payments tab.';
+        chooseBtn.disabled = false;
+        chooseBtn.textContent = '💳 Card';
+        errMsg.textContent = 'Could not start card payment — try again, or use Mobile Money.';
+        errMsg.style.display = 'block';
+      }
+      return;
+    }
+    const phoneSubmitBtn = e.target.closest('.pay-phone-submit');
+    if (phoneSubmitBtn) {
+      const widget = phoneSubmitBtn.closest('.pay-widget');
+      const ticketId = widget.dataset.ticket;
+      const amount = widget.dataset.amount;
+      const phoneInput = widget.querySelector('.pay-phone-input');
+      const errMsg = widget.querySelector('.pay-error-msg');
+      const phone = phoneInput.value.trim();
+      errMsg.style.display = 'none';
+      if (!/^\+256\d{9}$/.test(phone)) {
+        errMsg.textContent = 'Enter a valid number in the format +256700000000.';
+        errMsg.style.display = 'block';
+        return;
+      }
+      phoneSubmitBtn.disabled = true;
+      phoneSubmitBtn.textContent = 'Sending prompt...';
+      try {
+        const res = await fetch('https://eo58fg1ynk6ao86.m.pipedream.net', {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ ticketId, amountUSD: amount, phoneNumber: phone, paymentMethod: 'mobile_money' })
+        });
+        const data = await res.json();
+        if (data.transactionUuid) {
+          payWidgetState[ticketId] = 'waiting';
+          renderFilteredRequests();
+        } else {
+          throw new Error('No transaction returned');
+        }
+      } catch (err) {
+        phoneSubmitBtn.disabled = false;
+        phoneSubmitBtn.textContent = 'Send payment prompt';
+        errMsg.textContent = 'Could not send payment prompt — check the number and try again.';
+        errMsg.style.display = 'block';
       }
       return;
     }
@@ -1836,6 +1885,7 @@
 
   // Track which notes the client has already seen, using localStorage
   let currentDocs = [];
+  const payWidgetState = {}; // tracks per-ticket "waiting for mobile money approval" state across re-renders
   function checkUnreadNotes() {
     const notifDot = document.getElementById('notifDot');
     let unreadCount = 0;
@@ -1991,6 +2041,30 @@
     });
   }
 
+  function renderPayWidget(d) {
+    const state = payWidgetState[d.ticketId] || 'idle';
+    if (state === 'waiting') {
+      return `<div class="pay-status-msg" style="margin-top:10px;font-size:13px;color:var(--gold);">⏳ Payment prompt sent to your phone — approve it there to unlock your download. This updates automatically, no need to refresh.</div>`;
+    }
+    return `
+      <div class="pay-widget" data-ticket="${d.ticketId || ''}" data-amount="${d.amountDue || 0}">
+        <button type="button" class="download-btn pay-start-btn">🔒 Pay $${d.amountDue || 0} to unlock</button>
+        <div class="pay-method-choice" style="display:none;">
+          <p class="text-dim-note" style="margin:10px 0 8px;">Choose how you'd like to pay:</p>
+          <div style="display:flex;gap:8px;">
+            <button type="button" class="bot-buy-btn pay-choose-btn" data-method="mobile_money" style="flex:1;">📱 Mobile Money</button>
+            <button type="button" class="bot-buy-btn primary pay-choose-btn" data-method="card" style="flex:1;">💳 Card</button>
+          </div>
+        </div>
+        <div class="pay-phone-entry" style="display:none;margin-top:10px;">
+          <input type="text" class="pay-phone-input" placeholder="+256700000000" style="width:100%;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px;color:var(--text);font-size:14px;margin-bottom:8px;">
+          <button type="button" class="btn btn-gold pay-phone-submit" style="width:100%;">Send payment prompt</button>
+        </div>
+        <div class="pay-error-msg" style="display:none;margin-top:8px;font-size:12px;color:var(--sell);"></div>
+      </div>
+    `;
+  }
+
   function renderFilteredRequests() {
     const requestsList = document.getElementById('requestsList');
     const typeValue = document.getElementById('clientTypeFilter').value;
@@ -2029,7 +2103,7 @@
           ${d.tvAccessGranted && d.status === 'Completed' ? `<div class="download-btn" style="background:var(--buy);color:#fff;cursor:default;">✅ TradingView access granted</div>` : ''}
           ${((d.platforms && d.platforms.includes('TradingView')) || d.platform === 'TradingView') && !d.tvAccessGranted && d.status === 'Completed' ? `<div class="amount-due-box">TradingView access is being set up — you'll be notified here once it's active.</div>` : ''}
           ${(d.deliveryLink || d.tvAccessGranted) && d.status === 'Completed' ? `<button type="button" class="install-guide-toggle">📖 How to install (${d.platform || 'MT5'}) — tap to expand</button><div class="install-guide-content">${getInstallGuide(d.platform)}</div>` : ''}
-          ${d.deliveryLink && d.status === 'Awaiting Payment' ? `<button type="button" class="download-btn locked-btn" data-ticket="${d.ticketId || ''}" data-amount="${d.amountDue || 0}">🔒 Pay $${d.amountDue || 0} to unlock</button><span class="pay-redirect-msg" style="display:block;font-size:11.5px;color:var(--text-dim);margin-top:6px;"></span>` : ''}
+          ${d.deliveryLink && d.status === 'Awaiting Payment' ? renderPayWidget(d) : ''}
           <div class="r-date">Submitted ${date}</div>
         `;
         requestsList.appendChild(card);
