@@ -1368,6 +1368,11 @@
       <button type="button" id="drawerCloseBtn" class="kebab-btn" aria-label="Close dashboard">✕</button>
     </div>
 
+    <div id="enableNotifBanner" style="display:none;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+      <span style="font-size:13px;color:var(--text);">🔔 Get notified when we reply — even when the site is closed.</span>
+      <button type="button" id="enableNotifBtn" class="btn btn-gold" style="white-space:nowrap;">Enable</button>
+    </div>
+
     <div class="panel-tabs">
       <button type="button" id="panelTabOverview" class="panel-tab active">Overview</button>
       <button type="button" id="panelTabLicenses" class="panel-tab">Licenses</button>
@@ -1456,6 +1461,9 @@
   import {
     getFirestore, collection, addDoc, doc, updateDoc, getDoc, getDocs, setDoc, query, where, orderBy, onSnapshot, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import {
+    getMessaging, getToken, isSupported
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBTMWE--vpIlQPS081VEv1RoaGCDbvIZhM",
@@ -1469,6 +1477,52 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+
+  // ---- Push notifications (Firebase Cloud Messaging) ----
+  // Replace this with YOUR OWN key from: Firebase Console -> Project settings
+  // -> Cloud Messaging tab -> "Web configuration" -> Generate key pair
+  const FCM_VAPID_KEY = "PASTE_YOUR_VAPID_KEY_HERE";
+
+  async function saveFcmToken(uid) {
+    try {
+      const supported = await isSupported().catch(() => false);
+      if (!supported || !('serviceWorker' in navigator)) return;
+      const registration = await navigator.serviceWorker.ready;
+      const messaging = getMessaging(app);
+      const token = await getToken(messaging, { vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: registration });
+      if (token) {
+        await setDoc(doc(db, 'fcmTokens', uid), { token, updatedAt: serverTimestamp() });
+      }
+    } catch (err) {
+      console.log('Could not get/save push token:', err);
+    }
+  }
+
+  function initPushNotifications(uid) {
+    if (!('Notification' in window)) return;
+    const banner = document.getElementById('enableNotifBanner');
+    const btn = document.getElementById('enableNotifBtn');
+    if (Notification.permission === 'granted') {
+      banner.style.display = 'none';
+      saveFcmToken(uid);
+    } else if (Notification.permission === 'default') {
+      banner.style.display = 'flex';
+      if (!btn.dataset.wired) {
+        btn.addEventListener('click', async () => {
+          const permission = await Notification.requestPermission();
+          if (permission === 'granted') {
+            banner.style.display = 'none';
+            saveFcmToken(uid);
+          } else {
+            banner.style.display = 'none';
+          }
+        });
+        btn.dataset.wired = 'true';
+      }
+    } else {
+      banner.style.display = 'none';
+    }
+  }
 
   // Tab switching (Login / Register)
   const tabLogin = document.getElementById('tabLogin');
@@ -1712,6 +1766,7 @@
       document.getElementById('profEmail').textContent = user.email || '—';
       loadRequests(user.uid);
       loadLicenses(user.uid);
+      initPushNotifications(user.uid);
 
       // Owner check -> show Admin Panel link and load admin data
       const ADMIN_EMAIL = 'thekingdomtrader7@gmail.com';
