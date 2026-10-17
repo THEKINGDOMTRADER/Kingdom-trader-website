@@ -933,6 +933,14 @@
   .calc-sum dt{color:var(--text-dim);} .calc-sum dd{font-family:'JetBrains Mono',monospace;text-align:right;}
   .chip.on{border-color:var(--gold);color:var(--gold);background:rgba(198,161,83,.1);}
   .inv-table td small{color:var(--text-dim);font-size:11.5px;}
+
+  /* ---------- DASHBOARD TABS UNDER THE WELCOME LINE (added) ---------- */
+  .sub-tabs{display:flex;gap:8px;overflow-x:auto;max-width:1180px;margin:0 auto;padding:0 28px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .sub-tabs::-webkit-scrollbar{display:none;}
+  .sub-tabs button{flex:1 0 auto;background:transparent;border:1px solid var(--line);color:var(--text-dim);font:inherit;font-size:13px;font-weight:600;padding:8px 16px;border-radius:18px;cursor:pointer;white-space:nowrap;}
+  .sub-tabs button:hover,.sub-tabs button.on{border-color:var(--gold);color:var(--gold);background:rgba(198,161,83,.08);}
+  @media (max-width:480px){ .sub-nav-inner{padding:8px 16px;} .sub-tabs{padding:0 16px 10px;gap:6px;overflow-x:visible;} .sub-tabs button{flex:1 1 0;min-width:0;padding:8px 2px;font-size:12px;} }
+  section{scroll-margin-top:140px;}
 </style>
 </head>
 <body>
@@ -974,6 +982,12 @@
       <button type="button" id="kebabBtn" class="kebab-btn menu-btn" aria-label="Open dashboard">☰<span id="notifDot" class="notif-dot" style="display:none;"></span></button>
       <span id="navGreetingText"></span>
       <a href="#admin" id="adminLink" class="admin-link" style="display:none;">Admin Panel →</a>
+    </div>
+    <div class="sub-tabs" id="subTabs" role="tablist" aria-label="My dashboard">
+      <button type="button" data-subtab="panelTabOverview">Overview</button>
+      <button type="button" data-subtab="panelTabLicenses">Licenses</button>
+      <button type="button" data-subtab="panelTabProfile">Profile</button>
+      <button type="button" data-subtab="panelTabPayments">Payments</button>
     </div>
   </div>
 </nav>
@@ -1462,7 +1476,7 @@
 <div class="page-banner" data-page="invest" style="--img:url(invest-scales.jpg)"><div class="wrap"><span class="eyebrow">Trade for me · Prototype</span><h1>Trade-for-me plans.</h1><p>Choose a plan, see the amount you are aiming for, and track it from your account. Virtual funds only for now.</p></div></div>
 <section id="invest" data-page="invest">
   <div class="wrap">
-    <div class="demo-banner"><strong>Prototype · virtual funds only.</strong> No real money is accepted or invested on this page yet. It shows how the plans will work. Expected amounts are targets, not guarantees, and you can lose money when trading.</div>
+    <div class="demo-banner"><strong>Prototype · no real money yet.</strong> Your account and plans are saved, but nothing is invested and no real payment is taken. Expected amounts are targets, not guarantees, and you can lose money when trading.</div>
 
     <div class="split">
       <div>
@@ -1471,7 +1485,7 @@
         <p style="color:var(--text-dim);">Funds are traded by our team of experienced traders, following a defined strategy and risk rules. Pick how long you want your money invested, enter an amount, and see the figure you are aiming for. Every completed plan comes with a statement.</p>
         <div class="inv-steps">
           <div class="inv-step"><span class="n">1</span><h4>Join a cohort</h4><p>Enrol Sunday to Tuesday. Everyone who joins that week starts together.</p></div>
-          <div class="inv-step"><span class="n">2</span><h4>Pay &amp; wait</h4><p>Pay by mobile money or card (test mode now) and watch the countdown.</p></div>
+          <div class="inv-step"><span class="n">2</span><h4>Pay &amp; wait</h4><p>We confirm your payment, then you watch the countdown.</p></div>
           <div class="inv-step"><span class="n">3</span><h4>Withdraw or reinvest</h4><p>At maturity, take your money out or reinvest part or all of it.</p></div>
         </div>
       </div>
@@ -1479,12 +1493,8 @@
     </div>
 
     <div class="inv-bar">
-      <div><small>Virtual wallet (demo)</small><div class="bal" id="ivBal">$0.00</div></div>
       <div class="inv-clock"><small>Time now (East Africa)</small><div id="ivClock">—</div></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button type="button" class="btn btn-ghost btn-sm" id="ivReset">Reset demo</button>
-        <a class="btn btn-gold btn-sm" target="_blank" rel="noopener" href="https://wa.me/256774077467?text=Hello%20Kingdom%20Trader%2C%20I%27m%20interested%20in%20the%20trade-for-me%20plans.%20Please%20tell%20me%20when%20they%20open.">Ask to be notified</a>
-      </div>
+      <a class="btn btn-gold btn-sm" target="_blank" rel="noopener" href="https://wa.me/256774077467?text=Hello%20Kingdom%20Trader%2C%20I%27m%20interested%20in%20the%20trade-for-me%20plans.">Ask us about the plans</a>
     </div>
 
     <div class="enrol-strip" id="ivEnrol"></div>
@@ -1496,6 +1506,12 @@
     <div class="inv-sec" id="ivAdminWrap" hidden>
       <h3>Admin view <span class="adm-tag">only you can see this</span></h3>
       <div id="ivAdminRemind"></div>
+
+      <div class="adm-block">
+        <h4>Waiting for confirmation</h4>
+        <p class="note">Confirm a contribution once you have received the payment. Members with a confirmed contribution join the cohort.</p>
+        <div id="ivPending"></div>
+      </div>
 
       <div class="adm-block">
         <h4>Targets for new joiners</h4>
@@ -1517,6 +1533,16 @@
       </div>
 
       <div class="adm-block">
+        <h4>Add a member manually</h4>
+        <p class="note">For members who paid you directly. They are added to the current enrolment cohort as confirmed.</p>
+        <div class="adm-grid">
+          <div class="inv-field"><input type="text" id="ivMName" placeholder="Member name" aria-label="Member name"></div>
+          <div class="inv-field"><select id="ivMPlan" aria-label="Plan"><option value="w2">2-week plan</option><option value="m1">1-month plan</option><option value="m3">3-month plan</option><option value="m6">6-month plan</option></select></div>
+          <div class="inv-field"><input type="number" id="ivMAmt" placeholder="Amount in USD" aria-label="Amount"><button type="button" class="btn btn-gold btn-sm" id="ivAddMember">Add</button></div>
+        </div>
+      </div>
+
+      <div class="adm-block">
         <h4>Withdrawal requests</h4>
         <div id="ivAdminWd"></div>
       </div>
@@ -1524,7 +1550,7 @@
       <div class="adm-block">
         <h4>Testing tools</h4>
         <label class="agree"><input type="checkbox" id="ivTestOpen"> Ignore the Sunday–Tuesday enrolment window (for testing)</label>
-        <p class="note" style="margin-top:10px;">Demo clock — jump ahead to test maturity, settlement and reminders:</p>
+        <p class="note" style="margin-top:10px;">Demo clock (only changes what you see) — jump ahead to test maturity, settlement and reminders:</p>
         <div class="chips" id="ivSkip">
           <button type="button" class="chip" data-skip="1">+1 day</button>
           <button type="button" class="chip" data-skip="7">+7 days</button>
@@ -3720,10 +3746,16 @@ document.getElementById('f-service').addEventListener('change', function() {
   </div>
 </div>
 
-<script>
-/* Trade-for-me plans — prototype with weekly cohorts. Virtual funds, stored in this browser only. */
+<script type="module">
+/* Trade-for-me plans — saved to your Firebase database. Prototype: virtual funds, payments confirmed by hand. */
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, query, where, onSnapshot, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 (function(){
-  var KEY='kt_invest_demo_v3', H=3600000, D=86400000, EAT=3*H;
+  if(!document.getElementById('ivPlans')) return;
+  var ADMIN_EMAIL='thekingdomtrader7@gmail.com';
+  var H=3600000, D=86400000, EAT=3*H;
   var PLANS=[
     {key:'w2',name:'2-week plan',days:14,target:0.04,min:10},
     {key:'m1',name:'1-month plan',days:30,target:0.08,min:10},
@@ -3731,108 +3763,98 @@ document.getElementById('f-service').addEventListener('change', function() {
     {key:'m6',name:'6-month plan',days:180,target:0.40,min:10}
   ];
   var METHODS=['MTN Mobile Money','Airtel Money','Card'];
-  var S, calcId=null, lastKey='', payCtx=null;
+  var db=getFirestore(getApp()), auth=getAuth(getApp());
+  var S={user:null,isAdmin:false,targets:{},targetsLoaded:false,mine:[],all:[],wds:[],allWds:[],offset:0,testOpen:false};
+  try{ S.testOpen=localStorage.getItem('kt_plan_test')==='1'; S.offset=parseInt(localStorage.getItem('kt_plan_offset')||'0',10)||0; }catch(e){}
+  var calcId=null, payCtx=null, lastKey='', unsubs=[];
 
   function plan(k){ return PLANS.filter(function(p){return p.key===k;})[0]; }
   function money(n){ return '$'+(Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
   function pct(n){ return (Math.round(n*10)/10)+'%'; }
-  function esc(t){ return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
-  function uid(){ return 'x'+Math.random().toString(36).slice(2,8); }
-  function now(){ return Date.now()+(S&&S.offset||0); }
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function el(id){ return document.getElementById(id); }
+  function now(){ return Date.now()+(S.isAdmin?S.offset:0); }
   function fmtD(ts){ return new Date(ts).toLocaleDateString('en-GB',{timeZone:'Africa/Kampala',weekday:'short',day:'numeric',month:'short'}); }
   function fmtDY(ts){ return new Date(ts).toLocaleDateString('en-GB',{timeZone:'Africa/Kampala',day:'numeric',month:'short',year:'numeric'}); }
   function fmtT(ts){ return new Date(ts).toLocaleTimeString('en-GB',{timeZone:'Africa/Kampala',hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
-  function load(){ try{ var j=localStorage.getItem(KEY); if(j) return JSON.parse(j); }catch(e){} return null; }
-  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
-  function isAdmin(){ var a=document.getElementById('adminLink'); return !!(a&&a.style.display==='inline'); }
+  function ref(x){ return String(x.id).slice(0,6).toUpperCase(); }
+  function tgt(pk){ return S.targets[pk]!=null?S.targets[pk]:plan(pk).target; }
+  function who(){ return {uid:S.user.uid,name:S.user.displayName||(S.user.email||'').split('@')[0],email:S.user.email||''}; }
+  function fail(e){ console.error(e); alert('Could not save: '+(e&&e.code==='permission-denied'?'permission denied. Please check the Firebase rules.':(e&&e.message)||'try again.')); }
 
-  /* ---- weeks & cohorts (enrol Sun 00:00 – Tue 23:59 EAT, start Wed 00:00 EAT) ---- */
+  /* weeks & cohorts: enrol Sun 00:00 – Tue 23:59 EAT, start Wed 00:00 EAT */
   function sunday(ts){ var d=new Date(ts+EAT); return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()-d.getUTCDay())-EAT; }
-  function winFor(ts){ var s=sunday(ts); return ts<=s+3*D-1 ? s : s+7*D; }
-  function rng(seed){ var x=seed%2147483647; if(x<=0) x+=2147483646; return function(){ x=x*16807%2147483647; return (x-1)/2147483646; }; }
-  function makeSeed(c){
-    var r=rng(Math.floor(c.winStart/D)+c.plan.charCodeAt(0)*131+c.plan.charCodeAt(1)*7), n=5+Math.floor(r()*6), A=[20,30,50,75,100,150,200,250,300], out=[];
-    for(var i=0;i<n;i++) out.push({name:'Member '+(i<9?'0':'')+(i+1),amount:A[Math.floor(r()*A.length)],t:S.targets[c.plan]});
-    return out;
-  }
-  function ensureSeed(c){ if(!c.seeded && now()>=c.winStart){ c.seed=makeSeed(c); c.seeded=true; } }
-  function cohortFor(pk,ws){
-    var id=pk+'-'+ws;
-    if(!S.cohorts[id]) S.cohorts[id]={id:id,plan:pk,winStart:ws,winEnd:ws+3*D-1,startAt:ws+3*D,maturesAt:ws+3*D+plan(pk).days*D,seeded:false,seed:[],mine:[],settled:null};
-    var c=S.cohorts[id]; ensureSeed(c); return c;
-  }
-  function status(c){ var t=now(); if(c.settled) return 'settled'; if(t<c.winStart) return 'upcoming'; if(t<=c.winEnd) return 'enrolling'; if(t<c.startAt) return 'starting'; if(t<c.maturesAt) return 'running'; return 'matured'; }
+  function winFor(ts){ var s=sunday(ts); return ts<=s+3*D-1?s:s+7*D; }
+  function dates(pk,ws){ return {id:pk+'-'+ws,plan:pk,winStart:ws,winEnd:ws+3*D-1,startAt:ws+3*D,maturesAt:ws+3*D+plan(pk).days*D,contribs:[]}; }
+  function timeStatus(c){ var t=now(); if(t<c.winStart) return 'upcoming'; if(t<=c.winEnd) return 'enrolling'; if(t<c.startAt) return 'starting'; if(t<c.maturesAt) return 'running'; return 'matured'; }
   var ST={upcoming:'Opens soon',enrolling:'Enrolling',starting:'Starts soon',running:'Running',matured:'Matured',settled:'Settled'};
-  function members(c){ ensureSeed(c); return c.seed.concat(c.mine.filter(function(x){return x.status==='active'||x.status==='settled'||x.status==='closed';}).map(function(x){return {name:'You (demo)',amount:x.amount,t:x.t,own:x.id};})); }
-  function total(list){ return list.reduce(function(a,m){return a+m.amount;},0); }
-  function openCohort(pk){ return cohortFor(pk,winFor(now())); }
-
-  function seedState(){
-    S={v:3,balance:1000,offset:0,testOpen:false,targets:{w2:.04,m1:.08,m3:.20,m6:.40},cohorts:{},withdrawals:[]};
-    var sun=sunday(now());
-    cohortFor('w2',sun-21*D); cohortFor('w2',sun-7*D); cohortFor('m1',sun-14*D); cohortFor('m3',sun-35*D);
+  function openCohort(pk){ return dates(pk,winFor(now())); }
+  function cohorts(){
+    var map={}; S.all.forEach(function(x){ if(!x.plan||!x.winStart) return; var id=x.plan+'-'+x.winStart; if(!map[id]) map[id]=dates(x.plan,x.winStart); map[id].contribs.push(x); });
+    return Object.keys(map).map(function(k){return map[k];});
   }
-  function ensureCurrent(){ PLANS.forEach(function(p){ openCohort(p.key); }); }
+  function actives(c){ return c.contribs.filter(function(x){return x.status==='active';}); }
+  function counted(c){ return c.contribs.filter(function(x){return x.status==='active'||x.status==='settled'||x.status==='closed';}); }
+  function cStatus(c){ if(!actives(c).length&&counted(c).length) return 'settled'; return timeStatus(c); }
+  function total(list){ return list.reduce(function(a,m){return a+m.amount;},0); }
+  function myList(){ return S.isAdmin?S.all.filter(function(x){return S.user&&x.uid===S.user.uid;}):S.mine; }
+  function myWds(){ return S.isAdmin?S.allWds.filter(function(x){return S.user&&x.uid===S.user.uid;}):S.wds; }
 
-  function calc(c,final){
-    var list=members(c), start=total(list), profit=Math.max(0,final-start), tp=list.reduce(function(a,m){return a+m.amount*m.t;},0);
+  function calc(list,final){
+    var start=total(list), profit=Math.max(0,final-start), tp=list.reduce(function(a,m){return a+m.amount*m.t;},0);
     var f=start>0?Math.min(1,final/start):0, g=tp>0?Math.min(1,profit/tp):0, paid=0;
     var rows=list.map(function(m){ var pay=Math.round((m.amount*f+m.amount*m.t*g)*100)/100; paid+=pay; var need=m.amount*(1+m.t);
-      var out=pay>=need-0.005?'ok':(pay>=m.amount-0.005?'mid':'bad'); return {name:m.name,own:m.own,amount:m.amount,t:m.t,pay:pay,out:out,need:need}; });
-    var fee=Math.max(0,Math.round((final-paid)*100)/100), needAll=rows.reduce(function(a,r){return a+r.need;},0);
-    return {rows:rows,start:start,final:final,profit:final-start,needAll:needAll,fee:fee,short:Math.max(0,needAll-final)};
+      return {id:m.id,name:m.name||m.email||'Member',amount:m.amount,t:m.t,pay:pay,need:need,out:pay>=need-0.005?'ok':(pay>=m.amount-0.005?'mid':'bad')}; });
+    var needAll=rows.reduce(function(a,r){return a+r.need;},0);
+    return {rows:rows,start:start,final:final,profit:final-start,needAll:needAll,fee:Math.max(0,Math.round((final-paid)*100)/100),short:Math.max(0,needAll-final)};
   }
 
-  /* ---- countdown ---- */
+  /* countdown */
   function cd(ts){ return '<span class="cd" data-until="'+ts+'"><b>0</b><i>d</i><b>00</b><i>h</i><b>00</b><i>m</i><b>00</b><i>s</i></span>'; }
   function tick(){
-    var clk=document.getElementById('ivClock'); if(!clk||!S) return;
-    var n=now(); clk.textContent=fmtD(n)+' · '+fmtT(n)+' EAT'+(S.offset?'  (demo clock +'+Math.round(S.offset/D)+'d)':'');
-    document.querySelectorAll('.cd').forEach(function(el){
-      var left=Math.max(0,parseInt(el.getAttribute('data-until'),10)-n), d=Math.floor(left/D), h=Math.floor(left%D/H), m=Math.floor(left%H/60000), s=Math.floor(left%60000/1000), b=el.querySelectorAll('b');
-      b[0].textContent=d; b[1].textContent=('0'+h).slice(-2); b[2].textContent=('0'+m).slice(-2); b[3].textContent=('0'+s).slice(-2);
-    });
-    var key=PLANS.map(function(p){ return status(openCohort(p.key)); }).join()+Object.keys(S.cohorts).map(function(k){return status(S.cohorts[k]);}).join();
-    if(lastKey&&key!==lastKey){ lastKey=key; render(); } else { lastKey=key; }
+    var n=now(), clk=el('ivClock'); if(clk) clk.textContent=fmtD(n)+' · '+fmtT(n)+' EAT'+(S.isAdmin&&S.offset?'  (demo clock +'+Math.round(S.offset/D)+'d)':'');
+    document.querySelectorAll('.cd').forEach(function(e){ var left=Math.max(0,parseInt(e.getAttribute('data-until'),10)-n), b=e.querySelectorAll('b');
+      b[0].textContent=Math.floor(left/D); b[1].textContent=('0'+Math.floor(left%D/H)).slice(-2); b[2].textContent=('0'+Math.floor(left%H/60000)).slice(-2); b[3].textContent=('0'+Math.floor(left%60000/1000)).slice(-2); });
+    var key=PLANS.map(function(p){return timeStatus(openCohort(p.key));}).join()+cohorts().map(function(c){return cStatus(c);}).join();
+    if(lastKey&&key!==lastKey){ lastKey=key; renderAll(); } else lastKey=key;
   }
 
-  /* ---- reminders ---- */
+  /* reminders */
   function chip(cls,html){ return '<div class="remind '+cls+'">'+html+'</div>'; }
   function remindCustomer(){
     var h='', n=now();
-    Object.keys(S.cohorts).forEach(function(k){ var c=S.cohorts[k], p=plan(c.plan), st=status(c);
-      c.mine.forEach(function(x){
-        if(x.status==='pending'&&n<=c.winEnd) h+=chip('warn','Pay for your '+p.name+' before enrolment closes in '+cd(c.winEnd)+'.');
-        if(x.status==='active'&&st==='running'&&c.maturesAt-n<=3*D) h+=chip('info','Your '+p.name+' matures in '+cd(c.maturesAt)+'.');
-        if(x.status==='active'&&st==='matured') h+=chip('info','Your '+p.name+' has matured. We are settling it now.');
-        if(x.status==='settled') h+=chip('go','Your '+p.name+' is ready: <a href="#" data-payout="'+x.id+'">withdraw or reinvest '+money(x.payout)+'</a>.');
-      }); });
-    S.withdrawals.forEach(function(w){ if(w.status==='requested') h+=chip('info','Withdrawal of '+money(w.amount)+' requested. We will release it soon.'); });
-    document.getElementById('ivRemind').innerHTML=h;
+    myList().forEach(function(x){ var c=dates(x.plan,x.winStart), p=plan(x.plan), st=timeStatus(c);
+      if(x.status==='pending'&&n<=c.winEnd) h+=chip('warn','Your '+p.name+' is waiting for payment confirmation. Enrolment closes in '+cd(c.winEnd)+'.');
+      if(x.status==='active'&&st==='running'&&c.maturesAt-n<=3*D) h+=chip('info','Your '+p.name+' matures in '+cd(c.maturesAt)+'.');
+      if(x.status==='active'&&st==='matured') h+=chip('info','Your '+p.name+' has matured. We are settling it now.');
+      if(x.status==='settled') h+=chip('go','Your '+p.name+' is ready: <a href="#" data-payout="'+x.id+'">withdraw or reinvest '+money(x.payout)+'</a>.'); });
+    myWds().forEach(function(w){ if(w.status==='requested') h+=chip('info','Withdrawal of '+money(w.amount)+' requested. We will release it soon.'); });
+    el('ivRemind').innerHTML=h;
   }
   function remindAdmin(){
-    var h='', n=now(), pend=S.withdrawals.filter(function(w){return w.status==='requested';}).length;
-    Object.keys(S.cohorts).forEach(function(k){ var c=S.cohorts[k]; if(!members(c).length) return; var p=plan(c.plan), st=status(c);
+    var h='', n=now(), pend=S.all.filter(function(x){return x.status==='pending';}).length, wd=S.allWds.filter(function(w){return w.status==='requested';}).length;
+    cohorts().forEach(function(c){ if(!counted(c).length) return; var p=plan(c.plan), st=cStatus(c);
       if(st==='matured') h+=chip('warn','Due now: '+p.name+' cohort '+fmtD(c.winStart)+' has matured. <a href="#" data-calc="'+c.id+'">Calculate and settle</a>.');
       else if(st==='running'&&c.maturesAt-n<=3*D) h+=chip('info',p.name+' cohort '+fmtD(c.winStart)+' matures in '+cd(c.maturesAt)+'.'); });
-    if(pend) h+=chip('warn',pend+' withdrawal request'+(pend>1?'s':'')+' waiting for you to release.');
-    document.getElementById('ivAdminRemind').innerHTML=h||'<div class="remind">No reminders right now.</div>';
+    if(pend) h+=chip('warn',pend+' contribution'+(pend>1?'s':'')+' waiting for you to confirm payment.');
+    if(wd) h+=chip('warn',wd+' withdrawal request'+(wd>1?'s':'')+' waiting for you to release.');
+    el('ivAdminRemind').innerHTML=h||'<div class="remind">No reminders right now.</div>';
   }
 
-  /* ---- customer side ---- */
+  /* customer side */
   function renderEnrol(){
     var n=now(), ws=winFor(n), open=(n>=ws&&n<=ws+3*D-1);
-    document.getElementById('ivEnrol').innerHTML=open
-      ? '<span class="dot go"></span><div><strong>Enrolment is open</strong> until '+fmtD(ws+3*D-1)+', 23:59 EAT. Closes in '+cd(ws+3*D-1)+'. This cohort starts '+fmtD(ws+3*D)+'.</div>'
-      : '<span class="dot"></span><div><strong>Enrolment is closed</strong> for now. The next cohort opens '+fmtD(ws)+' at 00:00 EAT, in '+cd(ws)+'.'+(S.testOpen?' <em>(testing: window ignored)</em>':'')+'</div>';
+    el('ivEnrol').innerHTML=open?'<span class="dot go"></span><div><strong>Enrolment is open</strong> until '+fmtD(ws+3*D-1)+', 23:59 EAT. Closes in '+cd(ws+3*D-1)+'. This cohort starts '+fmtD(ws+3*D)+'.</div>'
+      :'<span class="dot"></span><div><strong>Enrolment is closed</strong> for now. The next cohort opens '+fmtD(ws)+' at 00:00 EAT, in '+cd(ws)+'.'+(S.testOpen?' <em>(testing: window ignored)</em>':'')+'</div>';
   }
   function renderPlans(){
-    var box=document.getElementById('ivPlans'); box.innerHTML='';
+    var box=el('ivPlans'); box.innerHTML='';
     PLANS.forEach(function(p){
-      var c=openCohort(p.key), st=status(c), t=S.targets[p.key], can=(st==='enrolling')||S.testOpen;
+      var c=openCohort(p.key), st=timeStatus(c), t=tgt(p.key), can=(st==='enrolling'||(S.isAdmin&&S.testOpen)), ready=S.targetsLoaded&&S.targets[p.key]!=null;
+      var label=!S.user?'Log in to join':(!ready?'Opening soon':(can?'Join this cohort':'Opens '+fmtD(c.winStart)));
       var opts=METHODS.map(function(m){return '<option>'+m+'</option>';}).join('');
-      var el=document.createElement('div'); el.className='pool'; el.setAttribute('data-plan',p.key);
-      el.innerHTML='<h3>'+p.name+'<span class="tag">TARGET +'+pct(t*100)+'</span></h3>'+
+      var d=document.createElement('div'); d.className='pool'; d.setAttribute('data-plan',p.key);
+      d.innerHTML='<h3>'+p.name+'<span class="tag">TARGET +'+pct(t*100)+'</span></h3>'+
         '<p class="note">Aim: grow your amount by about <strong style="color:var(--text)">'+pct(t*100)+'</strong> over '+(p.days===14?'2 weeks':(p.days/30)+' month'+(p.days>30?'s':''))+'. Not guaranteed.</p>'+
         '<dl><dt>Next cohort starts</dt><dd>'+fmtD(c.startAt)+'</dd><dt>Matures</dt><dd>'+fmtD(c.maturesAt)+'</dd></dl>'+
         '<div class="inv-field"><input type="number" inputmode="decimal" min="'+p.min+'" step="1" placeholder="Amount in USD (min $'+p.min+')" data-amt aria-label="Amount for '+p.name+'"></div>'+
@@ -3840,149 +3862,171 @@ document.getElementById('f-service').addEventListener('change', function() {
         '<div class="inv-field"><select data-method aria-label="Payment method">'+opts+'</select></div>'+
         '<ul class="keyfacts"><li>The expected amount is a target, not a guarantee. You can lose money.</li><li>Your money is managed together with other members\u2019 funds.</li><li>We keep any profit above the target as our fee.</li></ul>'+
         '<label class="agree"><input type="checkbox" data-agree> I understand and accept the <a href="#" data-open-terms>terms</a>.</label>'+
-        '<button type="button" class="btn btn-gold btn-sm" data-act="join"'+(can?'':' disabled')+'>'+(can?'Join this cohort':'Opens '+fmtD(c.winStart))+'</button><p class="note" data-msg></p>';
-      box.appendChild(el);
+        '<button type="button" class="btn btn-gold btn-sm" data-act="join"'+((!S.user||(ready&&can))?'':' disabled')+'>'+label+'</button><p class="note" data-msg></p>';
+      box.appendChild(d);
     });
   }
-  function ownRows(){ var out=[]; Object.keys(S.cohorts).forEach(function(k){ var c=S.cohorts[k]; c.mine.forEach(function(x){ out.push({c:c,x:x}); }); }); return out.sort(function(a,b){return b.x.at-a.x.at;}); }
   function renderPortfolio(){
     var rows='', n=now();
-    ownRows().forEach(function(r){ var c=r.c, x=r.x, p=plan(c.plan), st=status(c), clock='', act='', badge='';
-      if(x.status==='pending'){ if(n>c.winEnd&&!S.testOpen){ badge='<span class="out bad">Expired</span>'; } else { badge='<span class="out mid">Awaiting payment</span>'; act='<button type="button" class="btn btn-gold btn-sm" data-pay="'+x.id+'">Pay now (test)</button> <button type="button" class="btn btn-ghost btn-sm" data-cancel="'+x.id+'">Cancel</button>'; clock='Enrolment closes in '+cd(c.winEnd); } }
-      else if(x.status==='active'){ if(st==='enrolling'||st==='starting'){ badge='<span class="out ok">Active</span>'; clock='Starts in '+cd(c.startAt); } else if(st==='running'){ var dayN=Math.min(p.days,Math.floor((n-c.startAt)/D)+1); badge='<span class="out ok">Running</span>'; clock='Day '+dayN+' of '+p.days+' · matures in '+cd(c.maturesAt); } else { badge='<span class="out mid">Matured</span>'; clock='Being settled'; } }
+    myList().slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);}).forEach(function(x){ var c=dates(x.plan,x.winStart), p=plan(x.plan), st=timeStatus(c), clock='', act='', badge='';
+      if(x.status==='pending'){ if(n>c.winEnd&&!S.testOpen){ badge='<span class="out bad">Expired</span>'; } else { badge='<span class="out mid">Awaiting confirmation</span>'; clock='Ref '+ref(x)+' · closes in '+cd(c.winEnd); act='<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/256774077467?text='+encodeURIComponent('Hello, I joined the '+p.name+' (ref '+ref(x)+', $'+x.amount+'). Please confirm my payment.')+'">Tell us on WhatsApp</a>'+(x.source==='reinvest'?'':' <button type="button" class="btn btn-ghost btn-sm" data-cancel="'+x.id+'">Cancel</button>'); } }
+      else if(x.status==='active'){ if(st==='enrolling'||st==='starting'){ badge='<span class="out ok">Active</span>'; clock='Starts in '+cd(c.startAt); } else if(st==='running'){ badge='<span class="out ok">Running</span>'; clock='Day '+Math.min(p.days,Math.floor((n-c.startAt)/D)+1)+' of '+p.days+' · matures in '+cd(c.maturesAt); } else { badge='<span class="out mid">Matured</span>'; clock='Being settled'; } }
       else if(x.status==='settled'){ badge='<span class="out ok">Ready</span>'; act='<button type="button" class="btn btn-gold btn-sm" data-payout="'+x.id+'">Withdraw / reinvest</button>'; clock=money(x.payout)+' available'; }
       else if(x.status==='closed'){ badge='<span class="out '+(x.out||'mid')+'">Completed</span>'; clock=money(x.payout)+' returned'; }
       else return;
-      rows+='<tr><td>'+p.name+'<br><small>Cohort '+fmtD(c.winStart)+'</small></td><td class="num">'+money(x.amount)+'</td><td class="num">'+money(x.amount*(1+x.t))+'</td><td>'+badge+'<br><small>'+clock+'</small></td><td>'+act+'</td></tr>';
-    });
-    document.getElementById('ivPortfolio').innerHTML='<div class="scroll-x">'+(rows?'<table class="inv-table"><thead><tr><th>Plan</th><th class="num">Amount</th><th class="num">Target amount</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>':'<div class="empty">No plans yet. Choose a plan above to get started.</div>')+'</div>';
-    var w=S.withdrawals.slice().reverse().map(function(x){ return '<tr><td>'+fmtDY(x.at)+'</td><td class="num">'+money(x.amount)+'</td><td>'+(x.status==='released'?'<span class="out ok">Released</span>':'<span class="out mid">Requested</span>')+'</td></tr>'; }).join('');
-    document.getElementById('ivWithdrawals').innerHTML=w?'<h4 style="margin:22px 0 10px;font-size:15px;">My withdrawals</h4><div class="scroll-x"><table class="inv-table"><thead><tr><th>Date</th><th class="num">Amount</th><th>Status</th></tr></thead><tbody>'+w+'</tbody></table></div>':'';
+      rows+='<tr><td>'+p.name+(x.source==='reinvest'?' <small>(reinvested)</small>':'')+'<br><small>Cohort '+fmtD(c.winStart)+'</small></td><td class="num">'+money(x.amount)+'</td><td class="num">'+money(x.amount*(1+x.t))+'</td><td>'+badge+'<br><small>'+clock+'</small></td><td>'+act+'</td></tr>'; });
+    var msg=S.user?'No plans yet. Choose a plan above to get started.':'Log in to see your plans.';
+    el('ivPortfolio').innerHTML='<div class="scroll-x">'+(rows?'<table class="inv-table"><thead><tr><th>Plan</th><th class="num">Amount</th><th class="num">Target amount</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>':'<div class="empty">'+msg+'</div>')+'</div>';
+    var w=myWds().slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);}).map(function(x){ return '<tr><td>'+fmtDY(x.createdAt||Date.now())+'</td><td class="num">'+money(x.amount)+'</td><td>'+(x.status==='released'?'<span class="out ok">Released</span>':'<span class="out mid">Requested</span>')+'</td></tr>'; }).join('');
+    el('ivWithdrawals').innerHTML=w?'<h4 style="margin:22px 0 10px;font-size:15px;">My withdrawals</h4><div class="scroll-x"><table class="inv-table"><thead><tr><th>Date</th><th class="num">Amount</th><th>Status</th></tr></thead><tbody>'+w+'</tbody></table></div>':'';
   }
   function renderStatements(){
-    var done=ownRows().filter(function(r){return r.x.status==='settled'||r.x.status==='closed';}), box=document.getElementById('ivStatements');
+    var done=myList().filter(function(x){return x.status==='settled'||x.status==='closed';}), box=el('ivStatements');
     if(!done.length){ box.innerHTML='<div class="scroll-x"><div class="empty">Your statements appear here when a plan is completed.</div></div>'; return; }
-    box.innerHTML=done.map(function(r){ var c=r.c,x=r.x,p=plan(c.plan), rate=((x.payout-x.amount)/x.amount)*100;
+    box.innerHTML=done.map(function(x){ var c=dates(x.plan,x.winStart), p=plan(x.plan), rate=((x.payout-x.amount)/x.amount)*100;
       return '<div class="stmt"><div class="stmt-head"><h4>'+p.name+' · matured '+fmtDY(c.maturesAt)+'</h4><span class="out '+x.out+'">'+(x.out==='ok'?'Target reached':(x.out==='mid'?'Below target':'Loss'))+'</span></div>'+
         '<dl><dt>Plan period</dt><dd>'+fmtDY(c.startAt)+' – '+fmtDY(c.maturesAt)+'</dd><dt>Amount invested</dt><dd>'+money(x.amount)+'</dd><dt>Target at the time</dt><dd>+'+pct(x.t*100)+'</dd><dt>Your result</dt><dd>'+(rate>=0?'+':'−')+pct(Math.abs(rate))+'</dd><dt><strong>Amount returned</strong></dt><dd><strong>'+money(x.payout)+'</strong></dd></dl>'+
         '<p class="how">Targets are not guarantees. Results are shared in proportion to each member\u2019s contribution.</p><button type="button" class="btn btn-ghost btn-sm" data-print="'+x.id+'" style="margin-top:12px;">Print / save as PDF</button></div>'; }).join('');
   }
 
-  /* ---- admin side ---- */
+  /* admin side */
+  var tgtKey='';
   function renderAdmin(){
-    var wrap=document.getElementById('ivAdminWrap'), show=isAdmin(); wrap.hidden=!show; if(!show) return;
-    remindAdmin();
-    document.getElementById('ivTestOpen').checked=!!S.testOpen;
-    document.getElementById('ivTargets').innerHTML=PLANS.map(function(p){ return '<div class="inv-field"><span class="lbl">'+p.name+'</span><input type="number" step="0.5" value="'+(S.targets[p.key]*100)+'" data-tgt="'+p.key+'" aria-label="Target for '+p.name+'"><button type="button" class="btn btn-ghost btn-sm" data-settarget="'+p.key+'">Save %</button></div>'; }).join('');
-    var rows='', ks=Object.keys(S.cohorts).map(function(k){return S.cohorts[k];}).filter(function(c){ var st=status(c); return members(c).length||st==='enrolling'; }).sort(function(a,b){return b.winStart-a.winStart;});
-    ks.forEach(function(c){ var p=plan(c.plan), l=members(c), st=status(c);
-      rows+='<tr><td>'+p.name+'</td><td>'+fmtD(c.winStart)+' – '+fmtD(c.winEnd)+'</td><td>'+fmtD(c.startAt)+'</td><td>'+fmtD(c.maturesAt)+(st==='running'?'<br><small>in '+cd(c.maturesAt)+'</small>':'')+'</td><td class="num">'+l.length+'</td><td class="num">'+money(total(l))+'</td><td><span class="out '+(st==='matured'?'bad':(st==='settled'?'ok':'mid'))+'">'+ST[st]+'</span></td><td>'+(st==='running'||st==='matured'?'<button type="button" class="btn btn-ghost btn-sm" data-calc="'+c.id+'">Calculator</button>':'')+'</td></tr>'; });
-    document.getElementById('ivCohortTable').innerHTML='<thead><tr><th>Plan</th><th>Enrolment</th><th>Starts</th><th>Matures</th><th class="num">Members</th><th class="num">Total</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody>';
-    var cl=Object.keys(S.cohorts).map(function(k){return S.cohorts[k];}).filter(function(c){ var st=status(c); return (st==='running'||st==='matured'||st==='starting')&&members(c).length>0; }).sort(function(a,b){return a.maturesAt-b.maturesAt;});
-    document.getElementById('ivCalcList').innerHTML=cl.length?cl.map(function(c){ var p=plan(c.plan); return '<button type="button" class="calc-pick'+(c.id===calcId?' on':'')+'" data-calc="'+c.id+'"><strong>'+p.name+'</strong> · cohort '+fmtD(c.winStart)+'<br><small>'+members(c).length+' members · '+money(total(members(c)))+' · '+ST[status(c)]+'</small></button>'; }).join(''):'<div class="empty">No active cohorts yet.</div>';
-    renderCalc();
-    var wd=S.withdrawals.filter(function(w){return w.status==='requested';});
-    document.getElementById('ivAdminWd').innerHTML=wd.length?'<div class="scroll-x"><table class="inv-table"><thead><tr><th>Date</th><th>Member</th><th class="num">Amount</th><th></th></tr></thead><tbody>'+wd.map(function(w){return '<tr><td>'+fmtDY(w.at)+'</td><td>You (demo)</td><td class="num">'+money(w.amount)+'</td><td><button type="button" class="btn btn-gold btn-sm" data-release="'+w.id+'">Mark as released</button></td></tr>';}).join('')+'</tbody></table></div>':'<div class="empty">No withdrawal requests waiting.</div>';
+    var wrap=el('ivAdminWrap'); wrap.hidden=!S.isAdmin; if(!S.isAdmin) return;
+    remindAdmin(); el('ivTestOpen').checked=!!S.testOpen;
+    var k=JSON.stringify(S.targets); if(k!==tgtKey||!el('ivTargets').children.length){ tgtKey=k; el('ivTargets').innerHTML=PLANS.map(function(p){ return '<div class="inv-field"><span class="lbl">'+p.name+'</span><input type="number" step="0.5" value="'+(Math.round(tgt(p.key)*1000)/10)+'" data-tgt="'+p.key+'" aria-label="Target for '+p.name+'"><button type="button" class="btn btn-ghost btn-sm" data-settarget="'+p.key+'">Save %</button></div>'; }).join(''); }
+    var pend=S.all.filter(function(x){return x.status==='pending';});
+    el('ivPending').innerHTML=pend.length?'<div class="scroll-x"><table class="inv-table"><thead><tr><th>Ref</th><th>Member</th><th>Plan</th><th class="num">Amount</th><th>Method</th><th></th></tr></thead><tbody>'+pend.map(function(x){ var p=plan(x.plan);
+      return '<tr><td>'+ref(x)+'</td><td>'+esc(x.name||x.email)+(x.source==='reinvest'?'<br><small>reinvestment</small>':'')+'</td><td>'+p.name+'<br><small>cohort '+fmtD(x.winStart)+'</small></td><td class="num">'+money(x.amount)+'</td><td>'+esc(x.method||'')+'</td><td><button type="button" class="btn btn-gold btn-sm" data-confirm="'+x.id+'">Confirm</button> <button type="button" class="btn btn-ghost btn-sm" data-reject="'+x.id+'">Reject</button></td></tr>'; }).join('')+'</tbody></table></div>':'<div class="empty">Nothing waiting for confirmation.</div>';
+    var rows='', cs=cohorts().filter(function(c){return counted(c).length||c.contribs.length;}).sort(function(a,b){return b.winStart-a.winStart;});
+    cs.forEach(function(c){ var p=plan(c.plan), l=counted(c), st=cStatus(c);
+      rows+='<tr><td>'+p.name+'</td><td>'+fmtD(c.winStart)+' – '+fmtD(c.winEnd)+'</td><td>'+fmtD(c.startAt)+'</td><td>'+fmtD(c.maturesAt)+(st==='running'?'<br><small>in '+cd(c.maturesAt)+'</small>':'')+'</td><td class="num">'+l.length+'</td><td class="num">'+money(total(l))+'</td><td><span class="out '+(st==='matured'?'bad':(st==='settled'?'ok':'mid'))+'">'+ST[st]+'</span></td><td>'+(actives(c).length&&(st==='running'||st==='matured'||st==='starting')?'<button type="button" class="btn btn-ghost btn-sm" data-calc="'+c.id+'">Calculator</button>':'')+'</td></tr>'; });
+    el('ivCohortTable').innerHTML='<thead><tr><th>Plan</th><th>Enrolment</th><th>Starts</th><th>Matures</th><th class="num">Members</th><th class="num">Total</th><th>Status</th><th></th></tr></thead><tbody>'+(rows||'<tr><td colspan="8"><div class="empty">No cohorts yet.</div></td></tr>')+'</tbody>';
+    var cl=cohorts().filter(function(c){ var st=cStatus(c); return actives(c).length&&(st==='running'||st==='matured'||st==='starting'); }).sort(function(a,b){return a.maturesAt-b.maturesAt;});
+    el('ivCalcList').innerHTML=cl.length?cl.map(function(c){ var p=plan(c.plan); return '<button type="button" class="calc-pick'+(c.id===calcId?' on':'')+'" data-calc="'+c.id+'"><strong>'+p.name+'</strong> · cohort '+fmtD(c.winStart)+'<br><small>'+actives(c).length+' members · '+money(total(actives(c)))+' · '+ST[cStatus(c)]+'</small></button>'; }).join(''):'<div class="empty">No active cohorts yet. Confirm a contribution or add a member below.</div>';
+    if(!(document.activeElement&&document.activeElement.matches&&document.activeElement.matches('[data-final]'))) renderCalc();
+    var wd=S.allWds.filter(function(w){return w.status==='requested';});
+    el('ivAdminWd').innerHTML=wd.length?'<div class="scroll-x"><table class="inv-table"><thead><tr><th>Date</th><th>Member</th><th class="num">Amount</th><th></th></tr></thead><tbody>'+wd.map(function(w){return '<tr><td>'+fmtDY(w.createdAt||Date.now())+'</td><td>'+esc(w.name||w.email||'')+'</td><td class="num">'+money(w.amount)+'</td><td><button type="button" class="btn btn-gold btn-sm" data-release="'+w.id+'">Mark as released</button></td></tr>';}).join('')+'</tbody></table></div>':'<div class="empty">No withdrawal requests waiting.</div>';
   }
   function renderCalc(){
-    var body=document.getElementById('ivCalcBody'); var c=calcId&&S.cohorts[calcId]; if(!c){ body.hidden=true; return; }
-    body.hidden=false; var p=plan(c.plan), l=members(c), st=status(c), canSettle=(st==='matured')||S.testOpen;
-    var fin=body.querySelector('[data-final]'), keep=fin?fin.value:'';
-    body.innerHTML='<div class="calc-head"><strong>'+p.name+'</strong> · cohort '+fmtD(c.winStart)+' · '+ST[st]+'</div>'+
-      '<div class="inv-field"><input type="number" step="0.01" inputmode="decimal" data-final placeholder="Total amount we hold after trading (USD)" value="'+esc(keep)+'" aria-label="Final amount"></div>'+
-      '<div id="ivCalcOut"></div>';
+    var body=el('ivCalcBody'), c=calcId&&cohorts().filter(function(x){return x.id===calcId;})[0];
+    if(!c||!actives(c).length){ body.hidden=true; return; }
+    body.hidden=false; var p=plan(c.plan), fin=body.querySelector('[data-final]'), keep=fin?fin.value:'';
+    body.innerHTML='<div class="calc-head"><strong>'+p.name+'</strong> · cohort '+fmtD(c.winStart)+' · '+ST[cStatus(c)]+'</div><div class="inv-field"><input type="number" step="0.01" inputmode="decimal" data-final placeholder="Total amount we hold after trading (USD)" value="'+esc(keep)+'" aria-label="Final amount"></div><div id="ivCalcOut"></div>';
     updateCalc();
   }
   function updateCalc(){
-    var c=calcId&&S.cohorts[calcId]; if(!c) return; var out=document.getElementById('ivCalcOut'), f=parseFloat(document.querySelector('[data-final]').value), l=members(c), st=status(c), canSettle=(st==='matured')||S.testOpen;
-    if(!(f>=0)){ out.innerHTML='<div class="scroll-x" style="margin-top:12px;"><table class="inv-table"><thead><tr><th>Member</th><th class="num">Contribution</th><th class="num">Target</th></tr></thead><tbody>'+l.map(function(m){return '<tr><td>'+esc(m.name)+'</td><td class="num">'+money(m.amount)+'</td><td class="num">+'+pct(m.t*100)+'</td></tr>';}).join('')+'<tr><td><strong>Total</strong></td><td class="num"><strong>'+money(total(l))+'</strong></td><td></td></tr></tbody></table></div><p class="note" style="margin-top:8px;">Enter the final amount to see each member\u2019s payout.</p>'; return; }
-    var r=calc(c,f);
+    var c=calcId&&cohorts().filter(function(x){return x.id===calcId;})[0]; if(!c) return; var out=el('ivCalcOut'), inp=document.querySelector('[data-final]'); if(!out||!inp) return;
+    var f=parseFloat(inp.value), l=actives(c), can=(cStatus(c)==='matured')||S.testOpen;
+    if(!(f>=0)){ out.innerHTML='<div class="scroll-x" style="margin-top:12px;"><table class="inv-table"><thead><tr><th>Member</th><th class="num">Contribution</th><th class="num">Target</th></tr></thead><tbody>'+l.map(function(m){return '<tr><td>'+esc(m.name||m.email)+'</td><td class="num">'+money(m.amount)+'</td><td class="num">+'+pct(m.t*100)+'</td></tr>';}).join('')+'<tr><td><strong>Total</strong></td><td class="num"><strong>'+money(total(l))+'</strong></td><td></td></tr></tbody></table></div><p class="note" style="margin-top:8px;">Enter the final amount to see each member\u2019s payout.</p>'; return; }
+    var r=calc(l,f);
     out.innerHTML='<div class="scroll-x" style="margin-top:12px;"><table class="inv-table"><thead><tr><th>Member</th><th class="num">Contribution</th><th class="num">Payout</th><th class="num">Result</th></tr></thead><tbody>'+r.rows.map(function(x){var rate=((x.pay-x.amount)/x.amount)*100; return '<tr><td>'+esc(x.name)+'</td><td class="num">'+money(x.amount)+'</td><td class="num"><span class="out '+x.out+'">'+money(x.pay)+'</span></td><td class="num">'+(rate>=0?'+':'−')+pct(Math.abs(rate))+'</td></tr>';}).join('')+'</tbody></table></div>'+
       '<dl class="calc-sum"><dt>Total contributed</dt><dd>'+money(r.start)+'</dd><dt>Final amount</dt><dd>'+money(r.final)+'</dd><dt>Profit / loss</dt><dd>'+(r.profit>=0?'+':'−')+money(Math.abs(r.profit))+'</dd><dt>Needed to meet all targets</dt><dd>'+money(r.needAll)+'</dd><dt>Our fee (above targets)</dt><dd>'+money(r.fee)+'</dd><dt>Short of targets by</dt><dd>'+money(r.short)+'</dd></dl>'+
-      '<button type="button" class="btn btn-gold btn-sm" data-settle="'+c.id+'"'+(canSettle?'':' disabled')+'>Record settlement &amp; release to members</button><p class="note" style="margin-top:8px;">'+(canSettle?'This marks every member\u2019s payout as available to withdraw or reinvest.':'Available once the cohort has matured ('+fmtD(c.maturesAt)+').')+'</p>';
+      '<button type="button" class="btn btn-gold btn-sm" data-settle="'+c.id+'"'+(can?'':' disabled')+'>Record settlement &amp; release to members</button><p class="note" style="margin-top:8px;">'+(can?'This marks every member\u2019s payout as available to withdraw or reinvest.':'Available once the cohort has matured ('+fmtD(c.maturesAt)+').')+'</p>';
   }
+  function renderAll(){ renderEnrol(); renderPlans(); renderLists(); tick2(); }
+  function renderLists(){ renderPortfolio(); renderStatements(); remindCustomer(); renderAdmin(); tick2(); }
+  function tick2(){ var n=now(); document.querySelectorAll('.cd').forEach(function(e){ var left=Math.max(0,parseInt(e.getAttribute('data-until'),10)-n), b=e.querySelectorAll('b'); b[0].textContent=Math.floor(left/D); b[1].textContent=('0'+Math.floor(left%D/H)).slice(-2); b[2].textContent=('0'+Math.floor(left%H/60000)).slice(-2); b[3].textContent=('0'+Math.floor(left%60000/1000)).slice(-2); }); }
 
-  function render(){ ensureCurrent(); document.getElementById('ivBal').textContent=money(S.balance); renderEnrol(); renderPlans(); renderPortfolio(); renderStatements(); remindCustomer(); renderAdmin(); tick(); }
-
-  /* ---- payout modal (withdraw / reinvest) ---- */
-  function findContribution(id){ var r=null; Object.keys(S.cohorts).forEach(function(k){ S.cohorts[k].mine.forEach(function(x){ if(x.id===id) r={c:S.cohorts[k],x:x}; }); }); return r; }
-  function openPayout(id){
-    var r=findContribution(id); if(!r||r.x.status!=='settled') return; payCtx={id:id,pctRe:0,plan:r.c.plan};
-    drawPayout(); var m=document.getElementById('ivPayout'); m.hidden=false; document.body.style.overflow='hidden';
-  }
+  /* payout modal */
+  function find(id){ var r=null; (S.isAdmin?S.all:S.mine).forEach(function(x){ if(x.id===id) r=x; }); return r; }
+  function openPayout(id){ var x=find(id); if(!x||x.status!=='settled') return; payCtx={id:id,pctRe:0,plan:x.plan}; drawPayout(); el('ivPayout').hidden=false; document.body.style.overflow='hidden'; }
   function drawPayout(){
-    var r=findContribution(payCtx.id), x=r.x, avail=x.payout, re=Math.round(avail*payCtx.pctRe)/100, wd=Math.round((avail-re)*100)/100, tgt=openCohort(payCtx.plan);
+    var x=find(payCtx.id), avail=x.payout, re=Math.round(avail*payCtx.pctRe)/100, wd=Math.round((avail-re)*100)/100, tc=openCohort(payCtx.plan);
     var pc=[0,50,75,100].map(function(v){return '<button type="button" class="chip'+(payCtx.pctRe===v?' on':'')+'" data-re="'+v+'">'+(v===0?'Withdraw all':'Reinvest '+v+'%')+'</button>';}).join('');
     var po=PLANS.map(function(p){return '<option value="'+p.key+'"'+(p.key===payCtx.plan?' selected':'')+'>'+p.name+'</option>';}).join('');
-    document.getElementById('payBody').innerHTML='<p style="color:var(--text-dim);margin-bottom:12px;">Available: <strong style="color:var(--text)">'+money(avail)+'</strong> (your capital and returns together).</p><div class="chips" style="margin-bottom:12px;">'+pc+'</div>'+
-      (payCtx.pctRe>0?'<div class="inv-field" style="margin-bottom:10px;"><select data-replan>'+po+'</select></div><p class="note" style="margin-bottom:8px;">Reinvested into the cohort starting '+fmtD(tgt.startAt)+', at that plan\u2019s current target of +'+pct(S.targets[payCtx.plan]*100)+'. Not guaranteed.</p>':'')+
+    el('payBody').innerHTML='<p style="color:var(--text-dim);margin-bottom:12px;">Available: <strong style="color:var(--text)">'+money(avail)+'</strong> (your capital and returns together).</p><div class="chips" style="margin-bottom:12px;">'+pc+'</div>'+
+      (payCtx.pctRe>0?'<div class="inv-field" style="margin-bottom:10px;"><select data-replan>'+po+'</select></div><p class="note" style="margin-bottom:8px;">Reinvested into the cohort starting '+fmtD(tc.startAt)+', at that plan\u2019s current target of +'+pct(tgt(payCtx.plan)*100)+'. Not guaranteed. We confirm it before it starts.</p>':'')+
       '<dl class="calc-sum"><dt>Reinvest</dt><dd>'+money(re)+'</dd><dt>Withdraw</dt><dd>'+money(wd)+'</dd></dl><button type="button" class="btn btn-gold" data-confirm-pay>Confirm</button>';
   }
-  function closePayout(){ var m=document.getElementById('ivPayout'); if(m){ m.hidden=true; document.body.style.overflow=''; } payCtx=null; }
-
+  function closePayout(){ var m=el('ivPayout'); if(m){ m.hidden=true; document.body.style.overflow=''; } payCtx=null; }
   function printStmt(id){
-    var r=findContribution(id); if(!r) return; var c=r.c,x=r.x,p=plan(c.plan), rate=((x.payout-x.amount)/x.amount)*100, box=document.getElementById('stmtPrint');
+    var x=find(id); if(!x) return; var c=dates(x.plan,x.winStart), p=plan(x.plan), rate=((x.payout-x.amount)/x.amount)*100, box=el('stmtPrint');
     function row(a,b){ return '<tr><td>'+a+'</td><td>'+b+'</td></tr>'; }
-    box.innerHTML='<h2>The Kingdom Trader — Plan statement</h2><div>'+p.name+' · matured '+fmtDY(c.maturesAt)+'</div><table>'+row('Plan period',fmtDY(c.startAt)+' – '+fmtDY(c.maturesAt))+row('Amount invested',money(x.amount))+row('Target at the time','+'+pct(x.t*100))+row('Your result',(rate>=0?'+':'−')+pct(Math.abs(rate)))+row('<strong>Amount returned</strong>','<strong>'+money(x.payout)+'</strong>')+'</table><div class="warn">PROTOTYPE. This statement uses virtual funds and is not a record of real money. Targets are not guarantees and trading carries a high risk of loss.</div>';
+    box.innerHTML='<h2>The Kingdom Trader — Plan statement</h2><div>'+esc(x.name||'')+' · '+p.name+' · matured '+fmtDY(c.maturesAt)+'</div><table>'+row('Plan period',fmtDY(c.startAt)+' – '+fmtDY(c.maturesAt))+row('Amount invested',money(x.amount))+row('Target at the time','+'+pct(x.t*100))+row('Your result',(rate>=0?'+':'−')+pct(Math.abs(rate)))+row('<strong>Amount returned</strong>','<strong>'+money(x.payout)+'</strong>')+'</table><div class="warn">PROTOTYPE. This statement uses virtual funds and is not a record of real money. Targets are not guarantees and trading carries a high risk of loss.</div>';
     window.print();
   }
 
-  /* ---- events ---- */
+  /* events */
   document.addEventListener('input',function(e){
     var t=e.target; if(!t.matches) return;
-    if(t.matches('[data-amt]')){ var card=t.closest('.pool'), a=parseFloat(t.value); card.querySelector('[data-exp]').textContent=a>0?money(a*(1+S.targets[card.getAttribute('data-plan')])):'—'; }
+    if(t.matches('[data-amt]')){ var card=t.closest('.pool'), a=parseFloat(t.value); card.querySelector('[data-exp]').textContent=a>0?money(a*(1+tgt(card.getAttribute('data-plan')))):'—'; }
     if(t.matches('[data-final]')) updateCalc();
-    if(t.id==='ivTestOpen'){ S.testOpen=t.checked; save(); render(); }
+    if(t.id==='ivTestOpen'){ S.testOpen=t.checked; try{ localStorage.setItem('kt_plan_test',t.checked?'1':'0'); }catch(x){} renderAll(); }
   });
   document.addEventListener('change',function(e){ var t=e.target; if(t.matches&&t.matches('[data-replan]')&&payCtx){ payCtx.plan=t.value; drawPayout(); } });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') closePayout(); });
-  document.addEventListener('click',function(e){
-    var t=e.target; if(!t.closest||!S) return;
-    if(t.closest('#ivReset')){ if(confirm('Reset the demo and clear all contributions, cohorts and statements?')){ seedState(); save(); calcId=null; render(); } return; }
-    if(t.closest('[data-pclose]')||(t.id==='ivPayout')){ closePayout(); return; }
-    var q;
+  document.addEventListener('click',async function(e){
+    var t=e.target; if(!t.closest) return; var q;
+    try{
+    if(t.closest('[data-pclose]')||t.id==='ivPayout'){ closePayout(); return; }
     if((q=t.closest('[data-print]'))){ printStmt(q.getAttribute('data-print')); return; }
     if((q=t.closest('[data-payout]'))){ e.preventDefault(); openPayout(q.getAttribute('data-payout')); return; }
     if((q=t.closest('[data-re]'))&&payCtx){ payCtx.pctRe=parseInt(q.getAttribute('data-re'),10); drawPayout(); return; }
     if(t.closest('[data-confirm-pay]')&&payCtx){
-      var r=findContribution(payCtx.id), x=r.x, avail=x.payout, re=Math.round(avail*payCtx.pctRe)/100, wd=Math.round((avail-re)*100)/100;
-      if(re>0){ var tc=openCohort(payCtx.plan); tc.mine.push({id:uid(),amount:re,at:now(),status:'active',method:'Reinvested',t:S.targets[payCtx.plan]}); }
-      if(wd>0) S.withdrawals.push({id:uid(),amount:wd,at:now(),status:'requested'});
-      x.status='closed'; save(); closePayout(); render(); return;
+      var x=find(payCtx.id), avail=x.payout, re=Math.round(avail*payCtx.pctRe)/100, wd=Math.round((avail-re)*100)/100, b=writeBatch(db), w=who();
+      b.update(doc(db,'contributions',x.id),{status:'closed',resolution:{reinvest:re,withdraw:wd,plan:payCtx.pctRe>0?payCtx.plan:null,at:Date.now()}});
+      if(wd>0) b.set(doc(collection(db,'withdrawals')),{uid:x.uid,name:x.name||w.name,email:x.email||w.email,contributionId:x.id,amount:wd,status:'requested',createdAt:Date.now()});
+      if(re>0){ var tc=openCohort(payCtx.plan); b.set(doc(collection(db,'contributions')),{uid:x.uid,name:x.name||w.name,email:x.email||w.email,plan:payCtx.plan,amount:re,status:'pending',cohortId:tc.id,winStart:tc.winStart,startAt:tc.startAt,maturesAt:tc.maturesAt,t:tgt(payCtx.plan),method:'Reinvested',source:'reinvest',fromId:x.id,createdAt:Date.now()}); }
+      await b.commit(); closePayout(); return;
     }
-    if((q=t.closest('[data-pay]'))){ var id=q.getAttribute('data-pay'), f=findContribution(id); if(f&&f.x.status==='pending'){ if(f.x.amount>S.balance){ alert('Not enough virtual balance.'); return; } S.balance-=f.x.amount; f.x.status='active'; save(); render(); } return; }
-    if((q=t.closest('[data-cancel]'))){ var cid=q.getAttribute('data-cancel'); Object.keys(S.cohorts).forEach(function(k){ S.cohorts[k].mine=S.cohorts[k].mine.filter(function(x){return x.id!==cid;}); }); save(); render(); return; }
-    if((q=t.closest('[data-settarget]'))){ var pk=q.getAttribute('data-settarget'), v=parseFloat(document.querySelector('[data-tgt="'+pk+'"]').value); if(isNaN(v)||v<0||v>200){ alert('Enter a target between 0 and 200%.'); return; } S.targets[pk]=v/100; save(); render(); return; }
-    if((q=t.closest('[data-calc]'))){ e.preventDefault(); calcId=q.getAttribute('data-calc'); renderAdmin(); var cb=document.getElementById('ivCalc'); if(cb&&cb.scrollIntoView) cb.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+    if((q=t.closest('[data-cancel]'))){ await deleteDoc(doc(db,'contributions',q.getAttribute('data-cancel'))); return; }
+    if((q=t.closest('[data-confirm]'))){ await updateDoc(doc(db,'contributions',q.getAttribute('data-confirm')),{status:'active',confirmedAt:Date.now()}); return; }
+    if((q=t.closest('[data-reject]'))){ if(confirm('Reject and remove this contribution?')) await deleteDoc(doc(db,'contributions',q.getAttribute('data-reject'))); return; }
+    if((q=t.closest('[data-settarget]'))){ var pk=q.getAttribute('data-settarget'), v=parseFloat(document.querySelector('[data-tgt="'+pk+'"]').value); if(isNaN(v)||v<0||v>200){ alert('Enter a target between 0 and 200%.'); return; } await setDoc(doc(db,'planSettings',pk),{target:Math.round(v*10)/1000,updatedAt:Date.now()}); return; }
+    if((q=t.closest('[data-calc]'))){ e.preventDefault(); calcId=q.getAttribute('data-calc'); renderAdmin(); var cb=el('ivCalc'); if(cb&&cb.scrollIntoView) cb.scrollIntoView({behavior:'smooth',block:'start'}); return; }
     if((q=t.closest('[data-settle]'))){
-      var c=S.cohorts[q.getAttribute('data-settle')], fv=parseFloat(document.querySelector('[data-final]').value); if(!(fv>=0)){ alert('Enter the final amount first.'); return; }
-      var res=calc(c,fv); c.settled={at:now(),final:fv,fee:res.fee};
-      c.mine.forEach(function(x){ if(x.status==='active'){ var row=res.rows.filter(function(rw){return rw.own===x.id;})[0]; if(row){ x.payout=row.pay; x.out=row.out; x.status='settled'; } } });
-      save(); calcId=null; render(); return;
+      var c=cohorts().filter(function(z){return z.id===q.getAttribute('data-settle');})[0], fv=parseFloat(document.querySelector('[data-final]').value); if(!c||!(fv>=0)){ alert('Enter the final amount first.'); return; }
+      var res=calc(actives(c),fv), b2=writeBatch(db);
+      res.rows.forEach(function(r){ b2.update(doc(db,'contributions',r.id),{status:'settled',payout:r.pay,out:r.out,settlement:{final:fv,fee:res.fee,at:Date.now()}}); });
+      await b2.commit(); calcId=null; return;
     }
-    if((q=t.closest('[data-release]'))){ var wid=q.getAttribute('data-release'); S.withdrawals.forEach(function(w){ if(w.id===wid&&w.status==='requested'){ w.status='released'; S.balance+=w.amount; } }); save(); render(); return; }
-    if((q=t.closest('[data-skip]'))){ var d=parseInt(q.getAttribute('data-skip'),10); S.offset=d===0?0:(S.offset||0)+d*D; save(); render(); return; }
+    if((q=t.closest('[data-release]'))){ await updateDoc(doc(db,'withdrawals',q.getAttribute('data-release')),{status:'released',releasedAt:Date.now()}); return; }
+    if((q=t.closest('[data-skip]'))){ var dd=parseInt(q.getAttribute('data-skip'),10); S.offset=dd===0?0:S.offset+dd*D; try{ localStorage.setItem('kt_plan_offset',String(S.offset)); }catch(x){} renderAll(); return; }
+    if(t.closest('#ivAddMember')){
+      var nm=el('ivMName').value.trim(), pk2=el('ivMPlan').value, am=parseFloat(el('ivMAmt').value); if(!nm||!(am>=10)){ alert('Enter a name and an amount of at least $10.'); return; }
+      var co=openCohort(pk2); await addDoc(collection(db,'contributions'),{uid:'manual:'+Date.now(),name:nm,email:'',plan:pk2,amount:am,status:'active',cohortId:co.id,winStart:co.winStart,startAt:co.startAt,maturesAt:co.maturesAt,t:tgt(pk2),method:'Added by admin',source:'manual',createdAt:Date.now(),confirmedAt:Date.now()});
+      el('ivMName').value=''; el('ivMAmt').value=''; return;
+    }
     var act=t.closest('[data-act="join"]');
     if(act){
-      var card=act.closest('.pool'), msg=card.querySelector('[data-msg]'), p=plan(card.getAttribute('data-plan')), c2=openCohort(p.key), st=status(c2), amt=parseFloat(card.querySelector('[data-amt]').value);
-      if(!(st==='enrolling'||S.testOpen)){ msg.textContent='Enrolment is closed right now.'; return; }
+      var card=act.closest('.pool'), msg=card.querySelector('[data-msg]'), p=plan(card.getAttribute('data-plan'));
+      if(!S.user){ location.hash='#account'; return; }
+      var co2=openCohort(p.key), amt=parseFloat(card.querySelector('[data-amt]').value);
+      if(!(timeStatus(co2)==='enrolling'||(S.isAdmin&&S.testOpen))){ msg.textContent='Enrolment is closed right now.'; return; }
       if(!(amt>=p.min)){ msg.textContent='Enter at least $'+p.min+'.'; return; }
       if(!card.querySelector('[data-agree]').checked){ msg.textContent='Please tick the box to accept the terms.'; return; }
-      c2.mine.push({id:uid(),amount:amt,at:now(),status:'pending',method:card.querySelector('[data-method]').value,t:S.targets[p.key]});
-      save(); render();
+      act.disabled=true; var w2=who();
+      await addDoc(collection(db,'contributions'),{uid:w2.uid,name:w2.name,email:w2.email,plan:p.key,amount:amt,status:'pending',cohortId:co2.id,winStart:co2.winStart,startAt:co2.startAt,maturesAt:co2.maturesAt,t:tgt(p.key),method:card.querySelector('[data-method]').value,source:'new',createdAt:Date.now()});
+      card.querySelector('[data-amt]').value=''; card.querySelector('[data-agree]').checked=false; card.querySelector('[data-exp]').textContent='—'; msg.textContent='Saved. Your contribution is waiting for payment confirmation. See My plans below.'; act.disabled=false;
     }
+    }catch(err){ fail(err); renderAll(); }
   });
 
-  S=load();
-  if(!S||S.v!==3){ S=null; S={v:3}; seedState(); }
-  if(document.getElementById('ivPlans')){
-    render(); save();
-    setInterval(tick,1000);
-    setInterval(function(){ remindCustomer(); if(isAdmin()) remindAdmin(); },30000);
-    var al=document.getElementById('adminLink'); if(al&&'MutationObserver' in window) new MutationObserver(renderAdmin).observe(al,{attributes:true,attributeFilter:['style']});
-  }
+  /* data subscriptions */
+  function snap(s){ var a=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; a.push(o); }); return a; }
+  function stop(){ unsubs.forEach(function(u){ try{u();}catch(e){} }); unsubs=[]; }
+  onSnapshot(collection(db,'planSettings'),function(s){ var t={}; s.forEach(function(d){ var v=d.data().target; if(typeof v==='number') t[d.id]=v; }); S.targets=t; S.targetsLoaded=true;
+    if(S.isAdmin) PLANS.forEach(function(p){ if(t[p.key]==null) setDoc(doc(db,'planSettings',p.key),{target:p.target,updatedAt:Date.now()}).catch(function(){}); });
+    renderAll(); },function(){ S.targetsLoaded=true; renderAll(); });
+  onAuthStateChanged(auth,function(user){
+    stop(); S.user=user; S.isAdmin=!!(user&&user.email===ADMIN_EMAIL); S.mine=[];S.all=[];S.wds=[];S.allWds=[];
+    if(user){
+      if(S.isAdmin){
+        unsubs.push(onSnapshot(collection(db,'contributions'),function(s){ S.all=snap(s); renderLists(); },function(e){ console.error(e); }));
+        unsubs.push(onSnapshot(collection(db,'withdrawals'),function(s){ S.allWds=snap(s); renderLists(); },function(e){ console.error(e); }));
+        PLANS.forEach(function(p){ if(S.targetsLoaded&&S.targets[p.key]==null) setDoc(doc(db,'planSettings',p.key),{target:p.target,updatedAt:Date.now()}).catch(function(){}); });
+      } else {
+        unsubs.push(onSnapshot(query(collection(db,'contributions'),where('uid','==',user.uid)),function(s){ S.mine=snap(s); renderLists(); },function(e){ console.error(e); }));
+        unsubs.push(onSnapshot(query(collection(db,'withdrawals'),where('uid','==',user.uid)),function(s){ S.wds=snap(s); renderLists(); },function(e){ console.error(e); }));
+      }
+    }
+    renderAll();
+  });
+  renderAll(); setInterval(tick,1000); setInterval(function(){ remindCustomer(); if(S.isAdmin) remindAdmin(); },30000);
 })();
 </script>
+
 
 
 <script>
@@ -4060,6 +4104,21 @@ document.getElementById('f-service').addEventListener('change', function() {
     if(t.closest('[data-close]')||t.classList.contains('modal')){ close(); }
   });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
+})();
+</script>
+
+<script>
+/* dashboard tabs under the welcome line: open the dashboard on the chosen tab */
+(function(){
+  var strip=document.getElementById('subTabs'); if(!strip) return;
+  var drawer=document.getElementById('dashboardDrawer');
+  function sync(){ var open=drawer&&drawer.classList.contains('open'); strip.querySelectorAll('button').forEach(function(b){ var t=document.getElementById(b.getAttribute('data-subtab')); b.classList.toggle('on',!!(open&&t&&t.classList.contains('active'))); }); }
+  strip.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-subtab]'); if(!b) return;
+    if(!drawer.classList.contains('open')) document.getElementById('kebabBtn').click();
+    document.getElementById(b.getAttribute('data-subtab')).click(); setTimeout(sync,30);
+  });
+  if('MutationObserver' in window){ var mo=new MutationObserver(sync); mo.observe(drawer,{attributes:true,attributeFilter:['class']}); document.querySelectorAll('.panel-tab').forEach(function(t){ mo.observe(t,{attributes:true,attributeFilter:['class']}); }); }
 })();
 </script>
 
