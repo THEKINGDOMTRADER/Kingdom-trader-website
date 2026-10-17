@@ -859,6 +859,48 @@
   }
   .nav-links a{white-space:nowrap;}
   @media (max-width:1100px){.nav-links{display:none !important;} .nav-menu-btn{display:flex;}}
+
+  /* ---------- HERO PATHS, MODALS, INVEST v2 (added) ---------- */
+  .hero-overlay{background:linear-gradient(180deg, rgba(12,18,28,0.72) 0%, rgba(12,18,28,0.92) 55%, var(--bg) 92%);}
+  .hero p{margin-bottom:22px;}
+  .flow{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 auto 6px;flex-wrap:wrap;}
+  .flow span{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--gold);border:1px solid var(--gold-soft);padding:6px 12px;border-radius:14px;background:rgba(198,161,83,.07);}
+  .flow i{display:block;width:44px;height:2px;background:repeating-linear-gradient(90deg,var(--gold) 0 6px,transparent 6px 12px);background-size:24px 2px;animation:ktFlow 1.1s linear infinite;opacity:.8;}
+  @keyframes ktFlow{from{background-position:0 0}to{background-position:24px 0}}
+  .paths{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1000px;margin:34px auto 26px;text-align:left;}
+  @media (max-width:860px){.paths{grid-template-columns:1fr;gap:12px;margin-top:26px;}}
+  .path{display:flex;flex-direction:column;gap:6px;background:rgba(18,26,42,.86);border:1px solid var(--line);border-radius:8px;padding:20px 22px;
+    transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;backdrop-filter:blur(4px);}
+  .path:hover,.path:focus-visible{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 14px 30px rgba(0,0,0,.4),0 0 0 1px rgba(198,161,83,.25);}
+  .path-tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);}
+  .path h3{font-size:20px;}
+  .path p{font-size:13.5px;color:var(--text-dim);margin:0;max-width:none;flex:1;}
+  .path-go{font-size:13px;color:var(--gold);margin-top:8px;}
+  .hero-ctas{margin-bottom:48px;}
+  .modal{position:fixed;inset:0;z-index:200;background:rgba(5,8,14,.78);display:flex;align-items:center;justify-content:center;padding:18px;overflow-y:auto;}
+  .modal[hidden]{display:none;}
+  .modal-box{position:relative;background:var(--panel);border:1px solid var(--gold-soft);border-radius:8px;padding:26px 24px;max-width:520px;width:100%;max-height:92vh;overflow-y:auto;}
+  .modal-x{position:absolute;top:8px;right:12px;background:none;border:none;color:var(--text-dim);font-size:28px;cursor:pointer;line-height:1;}
+  .quiz-opt{display:block;width:100%;text-align:left;margin-bottom:10px;padding:14px 16px;background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--text);font:inherit;font-size:15px;cursor:pointer;}
+  .quiz-opt:hover{border-color:var(--gold);}
+  .terms-list{padding-left:20px;display:grid;gap:10px;font-size:13.5px;color:var(--text-dim);}
+  .terms-list strong{color:var(--text);}
+  .keyfacts{list-style:none;display:grid;gap:5px;font-size:12px;color:var(--text-dim);}
+  .keyfacts li{padding-left:16px;position:relative;}
+  .keyfacts li::before{content:"•";position:absolute;left:3px;color:var(--gold);}
+  .agree{font-size:12.5px;color:var(--text-dim);display:flex;gap:8px;align-items:flex-start;}
+  .agree a{color:var(--gold);text-decoration:underline;}
+  .pool select{background:var(--bg);border:1px solid var(--line);color:var(--text);padding:10px 12px;border-radius:4px;font:inherit;font-size:14px;width:100%;}
+  [hidden]{display:none !important;}
+  @media (max-width:520px){
+    .flow{flex-wrap:nowrap;gap:6px;}
+    .flow span{font-size:10px;padding:5px 8px;white-space:nowrap;}
+    .flow i{width:16px;}
+    .hero-ctas .btn-lg{width:100%;}
+  }
+  button.btn{font-family:inherit;cursor:pointer;text-align:center;}
+  button.btn-ghost{background:transparent;color:var(--text);}
+  .hero-ctas .btn{text-align:center;justify-content:center;}
 </style>
 </head>
 <body>
@@ -912,12 +954,36 @@
       <span class="eyebrow">Strategy Automation · Trading Bots · Kampala, Uganda</span>
       <div class="tagline-strip">From paper to automation.</div>
       <h1>Your strategy, <em>running while you sleep.</em></h1>
-      <p>We turn a trader's rules — entries, exits, risk — into a working automated system. Bring us your strategy and we build it, or choose one of ours, ready to deploy.</p>
-      <div class="hero-ctas">
-        <a href="#services" class="btn btn-gold btn-lg">Explore services</a>
-        <a href="https://wa.me/256774077467" class="btn btn-ghost btn-lg" target="_blank" rel="noopener">Talk to us on WhatsApp</a>
-      </div>
+      <p>Build a bot from your own strategy, buy or rent a ready-made one, or let us trade for you. Pick the path that fits you.</p>
+      <div class="flow" aria-hidden="true"><span>Your rules</span><i></i><span>Our bot</span><i></i><span>The market</span></div>
     </div>
+
+    <div class="paths" id="heroPaths">
+      <a href="#request" class="path">
+        <span class="path-tag">I have a strategy</span>
+        <h3>Build my bot</h3>
+        <p>We turn your entries, exits and risk rules into a tested bot that trades on your own account.</p>
+        <span class="path-go">Start a custom build →</span>
+      </a>
+      <a href="#bots" class="path">
+        <span class="path-tag">I don't have one</span>
+        <h3>Buy or rent a bot</h3>
+        <p>Choose a ready-made bot from our catalog. Buy it once or rent it by the month.</p>
+        <span class="path-go">See the bots →</span>
+      </a>
+      <a href="#invest" class="path">
+        <span class="path-tag">I'm not sure · prototype</span>
+        <h3>Trade for me</h3>
+        <p>Pick a plan and a time period, and we trade on your behalf. Targets are not guaranteed.</p>
+        <span class="path-go">Explore the plans →</span>
+      </a>
+    </div>
+
+    <div class="hero-ctas">
+      <button type="button" class="btn btn-ghost btn-lg" id="quizOpen">Not sure? Find your path in 20 seconds</button>
+      <a href="https://wa.me/256774077467" class="btn btn-ghost btn-lg" target="_blank" rel="noopener">Talk to us on WhatsApp</a>
+    </div>
+
 
     <div class="session-panel">
       <div class="session-head">
@@ -1053,10 +1119,10 @@
     </div>
     <div class="teaser">
       <div>
-        <h3>Don't have a strategy? Explore trade-for-me plans.</h3>
-        <p>Our new pooled plans are in a prototype stage. Try the demo with virtual funds and see exactly how a pool is calculated, including when it loses.</p>
+        <h3>Not sure where to start? Try a trade-for-me plan.</h3>
+        <p>Our trade-for-me plans are in a prototype stage. Choose a plan and a time period and try the demo with virtual funds. Targets are not guaranteed.</p>
       </div>
-      <a href="#invest" class="btn btn-gold">Open the demo</a>
+      <a href="#invest" class="btn btn-gold">Explore the plans</a>
     </div>
   </div>
 </section>
@@ -1361,56 +1427,59 @@
   </div>
 </section>
 
-<div class="page-banner" data-page="invest" style="--img:url(invest-scales.jpg)"><div class="wrap"><span class="eyebrow">Trade for me · Prototype</span><h1>Pooled investment plans.</h1><p>See how a pool is built, targeted, settled and reported, using virtual funds only.</p></div></div>
+<div class="page-banner" data-page="invest" style="--img:url(invest-scales.jpg)"><div class="wrap"><span class="eyebrow">Trade for me · Prototype</span><h1>Trade-for-me plans.</h1><p>Choose a plan, see the amount you are aiming for, and track it from your account. Virtual funds only for now.</p></div></div>
 <section id="invest" data-page="invest">
   <div class="wrap">
-    <div class="demo-banner"><strong>Prototype · virtual funds only.</strong> No real money is accepted, held or invested on this page. It shows how a pooled plan would be calculated and reported. Targets are goals, not promises, and a pool can lose money.</div>
+    <div class="demo-banner"><strong>Prototype · virtual funds only.</strong> No real money is accepted or invested on this page yet. It shows how the plans will work. Expected amounts are targets, not guarantees, and you can lose money when trading.</div>
 
     <div class="split">
       <div>
-        <span class="eyebrow">How a pool works</span>
-        <h2 style="margin:8px 0 12px;">Capital is grouped by investment period.</h2>
-        <p style="color:var(--text-dim);">Members who pick the same period form one pool. Their contributions are added together and traded as a whole. At the end of the period the pool is settled and every member gets a statement showing the working.</p>
+        <span class="eyebrow">How it works</span>
+        <h2 style="margin:8px 0 12px;">Choose a plan. We trade for you.</h2>
+        <p style="color:var(--text-dim);">Pick how long you want your money invested, enter an amount, and see the figure you are aiming for at the end. We trade on your behalf and send you a statement.</p>
         <div class="inv-steps">
-          <div class="inv-step"><span class="n">1</span><h4>Choose a period</h4><p>1, 3 or 6 months. Each has its own pool and its own target.</p></div>
-          <div class="inv-step"><span class="n">2</span><h4>Join with virtual funds</h4><p>Your share is your contribution divided by the pool total.</p></div>
-          <div class="inv-step"><span class="n">3</span><h4>Settle &amp; review</h4><p>See the pool result, your payout and the full calculation.</p></div>
+          <div class="inv-step"><span class="n">1</span><h4>Choose a plan</h4><p>1, 3 or 6 months, each with its own target.</p></div>
+          <div class="inv-step"><span class="n">2</span><h4>Pay</h4><p>Mobile money or card. Test mode for now.</p></div>
+          <div class="inv-step"><span class="n">3</span><h4>Track &amp; receive</h4><p>Follow your plan and get a statement.</p></div>
         </div>
       </div>
-      <figure class="media-card"><img src="invest-piggy.jpg" alt="Coins flowing from a piggy bank into a pooled pipeline over a trading chart" loading="lazy" width="1100" height="575"></figure>
+      <figure class="media-card"><img src="invest-piggy.jpg" alt="Coins flowing from a piggy bank into a trading chart" loading="lazy" width="1100" height="575"></figure>
     </div>
 
     <div class="inv-bar">
       <div><small>Virtual wallet (demo)</small><div class="bal" id="ivBal">$0.00</div></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button type="button" class="btn btn-ghost btn-sm" id="ivReset">Reset demo</button>
-        <a class="btn btn-gold btn-sm" id="ivWait" target="_blank" rel="noopener" href="https://wa.me/256774077467?text=Hello%20Kingdom%20Trader%2C%20I%27m%20interested%20in%20the%20trade-for-me%20plans.%20Please%20tell%20me%20when%20they%20open.">Ask to be notified</a>
+        <a class="btn btn-gold btn-sm" target="_blank" rel="noopener" href="https://wa.me/256774077467?text=Hello%20Kingdom%20Trader%2C%20I%27m%20interested%20in%20the%20trade-for-me%20plans.%20Please%20tell%20me%20when%20they%20open.">Ask to be notified</a>
       </div>
     </div>
 
     <div class="inv-plans" id="ivPlans"></div>
 
-    <div class="inv-sec">
-      <h3>My portfolio</h3>
-      <div id="ivPortfolio"></div>
-    </div>
-    <div class="inv-sec">
-      <h3>Statements</h3>
-      <div id="ivStatements"></div>
+    <div class="inv-sec"><h3>My plans</h3><div id="ivPortfolio"></div></div>
+    <div class="inv-sec"><h3>Statements</h3><div id="ivStatements"></div></div>
+
+    <div class="inv-sec" id="ivAdminWrap" hidden>
+      <h3>Admin view <span class="tag" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);background:rgba(198,161,83,.12);padding:3px 9px;border-radius:3px;vertical-align:middle;">only you can see this</span></h3>
+      <p class="note" style="color:var(--text-dim);font-size:13px;margin-bottom:14px;">Set the target for each plan, and settle a plan when its period ends. In the prototype you enter the portfolio result yourself. Targets lock once someone has joined.</p>
+      <div class="inv-plans" id="ivAdmin"></div>
+      <div id="ivAdminStmts" style="margin-top:18px;"></div>
     </div>
 
     <div class="risk-panel">
       <figure class="media-card tall"><img src="invest-decide.jpg" alt="A phone and tablet on a desk with the words: to invest or to sell?" loading="lazy" width="900" height="1348"></figure>
       <div>
-        <h3>Read this before anything goes live</h3>
-        <p><strong>A target is not a guarantee.</strong> If a pool earns less than its target, members receive a smaller share of what the pool actually holds. If the pool loses money, members can get back less than they put in.</p>
-        <p><strong>Pooling makes administration easier, not trading safer.</strong> A larger pool does not protect capital or make profits more likely.</p>
-        <p><strong>Targets are ambitious.</strong> A return of 30% or more in a month is exceptional and should never be treated as dependable. The targets in this demo are illustrations.</p>
-        <p><strong>Before real deposits:</strong> we must confirm the legal and regulatory position in Uganda, set up safe custody of funds, agree written terms with members (including how any profit above the target is shared) and test the accounting. None of that is in place yet.</p>
+        <h3>Please read this</h3>
+        <p><strong>Expected amounts are targets, not guarantees.</strong> If results fall short, you receive less than the target. You can also get back less than you invested.</p>
+        <p><strong>Your money is managed together with other members' funds.</strong> This keeps minimums low. It does not make profits more likely or protect your capital.</p>
+        <p><strong>Targets can be ambitious.</strong> A return of 30% or more in a month is exceptional and should never be treated as dependable. The targets shown here are illustrations.</p>
+        <p><strong>Status:</strong> prototype. Real deposits are not open yet. We are completing the legal and regulatory steps first.</p>
+        <button type="button" class="btn btn-ghost btn-sm" data-open-terms>Read the draft terms</button>
       </div>
     </div>
   </div>
 </section>
+
 
 <footer>
   <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;width:100%;">
@@ -3547,16 +3616,43 @@ document.getElementById('f-service').addEventListener('change', function() {
 </script>
 
 <div id="stmtPrint"></div>
+<div id="pathQuiz" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="quizTitle">
+  <div class="modal-box">
+    <button type="button" class="modal-x" data-close aria-label="Close">×</button>
+    <span class="eyebrow">Find your path</span>
+    <h3 id="quizTitle" style="margin:6px 0 14px;"></h3>
+    <div id="quizBody"></div>
+  </div>
+</div>
+<div id="ivTerms" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+  <div class="modal-box">
+    <button type="button" class="modal-x" data-close aria-label="Close">×</button>
+    <span class="eyebrow">Plan terms · draft</span>
+    <h3 id="termsTitle" style="margin:6px 0 12px;">Trade-for-me plan terms</h3>
+    <p class="note" style="color:var(--gold);font-size:13px;margin-bottom:10px;">Draft for the prototype. These terms must be reviewed by a lawyer before any real deposit is accepted.</p>
+    <ol class="terms-list">
+      <li><strong>What the plan is.</strong> You choose a plan length and an amount. The Kingdom Trader trades funds on your behalf.</li>
+      <li><strong>Targets are not guarantees.</strong> The expected amount shown is a target. Trading carries a high risk of loss, and you can receive back less than you put in.</li>
+      <li><strong>Funds are managed together.</strong> Your money is managed together with other members' funds in one portfolio. Results are shared in proportion to each member's contribution.</li>
+      <li><strong>Our fee.</strong> If the portfolio earns more than the combined targets, The Kingdom Trader keeps the amount above the targets as its fee.</li>
+      <li><strong>If results fall short.</strong> If the portfolio ends below the targets, members receive what the portfolio actually holds, in proportion to their contributions, even when that is less than the target or the amount invested.</li>
+      <li><strong>Statements.</strong> You can view and print a statement for every completed plan.</li>
+      <li><strong>Prototype.</strong> This page uses virtual funds. No real money is accepted yet.</li>
+    </ol>
+  </div>
+</div>
+
 <script>
-/* Demo investment ledger — virtual funds, stored in this browser only. */
+/* Trade-for-me plans — prototype ledger with virtual funds (stored in this browser only). */
 (function(){
-  var KEY='kt_invest_demo_v1';
+  var KEY='kt_invest_demo_v2';
   var PLANS=[
-    {key:'m1',name:'1-month pool',months:1,target:0.08,min:10,seed:{members:11,total:3850}},
-    {key:'m3',name:'3-month pool',months:3,target:0.20,min:10,seed:{members:8,total:2900}},
-    {key:'m6',name:'6-month pool',months:6,target:0.40,min:10,seed:{members:6,total:2300}}
+    {key:'m1',name:'1-month plan',months:1,target:0.08,min:10,seed:{members:11,total:3850}},
+    {key:'m3',name:'3-month plan',months:3,target:0.20,min:10,seed:{members:8,total:2900}},
+    {key:'m6',name:'6-month plan',months:6,target:0.40,min:10,seed:{members:6,total:2300}}
   ];
-  var PRESETS=[['Strong +25%',25],['Just on target',null],['Weak +3%',3],['Flat 0%',0],['Loss −20%',-20]];
+  var METHODS=['MTN Mobile Money','Airtel Money','Card'];
+  var PRESETS=[['Strong +25%',25],['On target',null],['Weak +3%',3],['Flat 0%',0],['Loss −20%',-20]];
   var S;
   function money(n){ return '$'+(Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
   function pct(n){ return (Math.round(n*10)/10)+'%'; }
@@ -3564,113 +3660,140 @@ document.getElementById('f-service').addEventListener('change', function() {
   function plan(k){ return PLANS.filter(function(p){return p.key===k;})[0]; }
   function load(){ try{ var j=localStorage.getItem(KEY); if(j) return JSON.parse(j); }catch(e){} return null; }
   function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
-  function newPool(p,n){ var jitter=1+((n||0)%3)*0.07; return {id:p.key+'-'+(n||1),plan:p.key,seq:n||1,open:true,others:{members:p.seed.members,total:Math.round(p.seed.total*jitter)},mine:[],closed:null}; }
-  function fresh(){ return {balance:1000,pools:PLANS.map(function(p){return newPool(p,1);}),log:[{at:Date.now(),text:'Demo wallet created with virtual funds',amt:1000}]}; }
-  function mineTotal(pool){ return pool.mine.reduce(function(a,c){return a+c.amount;},0); }
+  function uid(){ return 'c'+Math.random().toString(36).slice(2,8); }
+  function newPool(p,n,target){ var j=1+((n||0)%3)*0.07; return {id:p.key+'-'+n,plan:p.key,seq:n,open:true,target:(target==null?p.target:target),others:{members:p.seed.members,total:Math.round(p.seed.total*j)},mine:[],closed:null}; }
+  function fresh(){ return {balance:1000,pools:PLANS.map(function(p){return newPool(p,1);})}; }
+  function openPool(k){ return S.pools.filter(function(x){return x.plan===k&&x.open;})[0]; }
+  function sum(pool,status){ return pool.mine.filter(function(c){return !status||c.status===status;}).reduce(function(a,c){return a+c.amount;},0); }
+  function isAdmin(){ var a=document.getElementById('adminLink'); return !!(a&&a.style.display==='inline'); }
 
-  function settle(pool,p,r){
-    var mine=mineTotal(pool), start=pool.others.total+mine, end=start*(1+r);
-    var targetTotal=start*(1+p.target), excess=Math.max(0,end-targetTotal);
-    var factor=Math.min(1+p.target,end/start), payout=mine*factor;
+  function settle(pool,r){
+    var mine=sum(pool,'active'), start=pool.others.total+mine, end=start*(1+r), t=pool.target;
+    var targetTotal=start*(1+t), excess=Math.max(0,end-targetTotal), factor=Math.min(1+t,end/start), payout=mine*factor;
     var out=end>=targetTotal?'ok':(end>=start?'mid':'bad');
-    var label=out==='ok'?'Target met':(out==='mid'?'Below target — principal covered':'Capital loss');
-    return {rate:r,mine:mine,start:start,end:end,targetTotal:targetTotal,excess:excess,factor:factor,payout:payout,out:out,label:label,at:Date.now()};
+    var label=out==='ok'?'Target reached':(out==='mid'?'Below target':'Loss');
+    return {rate:r,mine:mine,start:start,end:end,target:t,targetTotal:targetTotal,excess:excess,factor:factor,payout:payout,out:out,label:label,at:Date.now()};
   }
 
-  function render(){
-    document.getElementById('ivBal').textContent=money(S.balance);
+  function renderPlans(){
     var box=document.getElementById('ivPlans'); box.innerHTML='';
     PLANS.forEach(function(p){
-      var pool=S.pools.filter(function(x){return x.plan===p.key&&x.open;})[0];
-      var mine=mineTotal(pool), total=pool.others.total+mine, need=total*(1+p.target);
-      var el=document.createElement('div'); el.className='pool'; el.setAttribute('data-pool',pool.id);
-      var chips=PRESETS.map(function(c){ var v=c[1]===null?(p.target*100):c[1]; return '<button type="button" class="chip" data-rate="'+v+'">'+esc(c[0])+'</button>'; }).join('');
-      el.innerHTML='<h3>'+p.name+'<span class="tag">OPEN · #'+pool.seq+'</span></h3>'+
-        '<dl><dt>Target (not a promise)</dt><dd>'+pct(p.target*100)+' / '+p.months+' mo</dd>'+
-        '<dt>Demo members</dt><dd>'+pool.others.members+' · '+money(pool.others.total)+'</dd>'+
-        '<dt>Your contribution</dt><dd>'+money(mine)+'</dd>'+
-        '<dt>Pool total</dt><dd>'+money(total)+'</dd>'+
-        '<dt>Needed to meet all targets</dt><dd>'+money(need)+'</dd></dl>'+
-        '<div class="inv-field"><input type="number" inputmode="decimal" min="'+p.min+'" step="1" placeholder="Amount (min $'+p.min+')" aria-label="Amount to contribute to '+p.name+'"><button type="button" class="btn btn-gold btn-sm" data-act="join">Join pool</button></div>'+
-        '<p class="note" data-msg></p>'+
-        '<div class="sim"><h5>Simulate the end of this period</h5><div class="chips">'+chips+'</div>'+
-        '<div class="inv-field sim-row"><input type="number" inputmode="decimal" step="0.5" value="'+(p.target*100)+'" data-rate-input aria-label="Pool result percent"><button type="button" class="btn btn-ghost btn-sm" data-act="close"'+(mine>0?'':' disabled')+'>Close pool</button></div>'+
-        '<p class="note">'+(mine>0?'Enter the pool result for the period in %, then close to see the settlement.':'Join the pool first to run a settlement.')+'</p></div>';
+      var pool=openPool(p.key), t=pool.target;
+      var opts=METHODS.map(function(m){return '<option>'+m+'</option>';}).join('');
+      var el=document.createElement('div'); el.className='pool'; el.setAttribute('data-plan',p.key);
+      el.innerHTML='<h3>'+p.name+'<span class="tag">TARGET +'+pct(t*100)+'</span></h3>'+
+        '<p class="note">Aim: grow your amount by about <strong style="color:var(--text)">'+pct(t*100)+'</strong> over '+p.months+' month'+(p.months>1?'s':'')+'. Not guaranteed.</p>'+
+        '<div class="inv-field"><input type="number" inputmode="decimal" min="'+p.min+'" step="1" placeholder="Amount in USD (min $'+p.min+')" data-amt aria-label="Amount for '+p.name+'"></div>'+
+        '<dl><dt>Expected at the end (target)</dt><dd data-exp>—</dd></dl>'+
+        '<div class="inv-field"><select data-method aria-label="Payment method">'+opts+'</select></div>'+
+        '<ul class="keyfacts"><li>The expected amount is a target, not a guarantee. You can lose money.</li><li>Your money is managed together with other members\u2019 funds.</li><li>We keep any profit above the target as our fee.</li></ul>'+
+        '<label class="agree"><input type="checkbox" data-agree> I understand and accept the <a href="#" data-open-terms>terms</a>.</label>'+
+        '<button type="button" class="btn btn-gold btn-sm" data-act="join">Join this plan</button><p class="note" data-msg></p>';
       box.appendChild(el);
     });
-    renderPortfolio(); renderStatements();
   }
 
   function renderPortfolio(){
-    var rows='',invested=0;
-    S.pools.forEach(function(pool){
-      var p=plan(pool.plan);
-      if(pool.open){ pool.mine.forEach(function(c){ invested+=c.amount; rows+='<tr><td>'+p.name+' #'+pool.seq+'</td><td>'+new Date(c.at).toLocaleDateString()+'</td><td class="num">'+money(c.amount)+'</td><td class="num">'+money(c.amount*(1+p.target))+'</td><td>Open</td></tr>'; }); }
+    var rows='',total=0;
+    S.pools.forEach(function(pool){ var p=plan(pool.plan);
+      pool.mine.forEach(function(c){
+        var st=pool.open?(c.status==='pending'?'<span class="out mid">Awaiting payment</span>':'<span class="out ok">Active</span>'):'<span class="out '+(pool.closed&&pool.closed.out||'mid')+'">Completed</span>';
+        if(pool.open&&c.status==='active') total+=c.amount;
+        var act=(pool.open&&c.status==='pending')?'<button type="button" class="btn btn-gold btn-sm" data-pay="'+c.id+'">Pay now (test)</button> <button type="button" class="btn btn-ghost btn-sm" data-cancel="'+c.id+'">Cancel</button>':'';
+        rows+='<tr><td>'+p.name+'</td><td class="num">'+money(c.amount)+'</td><td class="num">'+money(c.amount*(1+(c.targetAtJoin==null?pool.target:c.targetAtJoin)))+'</td><td>'+st+'</td><td>'+act+'</td></tr>';
+      });
     });
-    var closed=S.pools.filter(function(x){return x.closed&&x.closed.mine>0;});
-    var pnl=closed.reduce(function(a,x){return a+(x.closed.payout-x.closed.mine);},0);
-    var html='<div class="scroll-x">';
-    if(rows){ html+='<table class="inv-table"><thead><tr><th>Pool</th><th>Date</th><th class="num">Contribution</th><th class="num">Target value</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table>'; }
-    else { html+='<div class="empty">No open contributions yet. Join a pool above.</div>'; }
-    html+='</div><p class="note" style="margin-top:10px;font-size:13px;color:var(--text-dim);">Open: '+money(invested)+' · Settled pools: '+closed.length+' · Simulated result on settled pools: <strong style="color:'+(pnl>=0?'var(--buy)':'var(--sell)')+'">'+(pnl>=0?'+':'−')+money(Math.abs(pnl))+'</strong></p>';
-    document.getElementById('ivPortfolio').innerHTML=html;
+    var h='<div class="scroll-x">';
+    h+=rows?'<table class="inv-table"><thead><tr><th>Plan</th><th class="num">Amount</th><th class="num">Target amount</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>':'<div class="empty">No plans yet. Choose a plan above to get started.</div>';
+    h+='</div>'+(total?'<p class="note" style="margin-top:10px;font-size:13px;color:var(--text-dim);">Active amount: '+money(total)+'. Target amounts are not guaranteed.</p>':'');
+    document.getElementById('ivPortfolio').innerHTML=h;
   }
 
+  function memberRes(pool){ var c=pool.closed, m=c.mine; return {mine:m,payout:c.payout,rate:m?((c.payout-m)/m)*100:0}; }
   function renderStatements(){
-    var closed=S.pools.filter(function(x){return x.closed&&x.closed.mine>0;}).reverse();
-    var box=document.getElementById('ivStatements');
-    if(!closed.length){ box.innerHTML='<div class="scroll-x"><div class="empty">Statements appear here after a pool is settled. Try joining a pool and closing it with a profit, then again with a loss.</div></div>'; return; }
-    box.innerHTML=closed.map(function(pool){
-      var p=plan(pool.plan), c=pool.closed;
-      return '<div class="stmt"><div class="stmt-head"><h4>'+p.name+' #'+pool.seq+' · settled '+new Date(c.at).toLocaleDateString()+'</h4><span class="out '+c.out+'">'+c.label+'</span></div>'+
-        '<dl><dt>Your contribution</dt><dd>'+money(c.mine)+'</dd><dt>Pool at start</dt><dd>'+money(c.start)+'</dd><dt>Pool result for the period</dt><dd>'+(c.rate>=0?'+':'−')+pct(Math.abs(c.rate*100))+'</dd><dt>Pool at end</dt><dd>'+money(c.end)+'</dd>'+
-        '<dt>Needed to meet targets ('+pct(p.target*100)+')</dt><dd>'+money(c.targetTotal)+'</dd><dt>Excess above targets (manager share, illustrative terms)</dt><dd>'+money(c.excess)+'</dd>'+
-        '<dt><strong>Your payout</strong></dt><dd><strong>'+money(c.payout)+'</strong></dd><dt>Result on your contribution</dt><dd>'+(c.payout-c.mine>=0?'+':'−')+money(Math.abs(c.payout-c.mine))+'</dd></dl>'+
-        '<p class="how">How it was worked out: your payout = your contribution × the smaller of (1 + target) and (pool at end ÷ pool at start). Anything above every member\u2019s target is the manager\u2019s share under these demo terms; if the pool is short of its targets, members share what the pool actually holds in proportion to their contributions.</p>'+
+    var done=S.pools.filter(function(x){return x.closed&&x.closed.mine>0;}).reverse(), box=document.getElementById('ivStatements');
+    if(!done.length){ box.innerHTML='<div class="scroll-x"><div class="empty">Your statements appear here when a plan is completed.</div></div>'; return; }
+    box.innerHTML=done.map(function(pool){ var p=plan(pool.plan), c=pool.closed, r=memberRes(pool);
+      return '<div class="stmt"><div class="stmt-head"><h4>'+p.name+' · completed '+new Date(c.at).toLocaleDateString()+'</h4><span class="out '+c.out+'">'+c.label+'</span></div>'+
+        '<dl><dt>Amount invested</dt><dd>'+money(r.mine)+'</dd><dt>Target at the time</dt><dd>+'+pct(c.target*100)+'</dd><dt>Your result</dt><dd>'+(r.rate>=0?'+':'−')+pct(Math.abs(r.rate))+'</dd><dt><strong>Amount returned</strong></dt><dd><strong>'+money(r.payout)+'</strong></dd></dl>'+
+        '<p class="how">Targets are not guarantees. Results are shared in proportion to each member\u2019s contribution.</p>'+
         '<button type="button" class="btn btn-ghost btn-sm" data-print="'+pool.id+'" style="margin-top:12px;">Print / save as PDF</button></div>';
     }).join('');
   }
 
+  function renderAdmin(){
+    var wrap=document.getElementById('ivAdminWrap'); var show=isAdmin(); wrap.hidden=!show; if(!show) return;
+    var box=document.getElementById('ivAdmin'); box.innerHTML='';
+    PLANS.forEach(function(p){ var pool=openPool(p.key), act=sum(pool,'active'), pend=sum(pool,'pending'), total=pool.others.total+act, locked=pool.mine.length>0;
+      var chips=PRESETS.map(function(c){ var v=c[1]===null?(pool.target*100):c[1]; return '<button type="button" class="chip" data-rate="'+v+'">'+esc(c[0])+'</button>'; }).join('');
+      var el=document.createElement('div'); el.className='pool'; el.setAttribute('data-pool',pool.id);
+      el.innerHTML='<h3>'+p.name+' #'+pool.seq+'<span class="tag">OPEN</span></h3>'+
+        '<div class="inv-field"><input type="number" step="0.5" value="'+(pool.target*100)+'" data-target'+(locked?' disabled':'')+' aria-label="Target percent"><button type="button" class="btn btn-ghost btn-sm" data-act="settarget"'+(locked?' disabled':'')+'>Set target %</button></div>'+
+        '<p class="note">'+(locked?'Target is locked because someone has joined.':'You can change the target until the first member joins.')+'</p>'+
+        '<dl><dt>Other members (demo)</dt><dd>'+pool.others.members+' · '+money(pool.others.total)+'</dd><dt>Active from you</dt><dd>'+money(act)+'</dd><dt>Awaiting payment</dt><dd>'+money(pend)+'</dd><dt>Plan total</dt><dd>'+money(total)+'</dd><dt>Needed to meet all targets</dt><dd>'+money(total*(1+pool.target))+'</dd></dl>'+
+        '<div class="sim"><h5>Settle at the end of the period</h5><div class="chips">'+chips+'</div><div class="inv-field sim-row"><input type="number" step="0.5" value="'+(pool.target*100)+'" data-rate-input aria-label="Result percent"><button type="button" class="btn btn-ghost btn-sm" data-act="close"'+(act>0?'':' disabled')+'>Settle plan</button></div><p class="note" data-msg>'+(act>0?'Enter the portfolio result for the period in %.':'Needs at least one active (paid) contribution.')+'</p></div>';
+      box.appendChild(el);
+    });
+    var done=S.pools.filter(function(x){return x.closed;}).reverse();
+    document.getElementById('ivAdminStmts').innerHTML=done.length?done.map(function(pool){ var p=plan(pool.plan), c=pool.closed;
+      return '<div class="stmt"><div class="stmt-head"><h4>'+p.name+' #'+pool.seq+' · full breakdown</h4><span class="out '+c.out+'">'+c.label+'</span></div><dl>'+
+      '<dt>Active contributions (you)</dt><dd>'+money(c.mine)+'</dd><dt>Plan total at start</dt><dd>'+money(c.start)+'</dd><dt>Portfolio result</dt><dd>'+(c.rate>=0?'+':'−')+pct(Math.abs(c.rate*100))+'</dd><dt>Plan total at end</dt><dd>'+money(c.end)+'</dd>'+
+      '<dt>Needed to meet targets ('+pct(c.target*100)+')</dt><dd>'+money(c.targetTotal)+'</dd><dt>Above targets (our fee)</dt><dd>'+money(c.excess)+'</dd><dt>Paid to you as member</dt><dd>'+money(c.payout)+'</dd></dl>'+
+      '<p class="how">Payout = contribution × the smaller of (1 + target) and (end ÷ start). Anything above every member\u2019s target is retained as the fee. If the plan is short, members share what it holds in proportion to contributions.</p></div>'; }).join(''):'';
+  }
+
+  function render(){ document.getElementById('ivBal').textContent=money(S.balance); renderPlans(); renderPortfolio(); renderStatements(); renderAdmin(); }
+
   function printStmt(id){
     var pool=S.pools.filter(function(x){return x.id===id;})[0]; if(!pool||!pool.closed) return;
-    var p=plan(pool.plan), c=pool.closed, box=document.getElementById('stmtPrint');
+    var p=plan(pool.plan), c=pool.closed, r=memberRes(pool), box=document.getElementById('stmtPrint');
     function row(a,b){ return '<tr><td>'+a+'</td><td>'+b+'</td></tr>'; }
-    box.innerHTML='<h2>The Kingdom Trader — Demo statement</h2><div>'+p.name+' #'+pool.seq+' · settled '+new Date(c.at).toLocaleString()+'</div>'+
-      '<table>'+row('Your contribution',money(c.mine))+row('Pool at start',money(c.start))+row('Pool result for the period',(c.rate>=0?'+':'−')+pct(Math.abs(c.rate*100)))+row('Pool at end',money(c.end))+
-      row('Needed to meet targets ('+pct(p.target*100)+')',money(c.targetTotal))+row('Excess above targets (manager share)',money(c.excess))+row('Outcome',c.label)+row('<strong>Your payout</strong>','<strong>'+money(c.payout)+'</strong>')+'</table>'+
-      '<div class="warn">DEMO ONLY. This statement uses virtual funds and does not represent real money, a real investment or any promise of return.</div>';
+    box.innerHTML='<h2>The Kingdom Trader — Plan statement</h2><div>'+p.name+' · completed '+new Date(c.at).toLocaleString()+'</div><table>'+row('Amount invested',money(r.mine))+row('Target at the time','+'+pct(c.target*100))+row('Outcome',c.label)+row('Your result',(r.rate>=0?'+':'−')+pct(Math.abs(r.rate)))+row('<strong>Amount returned</strong>','<strong>'+money(r.payout)+'</strong>')+'</table><div class="warn">PROTOTYPE. This statement uses virtual funds and is not a record of real money. Targets are not guarantees and trading carries a high risk of loss.</div>';
     window.print();
   }
 
+  document.addEventListener('input',function(e){
+    var inp=e.target; if(!inp.matches||!inp.matches('[data-amt]')) return;
+    var card=inp.closest('.pool'), p=plan(card.getAttribute('data-plan')), a=parseFloat(inp.value), t=openPool(p.key).target;
+    card.querySelector('[data-exp]').textContent=a>0?money(a*(1+t)):'—';
+  });
   document.addEventListener('click',function(e){
-    var t=e.target;
-    if(!t.closest) return;
-    var printBtn=t.closest('[data-print]'); if(printBtn){ printStmt(printBtn.getAttribute('data-print')); return; }
-    var chip=t.closest('.chip'); if(chip){ var card=chip.closest('.pool'); card.querySelector('[data-rate-input]').value=chip.getAttribute('data-rate'); return; }
+    var t=e.target; if(!t.closest) return;
+    if(t.closest('#ivReset')){ if(confirm('Reset the demo and clear all contributions and statements?')){ S=fresh(); save(); render(); } return; }
+    var pr=t.closest('[data-print]'); if(pr){ printStmt(pr.getAttribute('data-print')); return; }
+    var pay=t.closest('[data-pay]'); if(pay){ var id=pay.getAttribute('data-pay'); S.pools.forEach(function(pool){ pool.mine.forEach(function(c){ if(c.id===id&&c.status==='pending'){ if(c.amount>S.balance){ alert('Not enough virtual balance.'); return; } S.balance-=c.amount; c.status='active'; } }); }); save(); render(); return; }
+    var cn=t.closest('[data-cancel]'); if(cn){ var cid=cn.getAttribute('data-cancel'); S.pools.forEach(function(pool){ pool.mine=pool.mine.filter(function(c){return c.id!==cid;}); }); save(); render(); return; }
+    var chip=t.closest('.chip'); if(chip){ chip.closest('.pool').querySelector('[data-rate-input]').value=chip.getAttribute('data-rate'); return; }
     var act=t.closest('[data-act]'); if(!act) return;
-    var card=act.closest('.pool'); var pool=S.pools.filter(function(x){return x.id===card.getAttribute('data-pool');})[0]; var p=plan(pool.plan);
-    var msg=card.querySelector('[data-msg]');
-    if(act.getAttribute('data-act')==='join'){
-      var amt=parseFloat(card.querySelector('.inv-field input').value);
+    var card=act.closest('.pool'), msg=card.querySelector('[data-msg]'), a=act.getAttribute('data-act');
+    if(a==='join'){
+      var p=plan(card.getAttribute('data-plan')), pool=openPool(p.key), amt=parseFloat(card.querySelector('[data-amt]').value);
       if(!(amt>=p.min)){ msg.textContent='Enter at least $'+p.min+'.'; return; }
-      if(amt>S.balance){ msg.textContent='That is more than your virtual balance.'; return; }
-      S.balance-=amt; pool.mine.push({amount:amt,at:Date.now()});
-      S.log.push({at:Date.now(),text:'Joined '+p.name+' #'+pool.seq,amt:-amt}); save(); render();
-    } else if(act.getAttribute('data-act')==='close'){
-      var r=parseFloat(card.querySelector('[data-rate-input]').value);
-      if(isNaN(r)||r<-100){ msg.textContent='Enter a pool result between −100% and any gain.'; return; }
-      var res=settle(pool,p,r/100); pool.closed=res; pool.open=false; S.balance+=res.payout;
-      S.log.push({at:Date.now(),text:'Settled '+p.name+' #'+pool.seq+' ('+res.label+')',amt:res.payout});
-      var n=S.pools.filter(function(x){return x.plan===p.key;}).length+1; S.pools.push(newPool(p,n));
+      if(!card.querySelector('[data-agree]').checked){ msg.textContent='Please tick the box to accept the terms.'; return; }
+      pool.mine.push({id:uid(),amount:amt,at:Date.now(),status:'pending',method:card.querySelector('[data-method]').value,targetAtJoin:pool.target});
+      save(); render();
+    } else if(a==='settarget'){
+      var pool2=S.pools.filter(function(x){return x.id===card.getAttribute('data-pool');})[0], v=parseFloat(card.querySelector('[data-target]').value);
+      if(isNaN(v)||v<0||v>200){ msg.textContent='Enter a target between 0 and 200%.'; return; }
+      pool2.target=v/100; save(); render();
+    } else if(a==='close'){
+      var pool3=S.pools.filter(function(x){return x.id===card.getAttribute('data-pool');})[0], r=parseFloat(card.querySelector('[data-rate-input]').value);
+      if(isNaN(r)||r<-100){ msg.textContent='Enter a result of −100% or more.'; return; }
+      var res=settle(pool3,r/100); pool3.closed=res; pool3.open=false; S.balance+=res.payout;
+      pool3.mine.forEach(function(c){ if(c.status==='pending'){ c.status='refunded'; } });
+      pool3.mine=pool3.mine.filter(function(c){return c.status!=='refunded';});
+      var p3=plan(pool3.plan), n=S.pools.filter(function(x){return x.plan===p3.key;}).length+1; S.pools.push(newPool(p3,n,pool3.target));
       save(); render();
       var st=document.getElementById('ivStatements'); if(st&&st.scrollIntoView) st.scrollIntoView({behavior:'smooth',block:'start'});
     }
   });
-  document.addEventListener('click',function(e){ if(e.target&&e.target.id==='ivReset'){ if(confirm('Reset the demo and clear all virtual contributions and statements?')){ S=fresh(); save(); render(); } } });
-
-  S=load()||fresh(); if(document.getElementById('ivPlans')) render();
+  S=load()||fresh();
+  if(document.getElementById('ivPlans')){ render();
+    var al=document.getElementById('adminLink'); if(al&&'MutationObserver' in window) new MutationObserver(renderAdmin).observe(al,{attributes:true,attributeFilter:['style']});
+  }
 })();
 </script>
+
 <script>
 /* Page router: each menu item opens its own page (no long scrolling). Old #links still work. */
 (function(){
@@ -3714,6 +3837,38 @@ document.getElementById('f-service').addEventListener('change', function() {
   var logo=document.querySelector('nav .logo'); if(logo){ logo.style.cursor='pointer'; logo.addEventListener('click',function(){ if(location.hash!=='#home') history.pushState(null,'','#home'); go('home'); }); }
   setActive();
   if(location.hash && location.hash.length>1) setTimeout(fromHash,0);
+})();
+</script>
+
+<script>
+/* Modals (find-your-path quiz, plan terms) */
+(function(){
+  var quiz=document.getElementById('pathQuiz'), terms=document.getElementById('ivTerms');
+  if(!quiz) return;
+  var ans={};
+  function open(m){ m.hidden=false; document.body.style.overflow='hidden'; }
+  function close(){ quiz.hidden=true; terms.hidden=true; document.body.style.overflow=''; }
+  function set(title,html){ document.getElementById('quizTitle').textContent=title; document.getElementById('quizBody').innerHTML=html; }
+  function opt(label,k,v){ return '<button type="button" class="quiz-opt" data-k="'+k+'" data-v="'+v+'">'+label+'</button>'; }
+  function q1(){ ans={}; set('Do you already have a trading strategy?',opt('Yes, I have clear rules','s','yes')+opt('Sort of, it is mostly in my head','s','some')+opt('No, I am starting out','s','no')); }
+  function q2(){ set('How involved do you want to be?',opt('I want to stay in control of my own account','c','control')+opt('I want it handled for me','c','handled')); }
+  function result(){
+    var r;
+    if(ans.s==='yes') r={t:'Build my bot',p:'You have rules, so we can turn them into a tested bot that runs on your own account.',h:'#request',b:'Start a custom build'};
+    else if(ans.s==='some') r={t:'Build my bot',p:'We can help you write your rules down clearly, then build and test the bot with you.',h:'#request',b:'Start a custom build'};
+    else if(ans.c==='control') r={t:'Buy or rent a bot',p:'Choose a ready-made bot from the catalog and run it on your own account. Rent by the month if you want to try first.',h:'#bots',b:'See the bots'};
+    else r={t:'Trade for me',p:'Our trade-for-me plans are a prototype for now. You can explore how they will work, with virtual funds.',h:'#invest',b:'Explore the plans'};
+    set('Your best path: '+r.t,'<p style="color:var(--text-dim);margin-bottom:16px;">'+r.p+'</p><a class="btn btn-gold" href="'+r.h+'" data-close>'+r.b+'</a> <button type="button" class="btn btn-ghost" data-restart>Start over</button>');
+  }
+  document.addEventListener('click',function(e){
+    var t=e.target; if(!t.closest) return;
+    if(t.closest('#quizOpen')){ q1(); open(quiz); return; }
+    if(t.closest('[data-open-terms]')){ e.preventDefault(); open(terms); return; }
+    var o=t.closest('.quiz-opt'); if(o){ ans[o.getAttribute('data-k')]=o.getAttribute('data-v'); if(ans.s==='no'&&!ans.c) q2(); else result(); return; }
+    if(t.closest('[data-restart]')){ q1(); return; }
+    if(t.closest('[data-close]')||t.classList.contains('modal')){ close(); }
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
 })();
 </script>
 
