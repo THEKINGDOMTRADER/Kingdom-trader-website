@@ -731,7 +731,7 @@
   .nav-menu a:last-child{border-bottom:none;}
   .nav-menu a.active,.nav-links a.active{color:var(--gold);}
   @media (max-width:860px){.nav-menu-btn{display:flex;}}
-  @media (min-width:861px){.nav-menu{display:none !important;}}
+  @media (min-width:1101px){.nav-menu{display:none !important;}}
   @media (max-width:400px){ .nav-menu-btn{width:38px;} #navAccountBtn{padding:8px 10px;font-size:11px;} }
 
   .proof-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;}
@@ -757,9 +757,112 @@
     .logo-img{width:34px;height:34px;}
     .nav-menu{padding:8px 16px 16px;}
   }
+
+  /* ---------- PAGES, BANNERS, HOME EXTRAS, INVEST (added) ---------- */
+  body[data-active="home"]    [data-page]:not([data-page="home"]),
+  body[data-active="how"]     [data-page]:not([data-page="how"]),
+  body[data-active="bots"]    [data-page]:not([data-page="bots"]),
+  body[data-active="request"] [data-page]:not([data-page="request"]),
+  body[data-active="invest"]  [data-page]:not([data-page="invest"]),
+  body[data-active="account"] [data-page]:not([data-page="account"]),
+  body[data-active="contact"] [data-page]:not([data-page="contact"]),
+  body[data-active="admin"]   [data-page]:not([data-page="admin"]){display:none !important;}
+  .page-banner{
+    position:relative;min-height:230px;display:flex;align-items:flex-end;
+    background:linear-gradient(to top,rgba(12,18,28,.97) 4%,rgba(12,18,28,.55) 60%,rgba(12,18,28,.35)),var(--img) center/cover no-repeat;
+    border-bottom:1px solid var(--line);
+  }
+  .page-banner .wrap{padding-top:70px;padding-bottom:30px;width:100%;}
+  .page-banner h1{font-size:clamp(28px,5vw,44px);margin:6px 0 6px;}
+  .page-banner p{color:var(--text-dim);max-width:620px;font-size:15px;}
+  .page-banner + section{padding-top:56px;}
+  nav .nav-links a.active{color:var(--gold);}
+
+  .split{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:center;}
+  @media (max-width:860px){.split{grid-template-columns:1fr;gap:26px;}}
+  .media-card{border-radius:8px;overflow:hidden;border:1px solid var(--line);background:var(--panel);}
+  .media-card img{display:block;width:100%;height:auto;}
+  .media-card.tall img{aspect-ratio:4/5;object-fit:cover;}
+  .media-card figcaption{padding:10px 14px;font-size:12px;color:var(--text-dim);border-top:1px solid var(--line);}
+  .tick-list{list-style:none;margin:18px 0 24px;display:grid;gap:10px;}
+  .tick-list li{padding-left:26px;position:relative;color:var(--text-dim);font-size:15px;}
+  .tick-list li::before{content:"";position:absolute;left:0;top:7px;width:12px;height:12px;border:2px solid var(--gold);border-radius:50%;}
+  .mini-row{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:28px;}
+  @media (max-width:560px){.mini-row{grid-template-columns:1fr;}}
+  #why{background:linear-gradient(to bottom,transparent,rgba(24,32,54,.5),transparent);}
+  .proof-fig{margin:26px 0 0;max-width:760px;}
+  .teaser{margin-top:46px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;
+    background:var(--panel);border:1px solid var(--gold-soft);border-radius:8px;padding:22px 26px;}
+  .teaser h3{font-size:19px;margin-bottom:4px;}
+  .teaser p{color:var(--text-dim);font-size:14px;max-width:560px;}
+
+  /* invest */
+  .demo-banner{border:1px solid var(--gold-soft);background:rgba(198,161,83,.08);border-radius:6px;padding:14px 18px;font-size:14px;color:var(--text-dim);margin-bottom:34px;}
+  .demo-banner strong{color:var(--gold);}
+  .inv-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:26px 0 8px;}
+  @media (max-width:800px){.inv-steps{grid-template-columns:1fr;}}
+  .inv-step{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px;}
+  .inv-step .n{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);}
+  .inv-step h4{margin:4px 0 6px;font-size:15.5px;}
+  .inv-step p{font-size:13px;color:var(--text-dim);}
+  .inv-bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin:40px 0 18px;padding:16px 20px;background:var(--panel);border:1px solid var(--line);border-radius:6px;}
+  .inv-bar .bal{font-family:'JetBrains Mono',monospace;font-size:22px;color:var(--gold);}
+  .inv-bar small{display:block;color:var(--text-dim);font-size:12px;}
+  .inv-plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  @media (max-width:980px){.inv-plans{grid-template-columns:1fr;}}
+  .pool{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:22px;display:flex;flex-direction:column;gap:12px;}
+  .pool h3{font-size:18px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .pool .tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--buy);background:rgba(43,174,114,.12);padding:3px 9px;border-radius:3px;}
+  .pool dl{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:13px;}
+  .pool dt{color:var(--text-dim);}
+  .pool dd{font-family:'JetBrains Mono',monospace;text-align:right;}
+  .pool .note{font-size:12px;color:var(--text-dim);}
+  .inv-field{display:flex;gap:8px;}
+  .inv-field input,.inv-field select,.sim-row input{background:var(--bg);border:1px solid var(--line);color:var(--text);padding:10px 12px;border-radius:4px;font:inherit;font-size:14px;min-width:0;flex:1;}
+  .inv-field input:focus,.sim-row input:focus{outline:none;border-color:var(--gold);}
+  .sim{border-top:1px dashed var(--line);padding-top:12px;display:grid;gap:8px;}
+  .sim h5{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text-dim);font-weight:400;letter-spacing:.06em;text-transform:uppercase;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{border:1px solid var(--line);background:transparent;color:var(--text-dim);font-size:11.5px;padding:5px 9px;border-radius:14px;cursor:pointer;font-family:inherit;}
+  .chip:hover{border-color:var(--gold);color:var(--gold);}
+  .btn-sm{padding:9px 14px;font-size:12.5px;}
+  button.btn[disabled]{opacity:.45;cursor:not-allowed;}
+  .inv-sec{margin-top:44px;}
+  .inv-sec h3{font-size:20px;margin-bottom:14px;}
+  .inv-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  .inv-table th,.inv-table td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;}
+  .inv-table th{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-dim);font-weight:400;text-transform:uppercase;letter-spacing:.06em;}
+  .inv-table td.num,.inv-table th.num{text-align:right;font-family:'JetBrains Mono',monospace;}
+  .scroll-x{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px;}
+  .empty{padding:20px;color:var(--text-dim);font-size:14px;}
+  .stmt{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px;margin-bottom:14px;}
+  .stmt-head{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .stmt-head h4{font-size:15px;}
+  .out{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 9px;border-radius:3px;}
+  .out.ok{color:var(--buy);background:rgba(43,174,114,.12);}
+  .out.mid{color:var(--gold);background:rgba(198,161,83,.12);}
+  .out.bad{color:var(--sell);background:rgba(193,73,74,.14);}
+  .stmt dl{display:grid;grid-template-columns:1fr auto;gap:5px 14px;font-size:13px;}
+  .stmt dt{color:var(--text-dim);} .stmt dd{font-family:'JetBrains Mono',monospace;text-align:right;}
+  .stmt .how{margin-top:10px;font-size:12px;color:var(--text-dim);}
+  .risk-panel{margin-top:54px;display:grid;grid-template-columns:260px 1fr;gap:30px;align-items:start;}
+  @media (max-width:760px){.risk-panel{grid-template-columns:1fr;}}
+  .risk-panel h3{margin-bottom:8px;}
+  .risk-panel p{color:var(--text-dim);font-size:14px;margin-bottom:10px;}
+  #stmtPrint{display:none;}
+  @media print{
+    body > *:not(#stmtPrint){display:none !important;}
+    #stmtPrint{display:block !important;background:#fff;color:#111;padding:24px;font-family:Arial,sans-serif;font-size:13px;}
+    #stmtPrint h2{font-size:20px;margin-bottom:2px;} #stmtPrint table{width:100%;border-collapse:collapse;margin:14px 0;}
+    #stmtPrint td{padding:6px 4px;border-bottom:1px solid #ccc;} #stmtPrint td:last-child{text-align:right;}
+    #stmtPrint .warn{border:1px solid #999;padding:8px;margin-top:14px;font-size:12px;}
+  }
+  .nav-links a{white-space:nowrap;}
+  @media (max-width:1100px){.nav-links{display:none !important;} .nav-menu-btn{display:flex;}}
 </style>
 </head>
 <body>
+<script>(function(){var m={home:'home',services:'home',why:'home',how:'how',process:'how',proof:'how',bots:'bots',request:'request',invest:'invest',account:'account',contact:'contact',admin:'admin'};var id=(location.hash||'').slice(1)||'home';document.body.setAttribute('data-active',m[id]||'home');})();</script>
 
 <nav>
   <div class="wrap">
@@ -769,8 +872,9 @@
     </div>
     <div class="nav-links">
       <a href="#services">Services</a>
-      <a href="#process">How it works</a>
+      <a href="#how">How it works</a>
       <a href="#bots">Bot catalog</a>
+      <a href="#invest">Invest</a>
       <a href="#request">Get started</a>
       <a href="#account">My Account</a>
       <a href="#contact">Contact</a>
@@ -782,10 +886,11 @@
     </div>
   </div>
   <div id="navMenu" class="nav-menu" hidden>
+    <a href="#home">Home</a>
     <a href="#services">Services</a>
-    <a href="#process">How it works</a>
-    <a href="#proof">Proof &amp; track record</a>
+    <a href="#how">How it works &amp; proof</a>
     <a href="#bots">Bot catalog</a>
+    <a href="#invest">Invest (demo)</a>
     <a href="#request">Get started</a>
     <a href="#account">My Account</a>
     <a href="#contact">Contact</a>
@@ -799,7 +904,7 @@
   </div>
 </nav>
 
-<section class="hero" data-bg="waves,zones">
+<section class="hero" data-bg="waves,zones" data-page="home">
   <div class="hero-overlay"></div>
   <div class="hero-grid"></div>
   <div class="wrap">
@@ -839,7 +944,7 @@
   </div>
 </section>
 
-<section id="services">
+<section id="services" data-page="home">
   <svg class="candle-bg" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
     <!-- gridlines -->
     <g stroke="#C6A153" stroke-width="0.5" opacity="0.25">
@@ -930,7 +1035,34 @@
   </div>
 </section>
 
-<section id="process" data-bg="waves">
+<section id="why" data-page="home">
+  <div class="wrap">
+    <div class="split">
+      <figure class="media-card"><img src="tired-trader.jpg" alt="Illustration of a stressed trader tangled in lines in front of a screen" loading="lazy" width="1100" height="575"></figure>
+      <div>
+        <span class="eyebrow">Why automate</span>
+        <h2 style="margin:8px 0 12px;">Trading by hand wears you down.</h2>
+        <p style="color:var(--text-dim);">Hours at the screen, missed entries, emotional decisions after a losing trade. A bot follows your rules the same way every time. It does not remove risk, but it removes the fatigue and the second-guessing.</p>
+        <ul class="tick-list">
+          <li>Your rules, written down and tested before they go live</li>
+          <li>Runs on MT5 or TradingView, on your own account</li>
+          <li>You keep control: your capital stays in your account</li>
+        </ul>
+        <a href="#how" class="btn btn-ghost">See how it works</a>
+      </div>
+    </div>
+    <div class="teaser">
+      <div>
+        <h3>Don't have a strategy? Explore trade-for-me plans.</h3>
+        <p>Our new pooled plans are in a prototype stage. Try the demo with virtual funds and see exactly how a pool is calculated, including when it loses.</p>
+      </div>
+      <a href="#invest" class="btn btn-gold">Open the demo</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-banner" data-page="how" style="--img:url(blueprint.jpg)"><div class="wrap"><span class="eyebrow">How it works</span><h1>From paper to automation.</h1><p>Your rules, written down, built, tested and delivered. Here is the process and what we can show you so far.</p></div></div>
+<section id="process" data-bg="waves" data-page="how">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Process</span>
@@ -962,7 +1094,7 @@
   </div>
 </section>
 
-<section id="proof" data-bg="zones">
+<section id="proof" data-bg="zones" data-page="how">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Built on real logic</span>
@@ -988,6 +1120,7 @@
       </div>
     </div>
 
+    <figure class="media-card proof-fig"><img src="mt5-zones.jpg" alt="Price chart with fair value gap and order block zones marked" loading="lazy" width="750" height="536"><figcaption>Illustration: fair value gaps and order blocks marked on a price chart, the kind of logic our bots are coded around.</figcaption></figure>
     <div class="proof-cards">
       <div class="proof-card">
         <h4>Backtest reports</h4>
@@ -1009,7 +1142,8 @@
   </div>
 </section>
 
-<section id="bots" data-bg="candles">
+<div class="page-banner" data-page="bots" style="--img:url(ai-bots.jpg)"><div class="wrap"><span class="eyebrow">Bot catalog</span><h1>Bots ready to deploy.</h1><p>Pick a ready-made bot, or rent one by the month. Prices are shown in USD with an approximate UGX amount.</p></div></div>
+<section id="bots" data-bg="candles" data-page="bots">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Catalog</span>
@@ -1053,7 +1187,8 @@
   </div>
 </section>
 
-<section id="request">
+<div class="page-banner" data-page="request" style="--img:url(robot-desk.jpg)"><div class="wrap"><span class="eyebrow">Get started</span><h1>Tell us your strategy.</h1><p>Describe what you trade and how. We save your request and continue the conversation on WhatsApp.</p></div></div>
+<section id="request" data-page="request">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Get started</span>
@@ -1127,7 +1262,8 @@
   </div>
 </section>
 
-<section id="account">
+<div class="page-banner" data-page="account" style="--img:url(fx-board.jpg)"><div class="wrap"><span class="eyebrow">My Account</span><h1>Your dashboard.</h1><p>Log in to see your requests, licenses and payments.</p></div></div>
+<section id="account" data-page="account">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Client area</span>
@@ -1184,7 +1320,8 @@
   </div>
 </section>
 
-<section id="contact" data-bg="waves,zones">
+<div class="page-banner" data-page="contact" style="--img:url(phone-trader.jpg)"><div class="wrap"><span class="eyebrow">Contact</span><h1>Talk to us.</h1><p>Questions about a bot, a custom build or the new plans? Message us and we will reply.</p></div></div>
+<section id="contact" data-bg="waves,zones" data-page="contact">
   <div class="wrap">
     <div class="contact">
       <span class="eyebrow">Get in touch</span>
@@ -1224,6 +1361,57 @@
   </div>
 </section>
 
+<div class="page-banner" data-page="invest" style="--img:url(invest-scales.jpg)"><div class="wrap"><span class="eyebrow">Trade for me · Prototype</span><h1>Pooled investment plans.</h1><p>See how a pool is built, targeted, settled and reported, using virtual funds only.</p></div></div>
+<section id="invest" data-page="invest">
+  <div class="wrap">
+    <div class="demo-banner"><strong>Prototype · virtual funds only.</strong> No real money is accepted, held or invested on this page. It shows how a pooled plan would be calculated and reported. Targets are goals, not promises, and a pool can lose money.</div>
+
+    <div class="split">
+      <div>
+        <span class="eyebrow">How a pool works</span>
+        <h2 style="margin:8px 0 12px;">Capital is grouped by investment period.</h2>
+        <p style="color:var(--text-dim);">Members who pick the same period form one pool. Their contributions are added together and traded as a whole. At the end of the period the pool is settled and every member gets a statement showing the working.</p>
+        <div class="inv-steps">
+          <div class="inv-step"><span class="n">1</span><h4>Choose a period</h4><p>1, 3 or 6 months. Each has its own pool and its own target.</p></div>
+          <div class="inv-step"><span class="n">2</span><h4>Join with virtual funds</h4><p>Your share is your contribution divided by the pool total.</p></div>
+          <div class="inv-step"><span class="n">3</span><h4>Settle &amp; review</h4><p>See the pool result, your payout and the full calculation.</p></div>
+        </div>
+      </div>
+      <figure class="media-card"><img src="invest-piggy.jpg" alt="Coins flowing from a piggy bank into a pooled pipeline over a trading chart" loading="lazy" width="1100" height="575"></figure>
+    </div>
+
+    <div class="inv-bar">
+      <div><small>Virtual wallet (demo)</small><div class="bal" id="ivBal">$0.00</div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-ghost btn-sm" id="ivReset">Reset demo</button>
+        <a class="btn btn-gold btn-sm" id="ivWait" target="_blank" rel="noopener" href="https://wa.me/256774077467?text=Hello%20Kingdom%20Trader%2C%20I%27m%20interested%20in%20the%20trade-for-me%20plans.%20Please%20tell%20me%20when%20they%20open.">Ask to be notified</a>
+      </div>
+    </div>
+
+    <div class="inv-plans" id="ivPlans"></div>
+
+    <div class="inv-sec">
+      <h3>My portfolio</h3>
+      <div id="ivPortfolio"></div>
+    </div>
+    <div class="inv-sec">
+      <h3>Statements</h3>
+      <div id="ivStatements"></div>
+    </div>
+
+    <div class="risk-panel">
+      <figure class="media-card tall"><img src="invest-decide.jpg" alt="A phone and tablet on a desk with the words: to invest or to sell?" loading="lazy" width="900" height="1348"></figure>
+      <div>
+        <h3>Read this before anything goes live</h3>
+        <p><strong>A target is not a guarantee.</strong> If a pool earns less than its target, members receive a smaller share of what the pool actually holds. If the pool loses money, members can get back less than they put in.</p>
+        <p><strong>Pooling makes administration easier, not trading safer.</strong> A larger pool does not protect capital or make profits more likely.</p>
+        <p><strong>Targets are ambitious.</strong> A return of 30% or more in a month is exceptional and should never be treated as dependable. The targets in this demo are illustrations.</p>
+        <p><strong>Before real deposits:</strong> we must confirm the legal and regulatory position in Uganda, set up safe custody of funds, agree written terms with members (including how any profit above the target is shared) and test the accounting. None of that is in place yet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;width:100%;">
     <div class="foot-risk" style="flex-basis:100%;">Risk warning: trading carries a high risk of loss. Bots do not guarantee profit. Prices shown in UGX are approximate; the final amount is confirmed at checkout.</div>
@@ -1231,12 +1419,13 @@
     <div class="foot-links">
       <a href="#services">Services</a>
       <a href="#bots">Bots</a>
+      <a href="#invest">Invest</a>
       <a href="#contact">Contact</a>
     </div>
   </div>
 </footer>
 
-<section id="admin" style="display:none;" data-nosnippet>
+<section id="admin" style="display:none;" data-nosnippet data-page="admin">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Owner only</span>
@@ -3315,20 +3504,8 @@ document.getElementById('f-service').addEventListener('change', function() {
     menu.addEventListener('click',function(e){ if(e.target.tagName==='A') setMenu(false); });
     document.addEventListener('click',function(e){ if(!menu.hidden && !menu.contains(e.target)) setMenu(false); });
     document.addEventListener('keydown',function(e){ if(e.key==='Escape') setMenu(false); });
-    addEventListener('resize',function(){ if(innerWidth>860) setMenu(false); });
+    addEventListener('resize',function(){ if(innerWidth>1100) setMenu(false); });
   }
-  /* highlight the section being viewed */
-  var links=[].slice.call(document.querySelectorAll('.nav-links a, .nav-menu a'));
-  var ids=['services','process','proof','bots','request','account','contact'];
-  if('IntersectionObserver' in window){
-    var io=new IntersectionObserver(function(entries){
-      entries.forEach(function(en){ if(en.isIntersecting){
-        links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href')==='#'+en.target.id); });
-      }});
-    },{rootMargin:'-45% 0px -50% 0px'});
-    ids.forEach(function(id){ var el=document.getElementById(id); if(el) io.observe(el); });
-  }
-
   /* approximate UGX prices (only shown when the exchange rate is available) */
   function fmt(n){ return Math.round(n/1000)*1000; }
   window.ktAddUgx=function(){
@@ -3366,6 +3543,177 @@ document.getElementById('f-service').addEventListener('change', function() {
     new MutationObserver(function(){ clearTimeout(t); t=setTimeout(function(){ buildLd(); window.ktAddUgx(); },250); }).observe(box,{childList:true,subtree:true});
   }
   window.ktAddUgx();
+})();
+</script>
+
+<div id="stmtPrint"></div>
+<script>
+/* Demo investment ledger — virtual funds, stored in this browser only. */
+(function(){
+  var KEY='kt_invest_demo_v1';
+  var PLANS=[
+    {key:'m1',name:'1-month pool',months:1,target:0.08,min:10,seed:{members:11,total:3850}},
+    {key:'m3',name:'3-month pool',months:3,target:0.20,min:10,seed:{members:8,total:2900}},
+    {key:'m6',name:'6-month pool',months:6,target:0.40,min:10,seed:{members:6,total:2300}}
+  ];
+  var PRESETS=[['Strong +25%',25],['Just on target',null],['Weak +3%',3],['Flat 0%',0],['Loss −20%',-20]];
+  var S;
+  function money(n){ return '$'+(Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function pct(n){ return (Math.round(n*10)/10)+'%'; }
+  function esc(t){ return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function plan(k){ return PLANS.filter(function(p){return p.key===k;})[0]; }
+  function load(){ try{ var j=localStorage.getItem(KEY); if(j) return JSON.parse(j); }catch(e){} return null; }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+  function newPool(p,n){ var jitter=1+((n||0)%3)*0.07; return {id:p.key+'-'+(n||1),plan:p.key,seq:n||1,open:true,others:{members:p.seed.members,total:Math.round(p.seed.total*jitter)},mine:[],closed:null}; }
+  function fresh(){ return {balance:1000,pools:PLANS.map(function(p){return newPool(p,1);}),log:[{at:Date.now(),text:'Demo wallet created with virtual funds',amt:1000}]}; }
+  function mineTotal(pool){ return pool.mine.reduce(function(a,c){return a+c.amount;},0); }
+
+  function settle(pool,p,r){
+    var mine=mineTotal(pool), start=pool.others.total+mine, end=start*(1+r);
+    var targetTotal=start*(1+p.target), excess=Math.max(0,end-targetTotal);
+    var factor=Math.min(1+p.target,end/start), payout=mine*factor;
+    var out=end>=targetTotal?'ok':(end>=start?'mid':'bad');
+    var label=out==='ok'?'Target met':(out==='mid'?'Below target — principal covered':'Capital loss');
+    return {rate:r,mine:mine,start:start,end:end,targetTotal:targetTotal,excess:excess,factor:factor,payout:payout,out:out,label:label,at:Date.now()};
+  }
+
+  function render(){
+    document.getElementById('ivBal').textContent=money(S.balance);
+    var box=document.getElementById('ivPlans'); box.innerHTML='';
+    PLANS.forEach(function(p){
+      var pool=S.pools.filter(function(x){return x.plan===p.key&&x.open;})[0];
+      var mine=mineTotal(pool), total=pool.others.total+mine, need=total*(1+p.target);
+      var el=document.createElement('div'); el.className='pool'; el.setAttribute('data-pool',pool.id);
+      var chips=PRESETS.map(function(c){ var v=c[1]===null?(p.target*100):c[1]; return '<button type="button" class="chip" data-rate="'+v+'">'+esc(c[0])+'</button>'; }).join('');
+      el.innerHTML='<h3>'+p.name+'<span class="tag">OPEN · #'+pool.seq+'</span></h3>'+
+        '<dl><dt>Target (not a promise)</dt><dd>'+pct(p.target*100)+' / '+p.months+' mo</dd>'+
+        '<dt>Demo members</dt><dd>'+pool.others.members+' · '+money(pool.others.total)+'</dd>'+
+        '<dt>Your contribution</dt><dd>'+money(mine)+'</dd>'+
+        '<dt>Pool total</dt><dd>'+money(total)+'</dd>'+
+        '<dt>Needed to meet all targets</dt><dd>'+money(need)+'</dd></dl>'+
+        '<div class="inv-field"><input type="number" inputmode="decimal" min="'+p.min+'" step="1" placeholder="Amount (min $'+p.min+')" aria-label="Amount to contribute to '+p.name+'"><button type="button" class="btn btn-gold btn-sm" data-act="join">Join pool</button></div>'+
+        '<p class="note" data-msg></p>'+
+        '<div class="sim"><h5>Simulate the end of this period</h5><div class="chips">'+chips+'</div>'+
+        '<div class="inv-field sim-row"><input type="number" inputmode="decimal" step="0.5" value="'+(p.target*100)+'" data-rate-input aria-label="Pool result percent"><button type="button" class="btn btn-ghost btn-sm" data-act="close"'+(mine>0?'':' disabled')+'>Close pool</button></div>'+
+        '<p class="note">'+(mine>0?'Enter the pool result for the period in %, then close to see the settlement.':'Join the pool first to run a settlement.')+'</p></div>';
+      box.appendChild(el);
+    });
+    renderPortfolio(); renderStatements();
+  }
+
+  function renderPortfolio(){
+    var rows='',invested=0;
+    S.pools.forEach(function(pool){
+      var p=plan(pool.plan);
+      if(pool.open){ pool.mine.forEach(function(c){ invested+=c.amount; rows+='<tr><td>'+p.name+' #'+pool.seq+'</td><td>'+new Date(c.at).toLocaleDateString()+'</td><td class="num">'+money(c.amount)+'</td><td class="num">'+money(c.amount*(1+p.target))+'</td><td>Open</td></tr>'; }); }
+    });
+    var closed=S.pools.filter(function(x){return x.closed&&x.closed.mine>0;});
+    var pnl=closed.reduce(function(a,x){return a+(x.closed.payout-x.closed.mine);},0);
+    var html='<div class="scroll-x">';
+    if(rows){ html+='<table class="inv-table"><thead><tr><th>Pool</th><th>Date</th><th class="num">Contribution</th><th class="num">Target value</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table>'; }
+    else { html+='<div class="empty">No open contributions yet. Join a pool above.</div>'; }
+    html+='</div><p class="note" style="margin-top:10px;font-size:13px;color:var(--text-dim);">Open: '+money(invested)+' · Settled pools: '+closed.length+' · Simulated result on settled pools: <strong style="color:'+(pnl>=0?'var(--buy)':'var(--sell)')+'">'+(pnl>=0?'+':'−')+money(Math.abs(pnl))+'</strong></p>';
+    document.getElementById('ivPortfolio').innerHTML=html;
+  }
+
+  function renderStatements(){
+    var closed=S.pools.filter(function(x){return x.closed&&x.closed.mine>0;}).reverse();
+    var box=document.getElementById('ivStatements');
+    if(!closed.length){ box.innerHTML='<div class="scroll-x"><div class="empty">Statements appear here after a pool is settled. Try joining a pool and closing it with a profit, then again with a loss.</div></div>'; return; }
+    box.innerHTML=closed.map(function(pool){
+      var p=plan(pool.plan), c=pool.closed;
+      return '<div class="stmt"><div class="stmt-head"><h4>'+p.name+' #'+pool.seq+' · settled '+new Date(c.at).toLocaleDateString()+'</h4><span class="out '+c.out+'">'+c.label+'</span></div>'+
+        '<dl><dt>Your contribution</dt><dd>'+money(c.mine)+'</dd><dt>Pool at start</dt><dd>'+money(c.start)+'</dd><dt>Pool result for the period</dt><dd>'+(c.rate>=0?'+':'−')+pct(Math.abs(c.rate*100))+'</dd><dt>Pool at end</dt><dd>'+money(c.end)+'</dd>'+
+        '<dt>Needed to meet targets ('+pct(p.target*100)+')</dt><dd>'+money(c.targetTotal)+'</dd><dt>Excess above targets (manager share, illustrative terms)</dt><dd>'+money(c.excess)+'</dd>'+
+        '<dt><strong>Your payout</strong></dt><dd><strong>'+money(c.payout)+'</strong></dd><dt>Result on your contribution</dt><dd>'+(c.payout-c.mine>=0?'+':'−')+money(Math.abs(c.payout-c.mine))+'</dd></dl>'+
+        '<p class="how">How it was worked out: your payout = your contribution × the smaller of (1 + target) and (pool at end ÷ pool at start). Anything above every member\u2019s target is the manager\u2019s share under these demo terms; if the pool is short of its targets, members share what the pool actually holds in proportion to their contributions.</p>'+
+        '<button type="button" class="btn btn-ghost btn-sm" data-print="'+pool.id+'" style="margin-top:12px;">Print / save as PDF</button></div>';
+    }).join('');
+  }
+
+  function printStmt(id){
+    var pool=S.pools.filter(function(x){return x.id===id;})[0]; if(!pool||!pool.closed) return;
+    var p=plan(pool.plan), c=pool.closed, box=document.getElementById('stmtPrint');
+    function row(a,b){ return '<tr><td>'+a+'</td><td>'+b+'</td></tr>'; }
+    box.innerHTML='<h2>The Kingdom Trader — Demo statement</h2><div>'+p.name+' #'+pool.seq+' · settled '+new Date(c.at).toLocaleString()+'</div>'+
+      '<table>'+row('Your contribution',money(c.mine))+row('Pool at start',money(c.start))+row('Pool result for the period',(c.rate>=0?'+':'−')+pct(Math.abs(c.rate*100)))+row('Pool at end',money(c.end))+
+      row('Needed to meet targets ('+pct(p.target*100)+')',money(c.targetTotal))+row('Excess above targets (manager share)',money(c.excess))+row('Outcome',c.label)+row('<strong>Your payout</strong>','<strong>'+money(c.payout)+'</strong>')+'</table>'+
+      '<div class="warn">DEMO ONLY. This statement uses virtual funds and does not represent real money, a real investment or any promise of return.</div>';
+    window.print();
+  }
+
+  document.addEventListener('click',function(e){
+    var t=e.target;
+    if(!t.closest) return;
+    var printBtn=t.closest('[data-print]'); if(printBtn){ printStmt(printBtn.getAttribute('data-print')); return; }
+    var chip=t.closest('.chip'); if(chip){ var card=chip.closest('.pool'); card.querySelector('[data-rate-input]').value=chip.getAttribute('data-rate'); return; }
+    var act=t.closest('[data-act]'); if(!act) return;
+    var card=act.closest('.pool'); var pool=S.pools.filter(function(x){return x.id===card.getAttribute('data-pool');})[0]; var p=plan(pool.plan);
+    var msg=card.querySelector('[data-msg]');
+    if(act.getAttribute('data-act')==='join'){
+      var amt=parseFloat(card.querySelector('.inv-field input').value);
+      if(!(amt>=p.min)){ msg.textContent='Enter at least $'+p.min+'.'; return; }
+      if(amt>S.balance){ msg.textContent='That is more than your virtual balance.'; return; }
+      S.balance-=amt; pool.mine.push({amount:amt,at:Date.now()});
+      S.log.push({at:Date.now(),text:'Joined '+p.name+' #'+pool.seq,amt:-amt}); save(); render();
+    } else if(act.getAttribute('data-act')==='close'){
+      var r=parseFloat(card.querySelector('[data-rate-input]').value);
+      if(isNaN(r)||r<-100){ msg.textContent='Enter a pool result between −100% and any gain.'; return; }
+      var res=settle(pool,p,r/100); pool.closed=res; pool.open=false; S.balance+=res.payout;
+      S.log.push({at:Date.now(),text:'Settled '+p.name+' #'+pool.seq+' ('+res.label+')',amt:res.payout});
+      var n=S.pools.filter(function(x){return x.plan===p.key;}).length+1; S.pools.push(newPool(p,n));
+      save(); render();
+      var st=document.getElementById('ivStatements'); if(st&&st.scrollIntoView) st.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  });
+  document.addEventListener('click',function(e){ if(e.target&&e.target.id==='ivReset'){ if(confirm('Reset the demo and clear all virtual contributions and statements?')){ S=fresh(); save(); render(); } } });
+
+  S=load()||fresh(); if(document.getElementById('ivPlans')) render();
+})();
+</script>
+<script>
+/* Page router: each menu item opens its own page (no long scrolling). Old #links still work. */
+(function(){
+  var MAP={home:'home',services:'home',why:'home',how:'how',process:'how',proof:'how',bots:'bots',request:'request',invest:'invest',account:'account',contact:'contact',admin:'admin'};
+  var TOP={home:1,how:1,process:1,bots:1,request:1,invest:1,account:1,contact:1,admin:1};
+  var cur=document.body.getAttribute('data-active')||'home';
+  function setActive(){
+    document.querySelectorAll('.nav-links a, .nav-menu a').forEach(function(a){
+      var id=(a.getAttribute('href')||'').slice(1);
+      a.classList.toggle('active', !!id && MAP[id]===cur && (id===cur||id==='process'&&cur==='how'||id==='services'&&cur==='home'&&false));
+    });
+  }
+  function show(page){
+    cur=page; document.body.setAttribute('data-active',page); setActive();
+    var t=({home:'The Kingdom Trader — Strategy Automation & Trading Bots',how:'How it works — The Kingdom Trader',bots:'Bot catalog — The Kingdom Trader',request:'Get started — The Kingdom Trader',invest:'Invest (demo) — The Kingdom Trader',account:'My Account — The Kingdom Trader',contact:'Contact — The Kingdom Trader',admin:'Admin — The Kingdom Trader'})[page];
+    if(t) document.title=t;
+  }
+  function go(id,instant){
+    var page=MAP[id]||'home';
+    if(page!==cur) show(page);
+    var el=document.getElementById(id);
+    if(TOP[id]||!el){ window.scrollTo({top:0,behavior:instant?'auto':'smooth'}); }
+    else { setTimeout(function(){ el.scrollIntoView({behavior:instant?'auto':'smooth',block:'start'}); },30); }
+  }
+  /* make existing code that scrolls to a hidden element open its page first */
+  var orig=Element.prototype.scrollIntoView;
+  Element.prototype.scrollIntoView=function(o){
+    var self=this, sec=this.closest&&this.closest('[data-page]');
+    if(sec){ var pg=sec.getAttribute('data-page'); if(pg!==cur){ show(pg); setTimeout(function(){ orig.call(self,o); },40); return; } }
+    return orig.call(this,o);
+  };
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a[href^="#"]'); if(!a) return;
+    var id=(a.getAttribute('href')||'').slice(1); if(!id||!MAP[id]) return;
+    e.preventDefault();
+    if(location.hash!=='#'+id) history.pushState(null,'','#'+id);
+    go(id);
+  });
+  function fromHash(){ var id=location.hash.slice(1)||'home'; go(MAP[id]?id:'home',true); }
+  addEventListener('popstate',fromHash); addEventListener('hashchange',fromHash);
+  var logo=document.querySelector('nav .logo'); if(logo){ logo.style.cursor='pointer'; logo.addEventListener('click',function(){ if(location.hash!=='#home') history.pushState(null,'','#home'); go('home'); }); }
+  setActive();
+  if(location.hash && location.hash.length>1) setTimeout(fromHash,0);
 })();
 </script>
 
