@@ -901,6 +901,38 @@
   button.btn{font-family:inherit;cursor:pointer;text-align:center;}
   button.btn-ghost{background:transparent;color:var(--text);}
   .hero-ctas .btn{text-align:center;justify-content:center;}
+
+  /* ---------- COHORT PLANS, CLOCKS, ADMIN (added) ---------- */
+  .inv-plans{grid-template-columns:repeat(auto-fit,minmax(250px,1fr));}
+  .inv-bar{align-items:flex-end;}
+  .inv-clock small{display:block;color:var(--text-dim);font-size:12px;}
+  .inv-clock div{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);}
+  .enrol-strip{display:flex;gap:12px;align-items:flex-start;margin:0 0 18px;padding:14px 18px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font-size:14px;color:var(--text-dim);}
+  .enrol-strip strong{color:var(--text);}
+  .dot{flex:0 0 10px;height:10px;border-radius:50%;background:var(--sell);margin-top:6px;}
+  .dot.go{background:var(--buy);box-shadow:0 0 0 4px rgba(43,174,114,.18);}
+  .cd{display:inline-flex;align-items:baseline;gap:2px;font-family:'JetBrains Mono',monospace;color:var(--gold);white-space:nowrap;}
+  .cd b{background:rgba(198,161,83,.12);border:1px solid var(--gold-soft);border-radius:3px;padding:1px 5px;font-weight:500;min-width:1.6em;text-align:center;}
+  .cd i{font-style:normal;font-size:.8em;color:var(--text-dim);margin-right:4px;}
+  .remind{padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--panel);font-size:13.5px;color:var(--text-dim);margin-bottom:8px;}
+  .remind a{color:var(--gold);text-decoration:underline;}
+  .remind.warn{border-color:var(--sell);background:rgba(193,73,74,.08);color:var(--text);}
+  .remind.go{border-color:var(--buy);background:rgba(43,174,114,.08);color:var(--text);}
+  .remind.info{border-color:var(--gold-soft);}
+  .adm-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);background:rgba(198,161,83,.12);padding:3px 9px;border-radius:3px;vertical-align:middle;}
+  .adm-block{margin-top:26px;padding:20px;border:1px solid var(--line);border-radius:8px;background:rgba(18,26,42,.5);}
+  .adm-block h4{font-size:16px;margin-bottom:6px;}
+  .adm-block .note{color:var(--text-dim);font-size:13px;margin-bottom:12px;}
+  .adm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;}
+  .adm-grid .lbl{flex:0 0 100px;align-self:center;font-size:13px;color:var(--text-dim);}
+  .calc-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-bottom:12px;}
+  .calc-pick{text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px 14px;color:var(--text);font:inherit;font-size:14px;cursor:pointer;}
+  .calc-pick small{color:var(--text-dim);} .calc-pick.on,.calc-pick:hover{border-color:var(--gold);}
+  .calc-head{margin:6px 0 10px;font-size:15px;}
+  .calc-sum{display:grid;grid-template-columns:1fr auto;gap:6px 14px;font-size:13.5px;margin:14px 0;}
+  .calc-sum dt{color:var(--text-dim);} .calc-sum dd{font-family:'JetBrains Mono',monospace;text-align:right;}
+  .chip.on{border-color:var(--gold);color:var(--gold);background:rgba(198,161,83,.1);}
+  .inv-table td small{color:var(--text-dim);font-size:11.5px;}
 </style>
 </head>
 <body>
@@ -1436,11 +1468,11 @@
       <div>
         <span class="eyebrow">How it works</span>
         <h2 style="margin:8px 0 12px;">Choose a plan. We trade for you.</h2>
-        <p style="color:var(--text-dim);">Pick how long you want your money invested, enter an amount, and see the figure you are aiming for at the end. We trade on your behalf and send you a statement.</p>
+        <p style="color:var(--text-dim);">Funds are traded by our team of experienced traders, following a defined strategy and risk rules. Pick how long you want your money invested, enter an amount, and see the figure you are aiming for. Every completed plan comes with a statement.</p>
         <div class="inv-steps">
-          <div class="inv-step"><span class="n">1</span><h4>Choose a plan</h4><p>1, 3 or 6 months, each with its own target.</p></div>
-          <div class="inv-step"><span class="n">2</span><h4>Pay</h4><p>Mobile money or card. Test mode for now.</p></div>
-          <div class="inv-step"><span class="n">3</span><h4>Track &amp; receive</h4><p>Follow your plan and get a statement.</p></div>
+          <div class="inv-step"><span class="n">1</span><h4>Join a cohort</h4><p>Enrol Sunday to Tuesday. Everyone who joins that week starts together.</p></div>
+          <div class="inv-step"><span class="n">2</span><h4>Pay &amp; wait</h4><p>Pay by mobile money or card (test mode now) and watch the countdown.</p></div>
+          <div class="inv-step"><span class="n">3</span><h4>Withdraw or reinvest</h4><p>At maturity, take your money out or reinvest part or all of it.</p></div>
         </div>
       </div>
       <figure class="media-card"><img src="invest-piggy.jpg" alt="Coins flowing from a piggy bank into a trading chart" loading="lazy" width="1100" height="575"></figure>
@@ -1448,22 +1480,58 @@
 
     <div class="inv-bar">
       <div><small>Virtual wallet (demo)</small><div class="bal" id="ivBal">$0.00</div></div>
+      <div class="inv-clock"><small>Time now (East Africa)</small><div id="ivClock">—</div></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button type="button" class="btn btn-ghost btn-sm" id="ivReset">Reset demo</button>
         <a class="btn btn-gold btn-sm" target="_blank" rel="noopener" href="https://wa.me/256774077467?text=Hello%20Kingdom%20Trader%2C%20I%27m%20interested%20in%20the%20trade-for-me%20plans.%20Please%20tell%20me%20when%20they%20open.">Ask to be notified</a>
       </div>
     </div>
 
+    <div class="enrol-strip" id="ivEnrol"></div>
     <div class="inv-plans" id="ivPlans"></div>
 
-    <div class="inv-sec"><h3>My plans</h3><div id="ivPortfolio"></div></div>
+    <div class="inv-sec"><h3>My plans</h3><div id="ivRemind"></div><div id="ivPortfolio"></div><div id="ivWithdrawals"></div></div>
     <div class="inv-sec"><h3>Statements</h3><div id="ivStatements"></div></div>
 
     <div class="inv-sec" id="ivAdminWrap" hidden>
-      <h3>Admin view <span class="tag" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);background:rgba(198,161,83,.12);padding:3px 9px;border-radius:3px;vertical-align:middle;">only you can see this</span></h3>
-      <p class="note" style="color:var(--text-dim);font-size:13px;margin-bottom:14px;">Set the target for each plan, and settle a plan when its period ends. In the prototype you enter the portfolio result yourself. Targets lock once someone has joined.</p>
-      <div class="inv-plans" id="ivAdmin"></div>
-      <div id="ivAdminStmts" style="margin-top:18px;"></div>
+      <h3>Admin view <span class="adm-tag">only you can see this</span></h3>
+      <div id="ivAdminRemind"></div>
+
+      <div class="adm-block">
+        <h4>Targets for new joiners</h4>
+        <p class="note">Changing a target updates what customers see on the plan cards. Members who already joined keep the target they saw when they joined.</p>
+        <div class="adm-grid" id="ivTargets"></div>
+      </div>
+
+      <div class="adm-block">
+        <h4>Cohorts</h4>
+        <p class="note">Each cohort is a plan and an enrolment week (Sunday to Tuesday). Everyone in it starts on the Wednesday and matures on the same day.</p>
+        <div class="scroll-x"><table class="inv-table" id="ivCohortTable"></table></div>
+      </div>
+
+      <div class="adm-block" id="ivCalc">
+        <h4>Calculator</h4>
+        <p class="note">Pick a cohort, enter the total you hold after trading, and the payout is split in proportion to each member's contribution.</p>
+        <div id="ivCalcList" class="calc-list"></div>
+        <div id="ivCalcBody" hidden></div>
+      </div>
+
+      <div class="adm-block">
+        <h4>Withdrawal requests</h4>
+        <div id="ivAdminWd"></div>
+      </div>
+
+      <div class="adm-block">
+        <h4>Testing tools</h4>
+        <label class="agree"><input type="checkbox" id="ivTestOpen"> Ignore the Sunday–Tuesday enrolment window (for testing)</label>
+        <p class="note" style="margin-top:10px;">Demo clock — jump ahead to test maturity, settlement and reminders:</p>
+        <div class="chips" id="ivSkip">
+          <button type="button" class="chip" data-skip="1">+1 day</button>
+          <button type="button" class="chip" data-skip="7">+7 days</button>
+          <button type="button" class="chip" data-skip="30">+30 days</button>
+          <button type="button" class="chip" data-skip="0">Back to real time</button>
+        </div>
+      </div>
     </div>
 
     <div class="risk-panel">
@@ -1479,6 +1547,7 @@
     </div>
   </div>
 </section>
+
 
 
 <footer>
@@ -3616,6 +3685,15 @@ document.getElementById('f-service').addEventListener('change', function() {
 </script>
 
 <div id="stmtPrint"></div>
+<div id="ivPayout" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="payTitle">
+  <div class="modal-box">
+    <button type="button" class="modal-x" data-pclose aria-label="Close">×</button>
+    <span class="eyebrow">Your plan has matured</span>
+    <h3 id="payTitle" style="margin:6px 0 12px;">Withdraw or reinvest</h3>
+    <div id="payBody"></div>
+  </div>
+</div>
+
 <div id="pathQuiz" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="quizTitle">
   <div class="modal-box">
     <button type="button" class="modal-x" data-close aria-label="Close">×</button>
@@ -3643,156 +3721,269 @@ document.getElementById('f-service').addEventListener('change', function() {
 </div>
 
 <script>
-/* Trade-for-me plans — prototype ledger with virtual funds (stored in this browser only). */
+/* Trade-for-me plans — prototype with weekly cohorts. Virtual funds, stored in this browser only. */
 (function(){
-  var KEY='kt_invest_demo_v2';
+  var KEY='kt_invest_demo_v3', H=3600000, D=86400000, EAT=3*H;
   var PLANS=[
-    {key:'m1',name:'1-month plan',months:1,target:0.08,min:10,seed:{members:11,total:3850}},
-    {key:'m3',name:'3-month plan',months:3,target:0.20,min:10,seed:{members:8,total:2900}},
-    {key:'m6',name:'6-month plan',months:6,target:0.40,min:10,seed:{members:6,total:2300}}
+    {key:'w2',name:'2-week plan',days:14,target:0.04,min:10},
+    {key:'m1',name:'1-month plan',days:30,target:0.08,min:10},
+    {key:'m3',name:'3-month plan',days:90,target:0.20,min:10},
+    {key:'m6',name:'6-month plan',days:180,target:0.40,min:10}
   ];
   var METHODS=['MTN Mobile Money','Airtel Money','Card'];
-  var PRESETS=[['Strong +25%',25],['On target',null],['Weak +3%',3],['Flat 0%',0],['Loss −20%',-20]];
-  var S;
+  var S, calcId=null, lastKey='', payCtx=null;
+
+  function plan(k){ return PLANS.filter(function(p){return p.key===k;})[0]; }
   function money(n){ return '$'+(Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
   function pct(n){ return (Math.round(n*10)/10)+'%'; }
   function esc(t){ return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
-  function plan(k){ return PLANS.filter(function(p){return p.key===k;})[0]; }
+  function uid(){ return 'x'+Math.random().toString(36).slice(2,8); }
+  function now(){ return Date.now()+(S&&S.offset||0); }
+  function fmtD(ts){ return new Date(ts).toLocaleDateString('en-GB',{timeZone:'Africa/Kampala',weekday:'short',day:'numeric',month:'short'}); }
+  function fmtDY(ts){ return new Date(ts).toLocaleDateString('en-GB',{timeZone:'Africa/Kampala',day:'numeric',month:'short',year:'numeric'}); }
+  function fmtT(ts){ return new Date(ts).toLocaleTimeString('en-GB',{timeZone:'Africa/Kampala',hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
   function load(){ try{ var j=localStorage.getItem(KEY); if(j) return JSON.parse(j); }catch(e){} return null; }
   function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
-  function uid(){ return 'c'+Math.random().toString(36).slice(2,8); }
-  function newPool(p,n,target){ var j=1+((n||0)%3)*0.07; return {id:p.key+'-'+n,plan:p.key,seq:n,open:true,target:(target==null?p.target:target),others:{members:p.seed.members,total:Math.round(p.seed.total*j)},mine:[],closed:null}; }
-  function fresh(){ return {balance:1000,pools:PLANS.map(function(p){return newPool(p,1);})}; }
-  function openPool(k){ return S.pools.filter(function(x){return x.plan===k&&x.open;})[0]; }
-  function sum(pool,status){ return pool.mine.filter(function(c){return !status||c.status===status;}).reduce(function(a,c){return a+c.amount;},0); }
   function isAdmin(){ var a=document.getElementById('adminLink'); return !!(a&&a.style.display==='inline'); }
 
-  function settle(pool,r){
-    var mine=sum(pool,'active'), start=pool.others.total+mine, end=start*(1+r), t=pool.target;
-    var targetTotal=start*(1+t), excess=Math.max(0,end-targetTotal), factor=Math.min(1+t,end/start), payout=mine*factor;
-    var out=end>=targetTotal?'ok':(end>=start?'mid':'bad');
-    var label=out==='ok'?'Target reached':(out==='mid'?'Below target':'Loss');
-    return {rate:r,mine:mine,start:start,end:end,target:t,targetTotal:targetTotal,excess:excess,factor:factor,payout:payout,out:out,label:label,at:Date.now()};
+  /* ---- weeks & cohorts (enrol Sun 00:00 – Tue 23:59 EAT, start Wed 00:00 EAT) ---- */
+  function sunday(ts){ var d=new Date(ts+EAT); return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()-d.getUTCDay())-EAT; }
+  function winFor(ts){ var s=sunday(ts); return ts<=s+3*D-1 ? s : s+7*D; }
+  function rng(seed){ var x=seed%2147483647; if(x<=0) x+=2147483646; return function(){ x=x*16807%2147483647; return (x-1)/2147483646; }; }
+  function makeSeed(c){
+    var r=rng(Math.floor(c.winStart/D)+c.plan.charCodeAt(0)*131+c.plan.charCodeAt(1)*7), n=5+Math.floor(r()*6), A=[20,30,50,75,100,150,200,250,300], out=[];
+    for(var i=0;i<n;i++) out.push({name:'Member '+(i<9?'0':'')+(i+1),amount:A[Math.floor(r()*A.length)],t:S.targets[c.plan]});
+    return out;
+  }
+  function ensureSeed(c){ if(!c.seeded && now()>=c.winStart){ c.seed=makeSeed(c); c.seeded=true; } }
+  function cohortFor(pk,ws){
+    var id=pk+'-'+ws;
+    if(!S.cohorts[id]) S.cohorts[id]={id:id,plan:pk,winStart:ws,winEnd:ws+3*D-1,startAt:ws+3*D,maturesAt:ws+3*D+plan(pk).days*D,seeded:false,seed:[],mine:[],settled:null};
+    var c=S.cohorts[id]; ensureSeed(c); return c;
+  }
+  function status(c){ var t=now(); if(c.settled) return 'settled'; if(t<c.winStart) return 'upcoming'; if(t<=c.winEnd) return 'enrolling'; if(t<c.startAt) return 'starting'; if(t<c.maturesAt) return 'running'; return 'matured'; }
+  var ST={upcoming:'Opens soon',enrolling:'Enrolling',starting:'Starts soon',running:'Running',matured:'Matured',settled:'Settled'};
+  function members(c){ ensureSeed(c); return c.seed.concat(c.mine.filter(function(x){return x.status==='active'||x.status==='settled'||x.status==='closed';}).map(function(x){return {name:'You (demo)',amount:x.amount,t:x.t,own:x.id};})); }
+  function total(list){ return list.reduce(function(a,m){return a+m.amount;},0); }
+  function openCohort(pk){ return cohortFor(pk,winFor(now())); }
+
+  function seedState(){
+    S={v:3,balance:1000,offset:0,testOpen:false,targets:{w2:.04,m1:.08,m3:.20,m6:.40},cohorts:{},withdrawals:[]};
+    var sun=sunday(now());
+    cohortFor('w2',sun-21*D); cohortFor('w2',sun-7*D); cohortFor('m1',sun-14*D); cohortFor('m3',sun-35*D);
+  }
+  function ensureCurrent(){ PLANS.forEach(function(p){ openCohort(p.key); }); }
+
+  function calc(c,final){
+    var list=members(c), start=total(list), profit=Math.max(0,final-start), tp=list.reduce(function(a,m){return a+m.amount*m.t;},0);
+    var f=start>0?Math.min(1,final/start):0, g=tp>0?Math.min(1,profit/tp):0, paid=0;
+    var rows=list.map(function(m){ var pay=Math.round((m.amount*f+m.amount*m.t*g)*100)/100; paid+=pay; var need=m.amount*(1+m.t);
+      var out=pay>=need-0.005?'ok':(pay>=m.amount-0.005?'mid':'bad'); return {name:m.name,own:m.own,amount:m.amount,t:m.t,pay:pay,out:out,need:need}; });
+    var fee=Math.max(0,Math.round((final-paid)*100)/100), needAll=rows.reduce(function(a,r){return a+r.need;},0);
+    return {rows:rows,start:start,final:final,profit:final-start,needAll:needAll,fee:fee,short:Math.max(0,needAll-final)};
   }
 
+  /* ---- countdown ---- */
+  function cd(ts){ return '<span class="cd" data-until="'+ts+'"><b>0</b><i>d</i><b>00</b><i>h</i><b>00</b><i>m</i><b>00</b><i>s</i></span>'; }
+  function tick(){
+    var clk=document.getElementById('ivClock'); if(!clk||!S) return;
+    var n=now(); clk.textContent=fmtD(n)+' · '+fmtT(n)+' EAT'+(S.offset?'  (demo clock +'+Math.round(S.offset/D)+'d)':'');
+    document.querySelectorAll('.cd').forEach(function(el){
+      var left=Math.max(0,parseInt(el.getAttribute('data-until'),10)-n), d=Math.floor(left/D), h=Math.floor(left%D/H), m=Math.floor(left%H/60000), s=Math.floor(left%60000/1000), b=el.querySelectorAll('b');
+      b[0].textContent=d; b[1].textContent=('0'+h).slice(-2); b[2].textContent=('0'+m).slice(-2); b[3].textContent=('0'+s).slice(-2);
+    });
+    var key=PLANS.map(function(p){ return status(openCohort(p.key)); }).join()+Object.keys(S.cohorts).map(function(k){return status(S.cohorts[k]);}).join();
+    if(lastKey&&key!==lastKey){ lastKey=key; render(); } else { lastKey=key; }
+  }
+
+  /* ---- reminders ---- */
+  function chip(cls,html){ return '<div class="remind '+cls+'">'+html+'</div>'; }
+  function remindCustomer(){
+    var h='', n=now();
+    Object.keys(S.cohorts).forEach(function(k){ var c=S.cohorts[k], p=plan(c.plan), st=status(c);
+      c.mine.forEach(function(x){
+        if(x.status==='pending'&&n<=c.winEnd) h+=chip('warn','Pay for your '+p.name+' before enrolment closes in '+cd(c.winEnd)+'.');
+        if(x.status==='active'&&st==='running'&&c.maturesAt-n<=3*D) h+=chip('info','Your '+p.name+' matures in '+cd(c.maturesAt)+'.');
+        if(x.status==='active'&&st==='matured') h+=chip('info','Your '+p.name+' has matured. We are settling it now.');
+        if(x.status==='settled') h+=chip('go','Your '+p.name+' is ready: <a href="#" data-payout="'+x.id+'">withdraw or reinvest '+money(x.payout)+'</a>.');
+      }); });
+    S.withdrawals.forEach(function(w){ if(w.status==='requested') h+=chip('info','Withdrawal of '+money(w.amount)+' requested. We will release it soon.'); });
+    document.getElementById('ivRemind').innerHTML=h;
+  }
+  function remindAdmin(){
+    var h='', n=now(), pend=S.withdrawals.filter(function(w){return w.status==='requested';}).length;
+    Object.keys(S.cohorts).forEach(function(k){ var c=S.cohorts[k]; if(!members(c).length) return; var p=plan(c.plan), st=status(c);
+      if(st==='matured') h+=chip('warn','Due now: '+p.name+' cohort '+fmtD(c.winStart)+' has matured. <a href="#" data-calc="'+c.id+'">Calculate and settle</a>.');
+      else if(st==='running'&&c.maturesAt-n<=3*D) h+=chip('info',p.name+' cohort '+fmtD(c.winStart)+' matures in '+cd(c.maturesAt)+'.'); });
+    if(pend) h+=chip('warn',pend+' withdrawal request'+(pend>1?'s':'')+' waiting for you to release.');
+    document.getElementById('ivAdminRemind').innerHTML=h||'<div class="remind">No reminders right now.</div>';
+  }
+
+  /* ---- customer side ---- */
+  function renderEnrol(){
+    var n=now(), ws=winFor(n), open=(n>=ws&&n<=ws+3*D-1);
+    document.getElementById('ivEnrol').innerHTML=open
+      ? '<span class="dot go"></span><div><strong>Enrolment is open</strong> until '+fmtD(ws+3*D-1)+', 23:59 EAT. Closes in '+cd(ws+3*D-1)+'. This cohort starts '+fmtD(ws+3*D)+'.</div>'
+      : '<span class="dot"></span><div><strong>Enrolment is closed</strong> for now. The next cohort opens '+fmtD(ws)+' at 00:00 EAT, in '+cd(ws)+'.'+(S.testOpen?' <em>(testing: window ignored)</em>':'')+'</div>';
+  }
   function renderPlans(){
     var box=document.getElementById('ivPlans'); box.innerHTML='';
     PLANS.forEach(function(p){
-      var pool=openPool(p.key), t=pool.target;
+      var c=openCohort(p.key), st=status(c), t=S.targets[p.key], can=(st==='enrolling')||S.testOpen;
       var opts=METHODS.map(function(m){return '<option>'+m+'</option>';}).join('');
       var el=document.createElement('div'); el.className='pool'; el.setAttribute('data-plan',p.key);
       el.innerHTML='<h3>'+p.name+'<span class="tag">TARGET +'+pct(t*100)+'</span></h3>'+
-        '<p class="note">Aim: grow your amount by about <strong style="color:var(--text)">'+pct(t*100)+'</strong> over '+p.months+' month'+(p.months>1?'s':'')+'. Not guaranteed.</p>'+
+        '<p class="note">Aim: grow your amount by about <strong style="color:var(--text)">'+pct(t*100)+'</strong> over '+(p.days===14?'2 weeks':(p.days/30)+' month'+(p.days>30?'s':''))+'. Not guaranteed.</p>'+
+        '<dl><dt>Next cohort starts</dt><dd>'+fmtD(c.startAt)+'</dd><dt>Matures</dt><dd>'+fmtD(c.maturesAt)+'</dd></dl>'+
         '<div class="inv-field"><input type="number" inputmode="decimal" min="'+p.min+'" step="1" placeholder="Amount in USD (min $'+p.min+')" data-amt aria-label="Amount for '+p.name+'"></div>'+
         '<dl><dt>Expected at the end (target)</dt><dd data-exp>—</dd></dl>'+
         '<div class="inv-field"><select data-method aria-label="Payment method">'+opts+'</select></div>'+
         '<ul class="keyfacts"><li>The expected amount is a target, not a guarantee. You can lose money.</li><li>Your money is managed together with other members\u2019 funds.</li><li>We keep any profit above the target as our fee.</li></ul>'+
         '<label class="agree"><input type="checkbox" data-agree> I understand and accept the <a href="#" data-open-terms>terms</a>.</label>'+
-        '<button type="button" class="btn btn-gold btn-sm" data-act="join">Join this plan</button><p class="note" data-msg></p>';
+        '<button type="button" class="btn btn-gold btn-sm" data-act="join"'+(can?'':' disabled')+'>'+(can?'Join this cohort':'Opens '+fmtD(c.winStart))+'</button><p class="note" data-msg></p>';
       box.appendChild(el);
     });
   }
-
+  function ownRows(){ var out=[]; Object.keys(S.cohorts).forEach(function(k){ var c=S.cohorts[k]; c.mine.forEach(function(x){ out.push({c:c,x:x}); }); }); return out.sort(function(a,b){return b.x.at-a.x.at;}); }
   function renderPortfolio(){
-    var rows='',total=0;
-    S.pools.forEach(function(pool){ var p=plan(pool.plan);
-      pool.mine.forEach(function(c){
-        var st=pool.open?(c.status==='pending'?'<span class="out mid">Awaiting payment</span>':'<span class="out ok">Active</span>'):'<span class="out '+(pool.closed&&pool.closed.out||'mid')+'">Completed</span>';
-        if(pool.open&&c.status==='active') total+=c.amount;
-        var act=(pool.open&&c.status==='pending')?'<button type="button" class="btn btn-gold btn-sm" data-pay="'+c.id+'">Pay now (test)</button> <button type="button" class="btn btn-ghost btn-sm" data-cancel="'+c.id+'">Cancel</button>':'';
-        rows+='<tr><td>'+p.name+'</td><td class="num">'+money(c.amount)+'</td><td class="num">'+money(c.amount*(1+(c.targetAtJoin==null?pool.target:c.targetAtJoin)))+'</td><td>'+st+'</td><td>'+act+'</td></tr>';
-      });
+    var rows='', n=now();
+    ownRows().forEach(function(r){ var c=r.c, x=r.x, p=plan(c.plan), st=status(c), clock='', act='', badge='';
+      if(x.status==='pending'){ if(n>c.winEnd&&!S.testOpen){ badge='<span class="out bad">Expired</span>'; } else { badge='<span class="out mid">Awaiting payment</span>'; act='<button type="button" class="btn btn-gold btn-sm" data-pay="'+x.id+'">Pay now (test)</button> <button type="button" class="btn btn-ghost btn-sm" data-cancel="'+x.id+'">Cancel</button>'; clock='Enrolment closes in '+cd(c.winEnd); } }
+      else if(x.status==='active'){ if(st==='enrolling'||st==='starting'){ badge='<span class="out ok">Active</span>'; clock='Starts in '+cd(c.startAt); } else if(st==='running'){ var dayN=Math.min(p.days,Math.floor((n-c.startAt)/D)+1); badge='<span class="out ok">Running</span>'; clock='Day '+dayN+' of '+p.days+' · matures in '+cd(c.maturesAt); } else { badge='<span class="out mid">Matured</span>'; clock='Being settled'; } }
+      else if(x.status==='settled'){ badge='<span class="out ok">Ready</span>'; act='<button type="button" class="btn btn-gold btn-sm" data-payout="'+x.id+'">Withdraw / reinvest</button>'; clock=money(x.payout)+' available'; }
+      else if(x.status==='closed'){ badge='<span class="out '+(x.out||'mid')+'">Completed</span>'; clock=money(x.payout)+' returned'; }
+      else return;
+      rows+='<tr><td>'+p.name+'<br><small>Cohort '+fmtD(c.winStart)+'</small></td><td class="num">'+money(x.amount)+'</td><td class="num">'+money(x.amount*(1+x.t))+'</td><td>'+badge+'<br><small>'+clock+'</small></td><td>'+act+'</td></tr>';
     });
-    var h='<div class="scroll-x">';
-    h+=rows?'<table class="inv-table"><thead><tr><th>Plan</th><th class="num">Amount</th><th class="num">Target amount</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>':'<div class="empty">No plans yet. Choose a plan above to get started.</div>';
-    h+='</div>'+(total?'<p class="note" style="margin-top:10px;font-size:13px;color:var(--text-dim);">Active amount: '+money(total)+'. Target amounts are not guaranteed.</p>':'');
-    document.getElementById('ivPortfolio').innerHTML=h;
+    document.getElementById('ivPortfolio').innerHTML='<div class="scroll-x">'+(rows?'<table class="inv-table"><thead><tr><th>Plan</th><th class="num">Amount</th><th class="num">Target amount</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>':'<div class="empty">No plans yet. Choose a plan above to get started.</div>')+'</div>';
+    var w=S.withdrawals.slice().reverse().map(function(x){ return '<tr><td>'+fmtDY(x.at)+'</td><td class="num">'+money(x.amount)+'</td><td>'+(x.status==='released'?'<span class="out ok">Released</span>':'<span class="out mid">Requested</span>')+'</td></tr>'; }).join('');
+    document.getElementById('ivWithdrawals').innerHTML=w?'<h4 style="margin:22px 0 10px;font-size:15px;">My withdrawals</h4><div class="scroll-x"><table class="inv-table"><thead><tr><th>Date</th><th class="num">Amount</th><th>Status</th></tr></thead><tbody>'+w+'</tbody></table></div>':'';
   }
-
-  function memberRes(pool){ var c=pool.closed, m=c.mine; return {mine:m,payout:c.payout,rate:m?((c.payout-m)/m)*100:0}; }
   function renderStatements(){
-    var done=S.pools.filter(function(x){return x.closed&&x.closed.mine>0;}).reverse(), box=document.getElementById('ivStatements');
+    var done=ownRows().filter(function(r){return r.x.status==='settled'||r.x.status==='closed';}), box=document.getElementById('ivStatements');
     if(!done.length){ box.innerHTML='<div class="scroll-x"><div class="empty">Your statements appear here when a plan is completed.</div></div>'; return; }
-    box.innerHTML=done.map(function(pool){ var p=plan(pool.plan), c=pool.closed, r=memberRes(pool);
-      return '<div class="stmt"><div class="stmt-head"><h4>'+p.name+' · completed '+new Date(c.at).toLocaleDateString()+'</h4><span class="out '+c.out+'">'+c.label+'</span></div>'+
-        '<dl><dt>Amount invested</dt><dd>'+money(r.mine)+'</dd><dt>Target at the time</dt><dd>+'+pct(c.target*100)+'</dd><dt>Your result</dt><dd>'+(r.rate>=0?'+':'−')+pct(Math.abs(r.rate))+'</dd><dt><strong>Amount returned</strong></dt><dd><strong>'+money(r.payout)+'</strong></dd></dl>'+
-        '<p class="how">Targets are not guarantees. Results are shared in proportion to each member\u2019s contribution.</p>'+
-        '<button type="button" class="btn btn-ghost btn-sm" data-print="'+pool.id+'" style="margin-top:12px;">Print / save as PDF</button></div>';
-    }).join('');
+    box.innerHTML=done.map(function(r){ var c=r.c,x=r.x,p=plan(c.plan), rate=((x.payout-x.amount)/x.amount)*100;
+      return '<div class="stmt"><div class="stmt-head"><h4>'+p.name+' · matured '+fmtDY(c.maturesAt)+'</h4><span class="out '+x.out+'">'+(x.out==='ok'?'Target reached':(x.out==='mid'?'Below target':'Loss'))+'</span></div>'+
+        '<dl><dt>Plan period</dt><dd>'+fmtDY(c.startAt)+' – '+fmtDY(c.maturesAt)+'</dd><dt>Amount invested</dt><dd>'+money(x.amount)+'</dd><dt>Target at the time</dt><dd>+'+pct(x.t*100)+'</dd><dt>Your result</dt><dd>'+(rate>=0?'+':'−')+pct(Math.abs(rate))+'</dd><dt><strong>Amount returned</strong></dt><dd><strong>'+money(x.payout)+'</strong></dd></dl>'+
+        '<p class="how">Targets are not guarantees. Results are shared in proportion to each member\u2019s contribution.</p><button type="button" class="btn btn-ghost btn-sm" data-print="'+x.id+'" style="margin-top:12px;">Print / save as PDF</button></div>'; }).join('');
   }
 
+  /* ---- admin side ---- */
   function renderAdmin(){
-    var wrap=document.getElementById('ivAdminWrap'); var show=isAdmin(); wrap.hidden=!show; if(!show) return;
-    var box=document.getElementById('ivAdmin'); box.innerHTML='';
-    PLANS.forEach(function(p){ var pool=openPool(p.key), act=sum(pool,'active'), pend=sum(pool,'pending'), total=pool.others.total+act, locked=pool.mine.length>0;
-      var chips=PRESETS.map(function(c){ var v=c[1]===null?(pool.target*100):c[1]; return '<button type="button" class="chip" data-rate="'+v+'">'+esc(c[0])+'</button>'; }).join('');
-      var el=document.createElement('div'); el.className='pool'; el.setAttribute('data-pool',pool.id);
-      el.innerHTML='<h3>'+p.name+' #'+pool.seq+'<span class="tag">OPEN</span></h3>'+
-        '<div class="inv-field"><input type="number" step="0.5" value="'+(pool.target*100)+'" data-target'+(locked?' disabled':'')+' aria-label="Target percent"><button type="button" class="btn btn-ghost btn-sm" data-act="settarget"'+(locked?' disabled':'')+'>Set target %</button></div>'+
-        '<p class="note">'+(locked?'Target is locked because someone has joined.':'You can change the target until the first member joins.')+'</p>'+
-        '<dl><dt>Other members (demo)</dt><dd>'+pool.others.members+' · '+money(pool.others.total)+'</dd><dt>Active from you</dt><dd>'+money(act)+'</dd><dt>Awaiting payment</dt><dd>'+money(pend)+'</dd><dt>Plan total</dt><dd>'+money(total)+'</dd><dt>Needed to meet all targets</dt><dd>'+money(total*(1+pool.target))+'</dd></dl>'+
-        '<div class="sim"><h5>Settle at the end of the period</h5><div class="chips">'+chips+'</div><div class="inv-field sim-row"><input type="number" step="0.5" value="'+(pool.target*100)+'" data-rate-input aria-label="Result percent"><button type="button" class="btn btn-ghost btn-sm" data-act="close"'+(act>0?'':' disabled')+'>Settle plan</button></div><p class="note" data-msg>'+(act>0?'Enter the portfolio result for the period in %.':'Needs at least one active (paid) contribution.')+'</p></div>';
-      box.appendChild(el);
-    });
-    var done=S.pools.filter(function(x){return x.closed;}).reverse();
-    document.getElementById('ivAdminStmts').innerHTML=done.length?done.map(function(pool){ var p=plan(pool.plan), c=pool.closed;
-      return '<div class="stmt"><div class="stmt-head"><h4>'+p.name+' #'+pool.seq+' · full breakdown</h4><span class="out '+c.out+'">'+c.label+'</span></div><dl>'+
-      '<dt>Active contributions (you)</dt><dd>'+money(c.mine)+'</dd><dt>Plan total at start</dt><dd>'+money(c.start)+'</dd><dt>Portfolio result</dt><dd>'+(c.rate>=0?'+':'−')+pct(Math.abs(c.rate*100))+'</dd><dt>Plan total at end</dt><dd>'+money(c.end)+'</dd>'+
-      '<dt>Needed to meet targets ('+pct(c.target*100)+')</dt><dd>'+money(c.targetTotal)+'</dd><dt>Above targets (our fee)</dt><dd>'+money(c.excess)+'</dd><dt>Paid to you as member</dt><dd>'+money(c.payout)+'</dd></dl>'+
-      '<p class="how">Payout = contribution × the smaller of (1 + target) and (end ÷ start). Anything above every member\u2019s target is retained as the fee. If the plan is short, members share what it holds in proportion to contributions.</p></div>'; }).join(''):'';
+    var wrap=document.getElementById('ivAdminWrap'), show=isAdmin(); wrap.hidden=!show; if(!show) return;
+    remindAdmin();
+    document.getElementById('ivTestOpen').checked=!!S.testOpen;
+    document.getElementById('ivTargets').innerHTML=PLANS.map(function(p){ return '<div class="inv-field"><span class="lbl">'+p.name+'</span><input type="number" step="0.5" value="'+(S.targets[p.key]*100)+'" data-tgt="'+p.key+'" aria-label="Target for '+p.name+'"><button type="button" class="btn btn-ghost btn-sm" data-settarget="'+p.key+'">Save %</button></div>'; }).join('');
+    var rows='', ks=Object.keys(S.cohorts).map(function(k){return S.cohorts[k];}).filter(function(c){ var st=status(c); return members(c).length||st==='enrolling'; }).sort(function(a,b){return b.winStart-a.winStart;});
+    ks.forEach(function(c){ var p=plan(c.plan), l=members(c), st=status(c);
+      rows+='<tr><td>'+p.name+'</td><td>'+fmtD(c.winStart)+' – '+fmtD(c.winEnd)+'</td><td>'+fmtD(c.startAt)+'</td><td>'+fmtD(c.maturesAt)+(st==='running'?'<br><small>in '+cd(c.maturesAt)+'</small>':'')+'</td><td class="num">'+l.length+'</td><td class="num">'+money(total(l))+'</td><td><span class="out '+(st==='matured'?'bad':(st==='settled'?'ok':'mid'))+'">'+ST[st]+'</span></td><td>'+(st==='running'||st==='matured'?'<button type="button" class="btn btn-ghost btn-sm" data-calc="'+c.id+'">Calculator</button>':'')+'</td></tr>'; });
+    document.getElementById('ivCohortTable').innerHTML='<thead><tr><th>Plan</th><th>Enrolment</th><th>Starts</th><th>Matures</th><th class="num">Members</th><th class="num">Total</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody>';
+    var cl=Object.keys(S.cohorts).map(function(k){return S.cohorts[k];}).filter(function(c){ var st=status(c); return (st==='running'||st==='matured'||st==='starting')&&members(c).length>0; }).sort(function(a,b){return a.maturesAt-b.maturesAt;});
+    document.getElementById('ivCalcList').innerHTML=cl.length?cl.map(function(c){ var p=plan(c.plan); return '<button type="button" class="calc-pick'+(c.id===calcId?' on':'')+'" data-calc="'+c.id+'"><strong>'+p.name+'</strong> · cohort '+fmtD(c.winStart)+'<br><small>'+members(c).length+' members · '+money(total(members(c)))+' · '+ST[status(c)]+'</small></button>'; }).join(''):'<div class="empty">No active cohorts yet.</div>';
+    renderCalc();
+    var wd=S.withdrawals.filter(function(w){return w.status==='requested';});
+    document.getElementById('ivAdminWd').innerHTML=wd.length?'<div class="scroll-x"><table class="inv-table"><thead><tr><th>Date</th><th>Member</th><th class="num">Amount</th><th></th></tr></thead><tbody>'+wd.map(function(w){return '<tr><td>'+fmtDY(w.at)+'</td><td>You (demo)</td><td class="num">'+money(w.amount)+'</td><td><button type="button" class="btn btn-gold btn-sm" data-release="'+w.id+'">Mark as released</button></td></tr>';}).join('')+'</tbody></table></div>':'<div class="empty">No withdrawal requests waiting.</div>';
+  }
+  function renderCalc(){
+    var body=document.getElementById('ivCalcBody'); var c=calcId&&S.cohorts[calcId]; if(!c){ body.hidden=true; return; }
+    body.hidden=false; var p=plan(c.plan), l=members(c), st=status(c), canSettle=(st==='matured')||S.testOpen;
+    var fin=body.querySelector('[data-final]'), keep=fin?fin.value:'';
+    body.innerHTML='<div class="calc-head"><strong>'+p.name+'</strong> · cohort '+fmtD(c.winStart)+' · '+ST[st]+'</div>'+
+      '<div class="inv-field"><input type="number" step="0.01" inputmode="decimal" data-final placeholder="Total amount we hold after trading (USD)" value="'+esc(keep)+'" aria-label="Final amount"></div>'+
+      '<div id="ivCalcOut"></div>';
+    updateCalc();
+  }
+  function updateCalc(){
+    var c=calcId&&S.cohorts[calcId]; if(!c) return; var out=document.getElementById('ivCalcOut'), f=parseFloat(document.querySelector('[data-final]').value), l=members(c), st=status(c), canSettle=(st==='matured')||S.testOpen;
+    if(!(f>=0)){ out.innerHTML='<div class="scroll-x" style="margin-top:12px;"><table class="inv-table"><thead><tr><th>Member</th><th class="num">Contribution</th><th class="num">Target</th></tr></thead><tbody>'+l.map(function(m){return '<tr><td>'+esc(m.name)+'</td><td class="num">'+money(m.amount)+'</td><td class="num">+'+pct(m.t*100)+'</td></tr>';}).join('')+'<tr><td><strong>Total</strong></td><td class="num"><strong>'+money(total(l))+'</strong></td><td></td></tr></tbody></table></div><p class="note" style="margin-top:8px;">Enter the final amount to see each member\u2019s payout.</p>'; return; }
+    var r=calc(c,f);
+    out.innerHTML='<div class="scroll-x" style="margin-top:12px;"><table class="inv-table"><thead><tr><th>Member</th><th class="num">Contribution</th><th class="num">Payout</th><th class="num">Result</th></tr></thead><tbody>'+r.rows.map(function(x){var rate=((x.pay-x.amount)/x.amount)*100; return '<tr><td>'+esc(x.name)+'</td><td class="num">'+money(x.amount)+'</td><td class="num"><span class="out '+x.out+'">'+money(x.pay)+'</span></td><td class="num">'+(rate>=0?'+':'−')+pct(Math.abs(rate))+'</td></tr>';}).join('')+'</tbody></table></div>'+
+      '<dl class="calc-sum"><dt>Total contributed</dt><dd>'+money(r.start)+'</dd><dt>Final amount</dt><dd>'+money(r.final)+'</dd><dt>Profit / loss</dt><dd>'+(r.profit>=0?'+':'−')+money(Math.abs(r.profit))+'</dd><dt>Needed to meet all targets</dt><dd>'+money(r.needAll)+'</dd><dt>Our fee (above targets)</dt><dd>'+money(r.fee)+'</dd><dt>Short of targets by</dt><dd>'+money(r.short)+'</dd></dl>'+
+      '<button type="button" class="btn btn-gold btn-sm" data-settle="'+c.id+'"'+(canSettle?'':' disabled')+'>Record settlement &amp; release to members</button><p class="note" style="margin-top:8px;">'+(canSettle?'This marks every member\u2019s payout as available to withdraw or reinvest.':'Available once the cohort has matured ('+fmtD(c.maturesAt)+').')+'</p>';
   }
 
-  function render(){ document.getElementById('ivBal').textContent=money(S.balance); renderPlans(); renderPortfolio(); renderStatements(); renderAdmin(); }
+  function render(){ ensureCurrent(); document.getElementById('ivBal').textContent=money(S.balance); renderEnrol(); renderPlans(); renderPortfolio(); renderStatements(); remindCustomer(); renderAdmin(); tick(); }
+
+  /* ---- payout modal (withdraw / reinvest) ---- */
+  function findContribution(id){ var r=null; Object.keys(S.cohorts).forEach(function(k){ S.cohorts[k].mine.forEach(function(x){ if(x.id===id) r={c:S.cohorts[k],x:x}; }); }); return r; }
+  function openPayout(id){
+    var r=findContribution(id); if(!r||r.x.status!=='settled') return; payCtx={id:id,pctRe:0,plan:r.c.plan};
+    drawPayout(); var m=document.getElementById('ivPayout'); m.hidden=false; document.body.style.overflow='hidden';
+  }
+  function drawPayout(){
+    var r=findContribution(payCtx.id), x=r.x, avail=x.payout, re=Math.round(avail*payCtx.pctRe)/100, wd=Math.round((avail-re)*100)/100, tgt=openCohort(payCtx.plan);
+    var pc=[0,50,75,100].map(function(v){return '<button type="button" class="chip'+(payCtx.pctRe===v?' on':'')+'" data-re="'+v+'">'+(v===0?'Withdraw all':'Reinvest '+v+'%')+'</button>';}).join('');
+    var po=PLANS.map(function(p){return '<option value="'+p.key+'"'+(p.key===payCtx.plan?' selected':'')+'>'+p.name+'</option>';}).join('');
+    document.getElementById('payBody').innerHTML='<p style="color:var(--text-dim);margin-bottom:12px;">Available: <strong style="color:var(--text)">'+money(avail)+'</strong> (your capital and returns together).</p><div class="chips" style="margin-bottom:12px;">'+pc+'</div>'+
+      (payCtx.pctRe>0?'<div class="inv-field" style="margin-bottom:10px;"><select data-replan>'+po+'</select></div><p class="note" style="margin-bottom:8px;">Reinvested into the cohort starting '+fmtD(tgt.startAt)+', at that plan\u2019s current target of +'+pct(S.targets[payCtx.plan]*100)+'. Not guaranteed.</p>':'')+
+      '<dl class="calc-sum"><dt>Reinvest</dt><dd>'+money(re)+'</dd><dt>Withdraw</dt><dd>'+money(wd)+'</dd></dl><button type="button" class="btn btn-gold" data-confirm-pay>Confirm</button>';
+  }
+  function closePayout(){ var m=document.getElementById('ivPayout'); if(m){ m.hidden=true; document.body.style.overflow=''; } payCtx=null; }
 
   function printStmt(id){
-    var pool=S.pools.filter(function(x){return x.id===id;})[0]; if(!pool||!pool.closed) return;
-    var p=plan(pool.plan), c=pool.closed, r=memberRes(pool), box=document.getElementById('stmtPrint');
+    var r=findContribution(id); if(!r) return; var c=r.c,x=r.x,p=plan(c.plan), rate=((x.payout-x.amount)/x.amount)*100, box=document.getElementById('stmtPrint');
     function row(a,b){ return '<tr><td>'+a+'</td><td>'+b+'</td></tr>'; }
-    box.innerHTML='<h2>The Kingdom Trader — Plan statement</h2><div>'+p.name+' · completed '+new Date(c.at).toLocaleString()+'</div><table>'+row('Amount invested',money(r.mine))+row('Target at the time','+'+pct(c.target*100))+row('Outcome',c.label)+row('Your result',(r.rate>=0?'+':'−')+pct(Math.abs(r.rate)))+row('<strong>Amount returned</strong>','<strong>'+money(r.payout)+'</strong>')+'</table><div class="warn">PROTOTYPE. This statement uses virtual funds and is not a record of real money. Targets are not guarantees and trading carries a high risk of loss.</div>';
+    box.innerHTML='<h2>The Kingdom Trader — Plan statement</h2><div>'+p.name+' · matured '+fmtDY(c.maturesAt)+'</div><table>'+row('Plan period',fmtDY(c.startAt)+' – '+fmtDY(c.maturesAt))+row('Amount invested',money(x.amount))+row('Target at the time','+'+pct(x.t*100))+row('Your result',(rate>=0?'+':'−')+pct(Math.abs(rate)))+row('<strong>Amount returned</strong>','<strong>'+money(x.payout)+'</strong>')+'</table><div class="warn">PROTOTYPE. This statement uses virtual funds and is not a record of real money. Targets are not guarantees and trading carries a high risk of loss.</div>';
     window.print();
   }
 
+  /* ---- events ---- */
   document.addEventListener('input',function(e){
-    var inp=e.target; if(!inp.matches||!inp.matches('[data-amt]')) return;
-    var card=inp.closest('.pool'), p=plan(card.getAttribute('data-plan')), a=parseFloat(inp.value), t=openPool(p.key).target;
-    card.querySelector('[data-exp]').textContent=a>0?money(a*(1+t)):'—';
+    var t=e.target; if(!t.matches) return;
+    if(t.matches('[data-amt]')){ var card=t.closest('.pool'), a=parseFloat(t.value); card.querySelector('[data-exp]').textContent=a>0?money(a*(1+S.targets[card.getAttribute('data-plan')])):'—'; }
+    if(t.matches('[data-final]')) updateCalc();
+    if(t.id==='ivTestOpen'){ S.testOpen=t.checked; save(); render(); }
   });
+  document.addEventListener('change',function(e){ var t=e.target; if(t.matches&&t.matches('[data-replan]')&&payCtx){ payCtx.plan=t.value; drawPayout(); } });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closePayout(); });
   document.addEventListener('click',function(e){
-    var t=e.target; if(!t.closest) return;
-    if(t.closest('#ivReset')){ if(confirm('Reset the demo and clear all contributions and statements?')){ S=fresh(); save(); render(); } return; }
-    var pr=t.closest('[data-print]'); if(pr){ printStmt(pr.getAttribute('data-print')); return; }
-    var pay=t.closest('[data-pay]'); if(pay){ var id=pay.getAttribute('data-pay'); S.pools.forEach(function(pool){ pool.mine.forEach(function(c){ if(c.id===id&&c.status==='pending'){ if(c.amount>S.balance){ alert('Not enough virtual balance.'); return; } S.balance-=c.amount; c.status='active'; } }); }); save(); render(); return; }
-    var cn=t.closest('[data-cancel]'); if(cn){ var cid=cn.getAttribute('data-cancel'); S.pools.forEach(function(pool){ pool.mine=pool.mine.filter(function(c){return c.id!==cid;}); }); save(); render(); return; }
-    var chip=t.closest('.chip'); if(chip){ chip.closest('.pool').querySelector('[data-rate-input]').value=chip.getAttribute('data-rate'); return; }
-    var act=t.closest('[data-act]'); if(!act) return;
-    var card=act.closest('.pool'), msg=card.querySelector('[data-msg]'), a=act.getAttribute('data-act');
-    if(a==='join'){
-      var p=plan(card.getAttribute('data-plan')), pool=openPool(p.key), amt=parseFloat(card.querySelector('[data-amt]').value);
+    var t=e.target; if(!t.closest||!S) return;
+    if(t.closest('#ivReset')){ if(confirm('Reset the demo and clear all contributions, cohorts and statements?')){ seedState(); save(); calcId=null; render(); } return; }
+    if(t.closest('[data-pclose]')||(t.id==='ivPayout')){ closePayout(); return; }
+    var q;
+    if((q=t.closest('[data-print]'))){ printStmt(q.getAttribute('data-print')); return; }
+    if((q=t.closest('[data-payout]'))){ e.preventDefault(); openPayout(q.getAttribute('data-payout')); return; }
+    if((q=t.closest('[data-re]'))&&payCtx){ payCtx.pctRe=parseInt(q.getAttribute('data-re'),10); drawPayout(); return; }
+    if(t.closest('[data-confirm-pay]')&&payCtx){
+      var r=findContribution(payCtx.id), x=r.x, avail=x.payout, re=Math.round(avail*payCtx.pctRe)/100, wd=Math.round((avail-re)*100)/100;
+      if(re>0){ var tc=openCohort(payCtx.plan); tc.mine.push({id:uid(),amount:re,at:now(),status:'active',method:'Reinvested',t:S.targets[payCtx.plan]}); }
+      if(wd>0) S.withdrawals.push({id:uid(),amount:wd,at:now(),status:'requested'});
+      x.status='closed'; save(); closePayout(); render(); return;
+    }
+    if((q=t.closest('[data-pay]'))){ var id=q.getAttribute('data-pay'), f=findContribution(id); if(f&&f.x.status==='pending'){ if(f.x.amount>S.balance){ alert('Not enough virtual balance.'); return; } S.balance-=f.x.amount; f.x.status='active'; save(); render(); } return; }
+    if((q=t.closest('[data-cancel]'))){ var cid=q.getAttribute('data-cancel'); Object.keys(S.cohorts).forEach(function(k){ S.cohorts[k].mine=S.cohorts[k].mine.filter(function(x){return x.id!==cid;}); }); save(); render(); return; }
+    if((q=t.closest('[data-settarget]'))){ var pk=q.getAttribute('data-settarget'), v=parseFloat(document.querySelector('[data-tgt="'+pk+'"]').value); if(isNaN(v)||v<0||v>200){ alert('Enter a target between 0 and 200%.'); return; } S.targets[pk]=v/100; save(); render(); return; }
+    if((q=t.closest('[data-calc]'))){ e.preventDefault(); calcId=q.getAttribute('data-calc'); renderAdmin(); var cb=document.getElementById('ivCalc'); if(cb&&cb.scrollIntoView) cb.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+    if((q=t.closest('[data-settle]'))){
+      var c=S.cohorts[q.getAttribute('data-settle')], fv=parseFloat(document.querySelector('[data-final]').value); if(!(fv>=0)){ alert('Enter the final amount first.'); return; }
+      var res=calc(c,fv); c.settled={at:now(),final:fv,fee:res.fee};
+      c.mine.forEach(function(x){ if(x.status==='active'){ var row=res.rows.filter(function(rw){return rw.own===x.id;})[0]; if(row){ x.payout=row.pay; x.out=row.out; x.status='settled'; } } });
+      save(); calcId=null; render(); return;
+    }
+    if((q=t.closest('[data-release]'))){ var wid=q.getAttribute('data-release'); S.withdrawals.forEach(function(w){ if(w.id===wid&&w.status==='requested'){ w.status='released'; S.balance+=w.amount; } }); save(); render(); return; }
+    if((q=t.closest('[data-skip]'))){ var d=parseInt(q.getAttribute('data-skip'),10); S.offset=d===0?0:(S.offset||0)+d*D; save(); render(); return; }
+    var act=t.closest('[data-act="join"]');
+    if(act){
+      var card=act.closest('.pool'), msg=card.querySelector('[data-msg]'), p=plan(card.getAttribute('data-plan')), c2=openCohort(p.key), st=status(c2), amt=parseFloat(card.querySelector('[data-amt]').value);
+      if(!(st==='enrolling'||S.testOpen)){ msg.textContent='Enrolment is closed right now.'; return; }
       if(!(amt>=p.min)){ msg.textContent='Enter at least $'+p.min+'.'; return; }
       if(!card.querySelector('[data-agree]').checked){ msg.textContent='Please tick the box to accept the terms.'; return; }
-      pool.mine.push({id:uid(),amount:amt,at:Date.now(),status:'pending',method:card.querySelector('[data-method]').value,targetAtJoin:pool.target});
+      c2.mine.push({id:uid(),amount:amt,at:now(),status:'pending',method:card.querySelector('[data-method]').value,t:S.targets[p.key]});
       save(); render();
-    } else if(a==='settarget'){
-      var pool2=S.pools.filter(function(x){return x.id===card.getAttribute('data-pool');})[0], v=parseFloat(card.querySelector('[data-target]').value);
-      if(isNaN(v)||v<0||v>200){ msg.textContent='Enter a target between 0 and 200%.'; return; }
-      pool2.target=v/100; save(); render();
-    } else if(a==='close'){
-      var pool3=S.pools.filter(function(x){return x.id===card.getAttribute('data-pool');})[0], r=parseFloat(card.querySelector('[data-rate-input]').value);
-      if(isNaN(r)||r<-100){ msg.textContent='Enter a result of −100% or more.'; return; }
-      var res=settle(pool3,r/100); pool3.closed=res; pool3.open=false; S.balance+=res.payout;
-      pool3.mine.forEach(function(c){ if(c.status==='pending'){ c.status='refunded'; } });
-      pool3.mine=pool3.mine.filter(function(c){return c.status!=='refunded';});
-      var p3=plan(pool3.plan), n=S.pools.filter(function(x){return x.plan===p3.key;}).length+1; S.pools.push(newPool(p3,n,pool3.target));
-      save(); render();
-      var st=document.getElementById('ivStatements'); if(st&&st.scrollIntoView) st.scrollIntoView({behavior:'smooth',block:'start'});
     }
   });
-  S=load()||fresh();
-  if(document.getElementById('ivPlans')){ render();
+
+  S=load();
+  if(!S||S.v!==3){ S=null; S={v:3}; seedState(); }
+  if(document.getElementById('ivPlans')){
+    render(); save();
+    setInterval(tick,1000);
+    setInterval(function(){ remindCustomer(); if(isAdmin()) remindAdmin(); },30000);
     var al=document.getElementById('adminLink'); if(al&&'MutationObserver' in window) new MutationObserver(renderAdmin).observe(al,{attributes:true,attributeFilter:['style']});
   }
 })();
 </script>
+
 
 <script>
 /* Page router: each menu item opens its own page (no long scrolling). Old #links still work. */
