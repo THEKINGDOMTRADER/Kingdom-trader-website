@@ -766,6 +766,7 @@
   body[data-active="invest"]  [data-page]:not([data-page="invest"]),
   body[data-active="account"] [data-page]:not([data-page="account"]),
   body[data-active="contact"] [data-page]:not([data-page="contact"]),
+  body[data-active="legal"]   [data-page]:not([data-page="legal"]),
   body[data-active="admin"]   [data-page]:not([data-page="admin"]){display:none !important;}
   .page-banner{
     position:relative;min-height:230px;display:flex;align-items:flex-end;
@@ -941,10 +942,34 @@
   .sub-tabs button:hover,.sub-tabs button.on{border-color:var(--gold);color:var(--gold);background:rgba(198,161,83,.08);}
   @media (max-width:480px){ .sub-nav-inner{padding:8px 16px;} .sub-tabs{padding:0 16px 10px;gap:6px;overflow-x:visible;} .sub-tabs button{flex:1 1 0;min-width:0;padding:8px 2px;font-size:12px;} }
   section{scroll-margin-top:140px;}
+
+  /* ---------- MOBILE PAGE TABS, LEGAL, PROMO, CATALOG (added) ---------- */
+  .nav-pills{display:none;gap:8px;overflow-x:auto;padding:8px 16px 10px;border-top:1px solid var(--line);scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .nav-pills::-webkit-scrollbar{display:none;}
+  .nav-pills a{flex:0 0 auto;padding:7px 14px;border:1px solid var(--line);border-radius:18px;font-size:13px;font-weight:600;color:var(--text-dim);white-space:nowrap;}
+  .nav-pills a.active{border-color:var(--gold);color:var(--gold);background:rgba(198,161,83,.1);}
+  @media (max-width:1100px){
+    .nav-pills{display:flex;}
+    .nav-menu-btn,.nav-menu{display:none !important;}
+    section{scroll-margin-top:120px;}
+  }
+  .legal{max-width:760px;} .legal h3{font-size:19px;margin:28px 0 8px;} .legal p{color:var(--text-dim);font-size:15px;margin-bottom:6px;} .legal a{color:var(--gold);text-decoration:underline;}
+  .promo{background:linear-gradient(90deg,rgba(198,161,83,.16),rgba(198,161,83,.06));border-top:1px solid var(--gold-soft);border-bottom:1px solid var(--gold-soft);}
+  .promo-in{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding-top:14px;padding-bottom:14px;font-size:14.5px;}
+  .promo-title{color:var(--gold);} .promo-text{color:var(--text);}
+  .cat-bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:0 0 22px;}
+  .cat-bar select{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:9px 12px;border-radius:4px;font:inherit;font-size:13.5px;}
+  .bot-media{position:relative;aspect-ratio:16/9;margin:-4px 0 14px;border-radius:6px;overflow:hidden;background:linear-gradient(135deg,#1d2a47,#0f1626);border:1px solid var(--line);}
+  .bot-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .bot-media-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:34px;color:var(--gold);opacity:.55;letter-spacing:.06em;}
+  .cat-badge{position:absolute;top:8px;left:8px;z-index:1;font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;background:rgba(12,18,28,.82);color:var(--gold);border:1px solid var(--gold-soft);}
+  .bot-details-btn{background:transparent;border:none;color:var(--text-dim);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;padding:6px 4px;}
+  .bot-details-btn:hover{color:var(--gold);}
+  .bot-card.expanded .bot-details-btn{color:var(--gold);}
 </style>
 </head>
 <body>
-<script>(function(){var m={home:'home',services:'home',why:'home',how:'how',process:'how',proof:'how',bots:'bots',request:'request',invest:'invest',account:'account',contact:'contact',admin:'admin'};var id=(location.hash||'').slice(1)||'home';document.body.setAttribute('data-active',m[id]||'home');})();</script>
+<script>(function(){var m={home:'home',services:'home',why:'home',how:'how',process:'how',proof:'how',bots:'bots',request:'request',invest:'invest',account:'account',contact:'contact',legal:'legal',admin:'admin'};var id=(location.hash||'').slice(1)||'home';document.body.setAttribute('data-active',m[id]||'home');})();</script>
 
 <nav>
   <div class="wrap">
@@ -977,7 +1002,18 @@
     <a href="#account">My Account</a>
     <a href="#contact">Contact</a>
   </div>
-  <div id="navGreeting" class="sub-nav-bar" style="display:none;">
+  <div class="nav-pills" id="navPills" aria-label="Site pages">
+    <a href="#home">Home</a>
+    <a href="#services">Services</a>
+    <a href="#how">How it works</a>
+    <a href="#bots">Bot catalog</a>
+    <a href="#invest">Invest</a>
+    <a href="#request">Get started</a>
+    <a href="#account">My Account</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+<div id="navGreeting" class="sub-nav-bar" style="display:none;">
     <div class="sub-nav-inner">
       <button type="button" id="kebabBtn" class="kebab-btn menu-btn" aria-label="Open dashboard">☰<span id="notifDot" class="notif-dot" style="display:none;"></span></button>
       <span id="navGreetingText"></span>
@@ -990,7 +1026,6 @@
       <button type="button" data-subtab="panelTabPayments">Payments</button>
     </div>
   </div>
-</nav>
 
 <section class="hero" data-bg="waves,zones" data-page="home">
   <div class="hero-overlay"></div>
@@ -1056,6 +1091,7 @@
   </div>
 </section>
 
+<div class="promo" id="promoHome" data-page="home" hidden><div class="wrap promo-in"><div><strong class="promo-title"></strong> <span class="promo-text"></span></div><a class="btn btn-gold btn-sm promo-btn" href="#request">Claim</a></div></div>
 <section id="services" data-page="home">
   <svg class="candle-bg" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
     <!-- gridlines -->
@@ -1255,12 +1291,23 @@
 </section>
 
 <div class="page-banner" data-page="bots" style="--img:url(ai-bots.jpg)"><div class="wrap"><span class="eyebrow">Bot catalog</span><h1>Bots ready to deploy.</h1><p>Pick a ready-made bot, or rent one by the month. Prices are shown in USD with an approximate UGX amount.</p></div></div>
+<div class="promo" id="promoBots" data-page="bots" hidden><div class="wrap promo-in"><div><strong class="promo-title"></strong> <span class="promo-text"></span></div><a class="btn btn-gold btn-sm promo-btn" href="#request">Claim</a></div></div>
 <section id="bots" data-bg="candles" data-page="bots">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Catalog</span>
       <h2>Bots ready to deploy.</h2>
       <p>Entry-level pricing to get our first traders on board — rates rise as track record builds.</p>
+    </div>
+    <div class="cat-bar" id="catBar">
+      <div class="chips" id="catChips">
+        <button type="button" class="chip on" data-cat="all">All</button>
+        <button type="button" class="chip" data-cat="PC">PC</button>
+        <button type="button" class="chip" data-cat="Mobile">Mobile (pocket)</button>
+        <button type="button" class="chip" data-cat="Combo">Combo</button>
+        <button type="button" class="chip" data-cat="Indicator">Indicator</button>
+      </div>
+      <select id="catSort" aria-label="Sort bots"><option value="">Sort: Featured</option><option value="plh">Price: low to high</option><option value="phl">Price: high to low</option><option value="az">Name: A to Z</option></select>
     </div>
     <div class="bots-scroll-box">
     <div id="botsContainer">
@@ -1576,6 +1623,21 @@
 
 
 
+<div class="page-banner" data-page="legal" style="--img:url(fx-board.jpg)"><div class="wrap"><span class="eyebrow">Legal</span><h1>Legal &amp; risk.</h1><p>Plain-language notes on risk, what we provide, and our refund and swap policy.</p></div></div>
+<section id="legal" data-page="legal">
+  <div class="wrap legal">
+    <h3>Trading risk warning</h3>
+    <p>Trading forex and other leveraged products carries a high level of risk. You can lose some or all of your capital, and you should never trade with money you cannot afford to lose. Past performance does not guarantee future results.</p>
+    <h3>What we provide</h3>
+    <p>Our bots and custom builds are software tools that carry out the rules you or we set. They do not guarantee profit, and the final decisions on your account are yours. We do not give personal financial advice. Always use proper risk management, such as sensible lot sizes and stop losses.</p>
+    <h3>Trade-for-me plans</h3>
+    <p>The trade-for-me plans are a prototype. No real deposits are accepted yet. Expected amounts are targets, not guarantees. Read the <a href="#" data-open-terms>draft plan terms</a>.</p>
+    <h3>Refunds and swaps</h3>
+    <p>Because our products are digital, sales are final once the file or license has been delivered. If a product does not suit you, you can ask to swap it for another product of equal or lesser value. To ask, open <strong>My Account → Licenses → Request a swap</strong>, or message us on WhatsApp. Every swap request is reviewed by us.</p>
+    <h3>Contact</h3>
+    <p>Questions about any of this? Message us on <a href="https://wa.me/256774077467" target="_blank" rel="noopener">WhatsApp</a>.</p>
+  </div>
+</section>
 <footer>
   <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;width:100%;">
     <div class="foot-risk" style="flex-basis:100%;">Risk warning: trading carries a high risk of loss. Bots do not guarantee profit. Prices shown in UGX are approximate; the final amount is confirmed at checkout.</div>
@@ -1585,6 +1647,7 @@
       <a href="#bots">Bots</a>
       <a href="#invest">Invest</a>
       <a href="#contact">Contact</a>
+      <a href="#legal">Legal &amp; risk</a>
     </div>
   </div>
 </footer>
@@ -1722,6 +1785,15 @@
         </form>
       </div>
 
+      <div class="admin-create-box" id="promoAdminBox">
+        <div class="dash-section-label" style="margin-top:0;">Promotion banner (e.g. free bot offer)</div>
+        <p class="text-dim-note" style="margin-bottom:12px;">Shows on the home page and the bot catalog while it is switched on.</p>
+        <div class="form-row"><div class="form-group form-group-full"><label class="platform-checkbox"><input type="checkbox" id="promo-active"> Show the promotion</label></div></div>
+        <div class="form-row"><div class="form-group"><label for="promo-title">Title</label><input type="text" id="promo-title" placeholder="e.g. Free bot promotion"></div><div class="form-group"><label for="promo-btn">Button text</label><input type="text" id="promo-btn" placeholder="e.g. Claim yours"></div></div>
+        <div class="form-row"><div class="form-group form-group-full"><label for="promo-text">Short message</label><input type="text" id="promo-text" placeholder="Say what the offer is and who qualifies"></div></div>
+        <div class="form-row"><div class="form-group form-group-full"><label for="promo-link">Button link</label><input type="text" id="promo-link" placeholder="#request or https://wa.me/256774077467"></div></div>
+        <button type="button" class="admin-save-btn" id="promoSave">Save promotion</button><span class="admin-save-msg" id="promoMsg"></span>
+      </div>
       <div class="admin-create-box">
         <div class="dash-section-label" style="margin-top:0;">Add / update a product</div>
         <p class="text-dim-note" style="margin-bottom:14px;">Editing a product name that already exists will update it instead of creating a duplicate.</p>
@@ -1734,6 +1806,16 @@
             <div class="form-group">
               <label for="prod-pair">Pair / tag</label>
               <input type="text" id="prod-pair" required placeholder="e.g. EURUSD">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prod-category">Category</label>
+              <select id="prod-category"><option value="PC">PC (MT5 on computer)</option><option value="Mobile">Mobile (pocket version)</option><option value="Combo">Combo (PC + mobile)</option><option value="Indicator">Indicator</option></select>
+            </div>
+            <div class="form-group">
+              <label for="prod-image">Picture (link or file name)</label>
+              <input type="text" id="prod-image" placeholder="e.g. bot-gold.jpg or https://...">
             </div>
           </div>
           <div class="form-row">
@@ -2138,12 +2220,17 @@
     card.dataset.botPrice = d.buyPrice || 0;
     card.dataset.botRentPrice = d.rentPrice || 0;
     card.dataset.botPlatforms = JSON.stringify(d.platforms || ['MT5']);
+    card.dataset.category = d.category || 'PC';
     const platforms = d.platforms || ['MT5'];
     const platformBadges = platforms.map(p => `<span class="platform-mini-badge">${p}</span>`).join('');
     const rentRows = Object.keys(RENTAL_LABELS).map(days =>
       `<div class="bot-detail-row"><span class="l">${RENTAL_LABELS[days]}</span><span class="v">$${computeRentalPrice(d.rentPrice || 0, days)} (1 platform)</span></div>`
     ).join('');
+    const initials = String(name).split(/[^A-Za-z0-9]+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || 'KT';
+    const imgTag = d.imageUrl ? `<img src="${String(d.imageUrl).replace(/"/g, '')}" alt="${String(name).replace(/"/g, '')}" loading="lazy" onerror="this.remove()">` : '';
+    const mediaHtml = `<div class="bot-media"><span class="bot-media-ph">${initials}</span>${imgTag}<span class="cat-badge">${d.category || 'PC'}</span></div>`;
     card.innerHTML = `
+      ${mediaHtml}
       <div class="bot-top">
         <h4 style="margin-bottom:0;">${name}</h4>
         <span class="bot-tag tag-buy">${d.pair || ''}</span>
@@ -2164,6 +2251,7 @@
       <div class="bot-foot">
         <span class="bot-price">from $${d.buyPrice || 0} / $${d.rentPrice || 0} mo</span>
         <div class="bot-actions">
+          <button type="button" class="bot-details-btn">Details</button>
           <button type="button" class="bot-buy-btn" data-action="rent">Rent</button>
           <button type="button" class="bot-buy-btn primary" data-action="buy">Buy</button>
         </div>
@@ -2176,10 +2264,12 @@
     const mt5Grid = document.getElementById('mt5BotsGrid');
     const tvGrid = document.getElementById('tvBotsGrid');
     document.querySelectorAll('.bot-card[data-dynamic="true"]').forEach(el => el.remove());
+    window.__ktProducts = {};
 
     let mt5Count = 0, tvCount = 0;
     snapshot.forEach((docSnap) => {
       const d = docSnap.data();
+      window.__ktProducts[docSnap.id] = { buyPrice: d.buyPrice || 0, rentPrice: d.rentPrice || 0 };
       const platforms = d.platforms || ['MT5'];
       if (platforms.includes('MT5')) {
         const card = renderProductCard(docSnap.id, d);
@@ -2421,6 +2511,58 @@
     if ('clearAppBadge' in navigator) navigator.clearAppBadge().catch(() => {});
   }
 
+  // ---- Swap a purchased product for one of equal or lesser value ----
+  let swapCtx = null;
+  function openSwap(licId, d) {
+    const cat = window.__ktProducts || {};
+    const oldPrice = cat[d.product] ? cat[d.product].buyPrice : null;
+    const names = Object.keys(cat).filter(n => n !== d.product && (oldPrice == null || cat[n].buyPrice <= oldPrice)).sort();
+    swapCtx = { licId, d };
+    document.getElementById('swapInfo').textContent = 'You are swapping ' + d.product + (oldPrice != null ? ' (value $' + oldPrice + ')' : '') + ' for a product of equal or lesser value.';
+    const sel = document.getElementById('swapNew');
+    sel.innerHTML = names.length ? names.map(n => '<option value="' + n.replace(/"/g, '&quot;') + '">' + n + ' — $' + cat[n].buyPrice + '</option>').join('') : '<option value="">No eligible products right now</option>';
+    document.getElementById('swapReason').value = '';
+    document.getElementById('swapMsg').textContent = '';
+    document.getElementById('swapSend').disabled = !names.length;
+    document.getElementById('swapModal').hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSwap() { document.getElementById('swapModal').hidden = true; document.body.style.overflow = ''; swapCtx = null; }
+  document.getElementById('swapClose').addEventListener('click', closeSwap);
+  document.getElementById('swapSend').addEventListener('click', async () => {
+    if (!swapCtx || !auth.currentUser) return;
+    const msg = document.getElementById('swapMsg');
+    const newName = document.getElementById('swapNew').value;
+    if (!newName) { msg.textContent = 'Choose a product to swap for.'; return; }
+    const reason = document.getElementById('swapReason').value.trim();
+    const d = swapCtx.d;
+    document.getElementById('swapSend').disabled = true;
+    try {
+      const ticketId = 'KT-' + Date.now().toString(36).slice(-4).toUpperCase() + '-' + Math.random().toString(36).slice(-3).toUpperCase();
+      await addDoc(collection(db, 'requests'), {
+        uid: auth.currentUser.uid,
+        ticketId: ticketId,
+        title: `${d.product} — Swap request`,
+        name: auth.currentUser.displayName || '',
+        contact: auth.currentUser.email || '',
+        service: 'Swap product',
+        platform: d.platform || '',
+        accountNumber: d.mt5AccountNumber || d.tradingViewUsername || '',
+        tier: 'Standard',
+        strategy: `Swap ${d.product} (license ${swapCtx.licId}) for ${newName}.${reason ? ' Reason: ' + reason : ''}`,
+        status: 'Received',
+        note: 'Swap request received. We will review it and get back to you.',
+        deliveryLink: '',
+        createdAt: serverTimestamp()
+      });
+      msg.textContent = 'Swap request sent. Ticket ' + ticketId + '. See "Your requests" for updates.';
+      setTimeout(closeSwap, 2200);
+    } catch (err) {
+      msg.textContent = 'Error: ' + err.message;
+      document.getElementById('swapSend').disabled = false;
+    }
+  });
+
   function loadLicenses(uid) {
     const licensesList = document.getElementById('licensesList');
     const q = query(collection(db, 'licenses'), where('uid', '==', uid));
@@ -2449,6 +2591,7 @@
           <div class="r-detail">${platformDetail}</div>
           <div class="r-detail">Subscription: ${d.subscriptionType || '—'}</div>
           <div class="r-date">${d.expiryDate ? 'Expires ' + d.expiryDate : 'Lifetime license'}</div>
+          ${!isRental ? '<button type="button" class="btn btn-ghost swap-btn" style="margin-top:10px;">Request a swap</button>' : ''}
           ${isRental ? `
             <div class="admin-edit-row" style="margin-top:12px;">
               <label>Renew for</label>
@@ -2505,6 +2648,9 @@
               msg.textContent = 'Error: ' + err.message;
             }
           });
+        }
+        if (!isRental) {
+          card.querySelector('.swap-btn').addEventListener('click', () => openSwap(licSnap.id, d));
         }
         licensesList.appendChild(card);
       });
@@ -3111,6 +3257,8 @@
         card.querySelector('.admin-editprod-btn').addEventListener('click', () => {
           document.getElementById('prod-name').value = docSnap.id;
           document.getElementById('prod-pair').value = d.pair || '';
+          document.getElementById('prod-category').value = d.category || 'PC';
+          document.getElementById('prod-image').value = d.imageUrl || '';
           document.querySelectorAll('.prod-platform-cb').forEach(cb => {
             cb.checked = (d.platforms || []).includes(cb.value);
           });
@@ -3157,6 +3305,8 @@
     try {
       await setDoc(doc(db, 'products', name), {
         pair: document.getElementById('prod-pair').value,
+        category: document.getElementById('prod-category').value,
+        imageUrl: document.getElementById('prod-image').value.trim(),
         platforms: selectedPlatforms,
         active: document.getElementById('prod-active').value === 'true',
         description: document.getElementById('prod-desc').value,
@@ -3711,6 +3861,32 @@ document.getElementById('f-service').addEventListener('change', function() {
 </script>
 
 <div id="stmtPrint"></div>
+<div id="riskModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="riskTitle">
+  <div class="modal-box">
+    <span class="eyebrow">Before you continue</span>
+    <h3 id="riskTitle" style="margin:6px 0 12px;">Trading carries risk</h3>
+    <ul class="tick-list" style="margin-top:0;">
+      <li>You can lose some or all of your capital. Never trade money you cannot afford to lose.</li>
+      <li>Our bots are software tools. They do not guarantee profit, and past results do not predict future results.</li>
+      <li>We do not give personal financial advice. Digital sales are final, with swaps for equal or lesser value.</li>
+    </ul>
+    <button type="button" class="btn btn-gold" id="riskAccept" style="width:100%;">I understand &amp; accept</button>
+    <p class="note" style="margin-top:10px;font-size:12.5px;"><a href="#legal" data-risk-read style="color:var(--gold);text-decoration:underline;">Read the full legal &amp; risk page</a></p>
+  </div>
+</div>
+<div id="swapModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="swapTitle">
+  <div class="modal-box">
+    <button type="button" class="modal-x" id="swapClose" aria-label="Close">×</button>
+    <span class="eyebrow">Request a swap</span>
+    <h3 id="swapTitle" style="margin:6px 0 10px;">Swap this product</h3>
+    <p class="note" id="swapInfo" style="color:var(--text-dim);font-size:13.5px;margin-bottom:12px;"></p>
+    <div class="form-group"><label for="swapNew">Swap for</label><select id="swapNew"></select></div>
+    <div class="form-group"><label for="swapReason">Why do you want to swap? (optional)</label><textarea id="swapReason" rows="3"></textarea></div>
+    <p class="note" id="swapMsg" style="min-height:18px;font-size:13px;color:var(--gold);"></p>
+    <button type="button" class="btn btn-gold" id="swapSend">Send swap request</button>
+  </div>
+</div>
+
 <div id="ivPayout" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="payTitle">
   <div class="modal-box">
     <button type="button" class="modal-x" data-pclose aria-label="Close">×</button>
@@ -4032,23 +4208,26 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
 <script>
 /* Page router: each menu item opens its own page (no long scrolling). Old #links still work. */
 (function(){
-  var MAP={home:'home',services:'home',why:'home',how:'how',process:'how',proof:'how',bots:'bots',request:'request',invest:'invest',account:'account',contact:'contact',admin:'admin'};
-  var TOP={home:1,how:1,process:1,bots:1,request:1,invest:1,account:1,contact:1,admin:1};
+  var MAP={home:'home',services:'home',why:'home',how:'how',process:'how',proof:'how',bots:'bots',request:'request',invest:'invest',account:'account',contact:'contact',legal:'legal',admin:'admin'};
+  var TOP={home:1,how:1,process:1,bots:1,request:1,invest:1,account:1,contact:1,legal:1,admin:1};
   var cur=document.body.getAttribute('data-active')||'home';
   function setActive(){
-    document.querySelectorAll('.nav-links a, .nav-menu a').forEach(function(a){
-      var id=(a.getAttribute('href')||'').slice(1);
-      a.classList.toggle('active', !!id && MAP[id]===cur && (id===cur||id==='process'&&cur==='how'||id==='services'&&cur==='home'&&false));
+    var h=(location.hash||'').slice(1);
+    document.querySelectorAll('.nav-links a, .nav-menu a, .nav-pills a').forEach(function(a){
+      var id=(a.getAttribute('href')||'').slice(1), on=false;
+      if(id==='services') on=(cur==='home'&&h==='services'); else if(id==='home') on=(cur==='home'&&h!=='services'); else on=(id===cur);
+      a.classList.toggle('active',on);
     });
+    var act=document.querySelector('.nav-pills a.active'); if(act&&act.parentNode) act.parentNode.scrollLeft=act.offsetLeft-(act.parentNode.clientWidth-act.offsetWidth)/2;
   }
   function show(page){
     cur=page; document.body.setAttribute('data-active',page); setActive();
-    var t=({home:'The Kingdom Trader — Strategy Automation & Trading Bots',how:'How it works — The Kingdom Trader',bots:'Bot catalog — The Kingdom Trader',request:'Get started — The Kingdom Trader',invest:'Invest (demo) — The Kingdom Trader',account:'My Account — The Kingdom Trader',contact:'Contact — The Kingdom Trader',admin:'Admin — The Kingdom Trader'})[page];
+    var t=({home:'The Kingdom Trader — Strategy Automation & Trading Bots',how:'How it works — The Kingdom Trader',bots:'Bot catalog — The Kingdom Trader',request:'Get started — The Kingdom Trader',invest:'Invest (demo) — The Kingdom Trader',account:'My Account — The Kingdom Trader',contact:'Contact — The Kingdom Trader',legal:'Legal & risk — The Kingdom Trader',admin:'Admin — The Kingdom Trader'})[page];
     if(t) document.title=t;
   }
   function go(id,instant){
     var page=MAP[id]||'home';
-    if(page!==cur) show(page);
+    if(page!==cur) show(page); setActive();
     var el=document.getElementById(id);
     if(TOP[id]||!el){ window.scrollTo({top:0,behavior:instant?'auto':'smooth'}); }
     else { setTimeout(function(){ el.scrollIntoView({behavior:instant?'auto':'smooth',block:'start'}); },30); }
@@ -4119,6 +4298,65 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
     document.getElementById(b.getAttribute('data-subtab')).click(); setTimeout(sync,30);
   });
   if('MutationObserver' in window){ var mo=new MutationObserver(sync); mo.observe(drawer,{attributes:true,attributeFilter:['class']}); document.querySelectorAll('.panel-tab').forEach(function(t){ mo.observe(t,{attributes:true,attributeFilter:['class']}); }); }
+})();
+</script>
+
+<script type="module">
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+(function(){
+  var db=getFirestore(getApp()), auth=getAuth(getApp()), admin=false, last=null;
+  function apply(d){
+    ['promoHome','promoBots'].forEach(function(id){
+      var el=document.getElementById(id); if(!el) return;
+      var on=!!(d&&d.active&&(d.title||d.text)); el.hidden=!on; if(!on) return;
+      el.querySelector('.promo-title').textContent=d.title||''; el.querySelector('.promo-text').textContent=d.text||'';
+      var a=el.querySelector('.promo-btn'); a.textContent=d.buttonText||'Claim'; var l=d.link||'#request'; a.setAttribute('href',l);
+      if(/^https?:/i.test(l)){ a.setAttribute('target','_blank'); a.setAttribute('rel','noopener'); } else { a.removeAttribute('target'); }
+    });
+    if(admin&&d){ document.getElementById('promo-active').checked=!!d.active; document.getElementById('promo-title').value=d.title||''; document.getElementById('promo-text').value=d.text||''; document.getElementById('promo-btn').value=d.buttonText||''; document.getElementById('promo-link').value=d.link||''; }
+  }
+  onSnapshot(doc(db,'siteContent','promo'),function(s){ last=s.exists()?s.data():null; apply(last); },function(){});
+  onAuthStateChanged(auth,function(u){ admin=!!(u&&u.email==='thekingdomtrader7@gmail.com'); if(admin) apply(last); });
+  var save=document.getElementById('promoSave');
+  if(save) save.addEventListener('click',async function(){
+    var m=document.getElementById('promoMsg');
+    try{ await setDoc(doc(db,'siteContent','promo'),{active:document.getElementById('promo-active').checked,title:document.getElementById('promo-title').value.trim(),text:document.getElementById('promo-text').value.trim(),buttonText:document.getElementById('promo-btn').value.trim(),link:document.getElementById('promo-link').value.trim(),updatedAt:Date.now()}); m.textContent='Saved ✓'; setTimeout(function(){m.textContent='';},2500); }
+    catch(e){ m.textContent='Error: '+(e.code==='permission-denied'?'permission denied (publish the new Firebase rules)':e.message); }
+  });
+})();
+</script>
+<script>
+/* first-visit risk pop-up */
+(function(){
+  var m=document.getElementById('riskModal'); if(!m) return;
+  try{ if(localStorage.getItem('kt_risk_ok')==='1') return; }catch(e){}
+  m.hidden=false; document.body.style.overflow='hidden';
+  function done(){ m.hidden=true; document.body.style.overflow=''; }
+  document.getElementById('riskAccept').addEventListener('click',function(){ try{ localStorage.setItem('kt_risk_ok','1'); }catch(e){} done(); });
+  var r=m.querySelector('[data-risk-read]'); if(r) r.addEventListener('click',function(){ done(); });
+})();
+/* catalog: filter by category and sort */
+(function(){
+  var cat='all', sort='';
+  function cards(grid){ return [].slice.call(grid.querySelectorAll('.bot-card[data-dynamic="true"]')); }
+  function key(c){ return (c.dataset.botName||'').toLowerCase(); }
+  function view(){
+    document.querySelectorAll('#botsContainer .bots').forEach(function(grid){
+      var list=cards(grid); if(!list.length) return;
+      list.forEach(function(c){ c.style.display=(cat==='all'||c.dataset.category===cat)?'':'none'; });
+      if(!sort) return;
+      var sorted=list.slice().sort(function(a,b){ if(sort==='az') return key(a)<key(b)?-1:1; var pa=parseFloat(a.dataset.botPrice)||0, pb=parseFloat(b.dataset.botPrice)||0; return sort==='plh'?pa-pb:pb-pa; });
+      var same=sorted.every(function(c,i){return c===list[i];}); if(same) return;
+      var first=list[0]; sorted.forEach(function(c){ grid.appendChild(c); });
+    });
+  }
+  window.ktCatalogView=view;
+  var bar=document.getElementById('catBar'); if(!bar) return;
+  bar.addEventListener('click',function(e){ var b=e.target.closest('[data-cat]'); if(!b) return; cat=b.getAttribute('data-cat'); bar.querySelectorAll('[data-cat]').forEach(function(x){ x.classList.toggle('on',x===b); }); view(); });
+  document.getElementById('catSort').addEventListener('change',function(e){ sort=e.target.value; view(); });
+  var box=document.getElementById('botsContainer'); if(box&&'MutationObserver' in window) new MutationObserver(function(){ setTimeout(view,120); }).observe(box,{childList:true});
 })();
 </script>
 
