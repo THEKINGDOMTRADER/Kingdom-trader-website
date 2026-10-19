@@ -999,6 +999,35 @@
     .platform-section-title::after{content:"swipe →";margin-left:10px;font-size:10px;color:var(--text-dim);text-transform:none;letter-spacing:0;}
   }
   .start-tabs a b{width:26px;height:26px;flex:0 0 auto;}
+
+  /* ---------- ACCOUNT SERVICES, TRANSACTIONS, REGION (added) ---------- */
+  .panel-tabs{overflow-x:auto;scrollbar-width:none;} .panel-tabs::-webkit-scrollbar{display:none;}
+  .panel-tab{flex:1 0 auto;padding:7px 10px;white-space:nowrap;}
+  .svc-cards{display:grid;gap:10px;margin-bottom:16px;}
+  .svc-card{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;color:var(--text);font:inherit;cursor:pointer;}
+  .svc-card:hover{border-color:var(--gold);} .svc-card b{font-size:15px;} .svc-card span{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);} .svc-card small{color:var(--text-dim);font-size:12px;}
+  .tx-list{display:grid;gap:8px;margin-top:12px;}
+  .tx-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px;}
+  .tx-row .l{font-size:13.5px;color:var(--text);} .tx-row small{display:block;color:var(--text-dim);font-size:11.5px;margin-top:2px;}
+  .tx-row .r{text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px;white-space:nowrap;} .tx-row .r small{font-family:inherit;}
+  .dash-invest .tx-row{margin-bottom:8px;}
+  .mini-select{background:var(--bg);border:1px solid var(--line);color:var(--text);padding:6px 8px;border-radius:4px;font:inherit;font-size:13px;max-width:190px;}
+  .foot-region{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--text-dim);}
+  @media (max-width:480px){ .sub-tabs{overflow-x:auto;} .sub-tabs button{flex:0 0 auto;padding:8px 12px;font-size:12.5px;} }
+  #panelOverviewView .stats-row{grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
+  #panelOverviewView .stat-card{padding:12px 6px;}
+  #panelOverviewView .stat-num{font-size:24px;}
+  #panelOverviewView .stat-label{font-size:10.5px;}
+
+  /* ---------- WALLET (added) ---------- */
+  .wallet-test{border:1px solid var(--gold-soft);background:rgba(198,161,83,.08);border-radius:6px;padding:10px 14px;font-size:13px;color:var(--text-dim);margin-bottom:12px;}
+  .wallet-test[hidden]{display:none;}
+  .wallet-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+  .wallet-cards div{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 8px;text-align:center;}
+  .wallet-cards small{display:block;color:var(--text-dim);font-size:11px;} .wallet-cards b{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--gold);font-weight:500;}
+  .wallet-forms{display:grid;gap:12px;margin-bottom:14px;}
+  .wallet-form{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:8px;} .wallet-form h4{font-size:14.5px;}
+  .wallet-form .inv-field input,.wallet-form .inv-field select{width:100%;}
 </style>
 </head>
 <body>
@@ -1045,9 +1074,11 @@
     </div>
     <div class="sub-tabs" id="subTabs" role="tablist" aria-label="My dashboard">
       <button type="button" data-subtab="panelTabOverview">Overview</button>
-      <button type="button" data-subtab="panelTabLicenses">Licenses</button>
+      <button type="button" data-subtab="panelTabStrategy">Strategy</button>
+      <button type="button" data-subtab="panelTabBots">Bots</button>
+      <button type="button" data-subtab="panelTabInvest">Invest</button>
+      <button type="button" data-subtab="panelTabTrans">Wallet</button>
       <button type="button" data-subtab="panelTabProfile">Profile</button>
-      <button type="button" data-subtab="panelTabPayments">Payments</button>
     </div>
   </div>
 
@@ -1095,9 +1126,9 @@
       <div class="session-head">
         <div>
           <span class="eyebrow">Live · session map</span>
-          <div class="session-title">Market sessions, shown in your local time (EAT)</div>
+          <div class="session-title" id="sessionTitle">Market sessions, shown in your local time</div>
         </div>
-        <div class="clock" id="clockText">--:--:-- EAT</div>
+        <div class="clock" id="clockText">--:--:--</div>
       </div>
       <div class="timeline" id="timeline">
         <div class="tl-hours" id="tlHours"></div>
@@ -1273,11 +1304,13 @@
         <div class="form-group">
           <label for="f-rental-duration">Rental duration</label>
           <select id="f-rental-duration">
-            <option value="7">7 days</option>
-            <option value="14">14 days</option>
-            <option value="30" selected>30 days</option>
-            <option value="60">60 days</option>
-            <option value="90">90 days</option>
+            <option value="7">1 week (7 days)</option>
+            <option value="14">2 weeks (14 days)</option>
+            <option value="30" selected>1 month (30 days)</option>
+            <option value="60">2 months (60 days)</option>
+            <option value="90">3 months (90 days)</option>
+            <option value="120">4 months (120 days)</option>
+            <option value="180">6 months (180 days)</option>
             <option value="365">1 year</option>
           </select>
           <span id="rentalEstimateNote" class="form-helper-note" style="margin:4px 0 0;padding:0;border:none;"></span>
@@ -1366,6 +1399,11 @@
         <div class="form-group form-group-full">
           <label for="reg-email">Email</label>
           <input type="email" id="reg-email" required placeholder="you@example.com">
+        </div>
+        <div class="form-group form-group-full">
+          <label for="reg-country">Your country</label>
+          <select id="reg-country" required></select>
+          <span class="form-helper-note" style="margin:4px 0 0;padding:0;border:none;">Used to show prices in your currency and market sessions in your time.</span>
         </div>
         <div class="form-group form-group-full">
           <label for="reg-password">Password</label>
@@ -1493,9 +1531,10 @@
         </div>
       </div>
 
-      <div class="adm-block">
-        <h4>Withdrawal requests</h4>
-        <div id="ivAdminWd"></div>
+      <div class="adm-block" id="ivAdminWallet" hidden>
+        <h4>Wallet requests</h4>
+        <p class="note">Deposits, withdrawals and bot payments from wallets that are waiting for you. Confirm a deposit once the money has arrived, and release a withdrawal once you have sent it. Once your gateway is live, it does this automatically.</p>
+        <div id="ivAdminWalletList"></div>
       </div>
 
       <div class="adm-block">
@@ -1544,7 +1583,7 @@
 </section>
 <footer>
   <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;width:100%;">
-    <div class="foot-risk" style="flex-basis:100%;">Risk warning: trading carries a high risk of loss, and results are not guaranteed. Prices shown in UGX are approximate; the final amount is confirmed at checkout.</div>
+    <div class="foot-risk" style="flex-basis:100%;">Prices in other currencies are approximate. <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener" style="text-decoration:underline;">Rates by Exchange Rate API</a>. Risk warning: trading carries a high risk of loss, and results are not guaranteed. Prices shown in UGX are approximate; the final amount is confirmed at checkout.</div>
     <div>© <span id="year"></span> The Kingdom Trader. All rights reserved.</div>
     <div class="foot-links">
       <a href="#start">Get started</a>
@@ -1553,7 +1592,7 @@
       <a href="#contact">Contact &amp; support</a>
       <a href="#legal">Legal &amp; risk</a>
     </div>
-    <div class="foot-contact" style="flex-basis:100%;">
+    <div class="foot-contact" style="flex-basis:100%;align-items:center;"><label class="foot-region">Region <select id="footRegion" class="mini-select" aria-label="Your region and currency"></select></label>
       <a href="https://wa.me/256774077467" target="_blank" rel="noopener">WhatsApp</a>
       <a href="https://t.me/the_kingdom_trader" target="_blank" rel="noopener">Telegram</a>
       <a href="mailto:thekingdomtrader7@gmail.com">Email</a>
@@ -1820,9 +1859,11 @@
 
     <div class="panel-tabs">
       <button type="button" id="panelTabOverview" class="panel-tab active">Overview</button>
-      <button type="button" id="panelTabLicenses" class="panel-tab">Licenses</button>
+      <button type="button" id="panelTabStrategy" class="panel-tab">Strategy</button>
+      <button type="button" id="panelTabBots" class="panel-tab">Bots</button>
+      <button type="button" id="panelTabInvest" class="panel-tab">Invest</button>
+      <button type="button" id="panelTabTrans" class="panel-tab">Wallet</button>
       <button type="button" id="panelTabProfile" class="panel-tab">Profile</button>
-      <button type="button" id="panelTabPayments" class="panel-tab">Payments</button>
     </div>
 
     <div id="panelOverviewView">
@@ -1840,11 +1881,22 @@
           <div class="stat-label">Completed</div>
         </div>
       </div>
+      <div class="dash-section-label">Your services</div>
+      <div class="svc-cards" id="svcCards">
+        <button type="button" class="svc-card" data-goto="strategy"><b>Strategy automation</b><span id="svcCnt1">0 requests</span><small>Custom bots built from your strategy</small></button>
+        <button type="button" class="svc-card" data-goto="bots"><b>Bots</b><span id="svcCnt2">0 orders</span><small>Bots you bought or rented</small></button>
+        <button type="button" class="svc-card" data-goto="trans"><b>Wallet</b><span id="svcCnt4">$0.00</span><small>Available balance</small></button>
+        <button type="button" class="svc-card" data-goto="invest"><b>Investments</b><span id="svcCnt3">0 plans</span><small>Your trade-for-me plans</small></button>
+      </div>
+      <a href="#start" class="btn btn-gold new-request-btn" id="overviewStartBtn">+ Start something new</a>
+    </div>
+
+    <div id="panelRequestsView" style="display:none;">
       <p id="emptyStateNote" class="text-dim-note" style="display:none;margin-bottom:20px;">Welcome! Your first request will show up here once you submit one.</p>
 
-      <div class="dash-section-label" id="requestsLabel">Your requests</div>
-      <a href="#request" id="newRequestBtn" class="btn btn-gold new-request-btn">+ Log a new request</a>
-      <div class="form-group" style="max-width:220px;margin-bottom:14px;">
+      <div class="dash-section-label" id="requestsLabel" style="margin-top:0;">Your requests</div>
+      <a href="#request" id="newRequestBtn" class="btn btn-gold new-request-btn">+ New request</a>
+      <div class="form-group" style="display:none;max-width:220px;margin-bottom:14px;">
         <label for="clientTypeFilter">Filter</label>
         <select id="clientTypeFilter">
           <option value="">All requests</option>
@@ -1856,7 +1908,34 @@
         <p class="text-dim-note">Loading your requests…</p>
       </div>
     </div>
-
+    <div id="panelInvestView" style="display:none;">
+      <div class="dash-section-label" style="margin-top:0;">Your investment plans</div>
+      <div id="dashInvest" class="dash-invest"><p class="text-dim-note">Your plans appear here once you join one.</p></div>
+      <a href="#invest" class="btn btn-gold new-request-btn">Open the plans</a>
+    </div>
+    <div id="panelTransView" style="display:none;">
+      <div class="dash-section-label" style="margin-top:0;">Your wallet</div>
+      <div id="walletBox">
+        <div class="wallet-test" id="walletTest">Test wallet · virtual funds only. No real money is accepted yet.</div>
+        <div class="wallet-cards"><div><small>Balance</small><b id="wBal">$0.00</b></div><div><small>Available</small><b id="wAvail">$0.00</b></div><div><small>Pending</small><b id="wPend">$0.00</b></div></div>
+        <div class="wallet-forms">
+          <div class="wallet-form"><h4>Deposit</h4>
+            <div class="inv-field"><input type="number" inputmode="decimal" id="wDepAmt" placeholder="Amount in USD" aria-label="Deposit amount"></div>
+            <div class="inv-field"><select id="wDepMethod" aria-label="Deposit method"><option>MTN Mobile Money</option><option>Airtel Money</option><option>Card</option></select></div>
+            <button type="button" class="btn btn-gold btn-sm" id="wDepBtn">Request deposit</button><p class="note" id="wDepMsg"></p></div>
+          <div class="wallet-form"><h4>Withdraw</h4>
+            <div class="inv-field"><input type="number" inputmode="decimal" id="wWdAmt" placeholder="Amount in USD" aria-label="Withdrawal amount"></div>
+            <div class="inv-field"><select id="wWdMethod" aria-label="Withdrawal method"><option>MTN Mobile Money</option><option>Airtel Money</option><option>Bank / card</option></select></div>
+            <div class="inv-field"><input type="text" id="wWdTo" placeholder="Phone number or account" aria-label="Send to"></div>
+            <button type="button" class="btn btn-gold btn-sm" id="wWdBtn">Request withdrawal</button><p class="note" id="wWdMsg"></p></div>
+        </div>
+        <div id="wPending"></div>
+      </div>
+      <div class="dash-section-label">Transactions</div>
+      <div class="chips" id="txChips"><button type="button" class="chip on" data-tx="all">All</button><button type="button" class="chip" data-tx="Wallet">Wallet</button><button type="button" class="chip" data-tx="Strategy">Strategy</button><button type="button" class="chip" data-tx="Bots">Bots</button><button type="button" class="chip" data-tx="Investments">Investments</button></div>
+      <div id="txList" class="tx-list"><p class="text-dim-note">Nothing yet. Orders, payments, plan contributions, payouts and withdrawals will be listed here.</p></div>
+      <p class="text-dim-note" style="margin-top:10px;">Amounts are in US dollars. Statuses update automatically.</p>
+    </div>
     <div id="panelLicensesView" style="display:none;">
       <div class="dash-section-label" style="margin-top:0;">Your licenses</div>
       <div id="licensesList" class="requests-list">
@@ -1867,6 +1946,7 @@
     <div id="panelProfileView" style="display:none;">
       <div class="profile-row"><span class="l">Name</span><span id="profName" class="v"></span></div>
       <div class="profile-row"><span class="l">Email</span><span id="profEmail" class="v"></span></div>
+      <div class="profile-row"><span class="l">Country</span><span class="v"><select id="profCountry" class="mini-select" aria-label="Your country"></select></span></div>
       <button type="button" id="logoutBtn" class="btn btn-ghost" style="width:100%;margin-top:14px;">Log out</button>
     </div>
 
@@ -2013,6 +2093,7 @@
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(cred.user, { displayName: name });
+      try { const cc = document.getElementById('reg-country').value; if (window.ktSetCountry) window.ktSetCountry(cc, true); await setDoc(doc(db, 'users', cred.user.uid), { country: cc, createdAt: Date.now() }); } catch (_) {}
     } catch (err) {
       errBox.textContent = friendlyAuthError(err);
       btn.disabled = false;
@@ -2065,8 +2146,8 @@
 
   // Auth state -> toggle Auth box vs Dashboard, and load this user's requests
   // ===== PUBLIC BOT CATALOG (loads for everyone, logged in or not) =====
-  const RENTAL_MULTIPLIERS = { 7: 1.10, 14: 1.05, 30: 1.00, 60: 0.95, 90: 0.90, 365: 0.75 };
-  const RENTAL_LABELS = { 7: '7 days', 14: '14 days', 30: '30 days', 60: '60 days', 90: '90 days', 365: '1 year' };
+  const RENTAL_MULTIPLIERS = { 7: 1.10, 14: 1.05, 30: 1.00, 60: 0.95, 90: 0.90, 120: 0.88, 180: 0.82, 365: 0.75 };
+  const RENTAL_LABELS = { 7: '1 week', 14: '2 weeks', 30: '1 month', 60: '2 months', 90: '3 months', 120: '4 months', 180: '6 months', 365: '1 year' };
   function computeRentalPrice(monthlyRate, days) {
     return Math.round((monthlyRate / 30) * days * (RENTAL_MULTIPLIERS[days] || 1));
   }
@@ -2281,25 +2362,32 @@
   document.getElementById('newRequestBtn').addEventListener('click', () => closeDrawer());
 
   // Overview / Profile / Payments tab switch inside the drawer
-  const panelTabOverview = document.getElementById('panelTabOverview');
-  const panelTabLicenses = document.getElementById('panelTabLicenses');
-  const panelTabProfile = document.getElementById('panelTabProfile');
-  const panelTabPayments = document.getElementById('panelTabPayments');
-  const panelOverviewView = document.getElementById('panelOverviewView');
-  const panelLicensesView = document.getElementById('panelLicensesView');
-  const panelProfileView = document.getElementById('panelProfileView');
-  const panelPaymentsView = document.getElementById('panelPaymentsView');
-
-  function showTab(tab){
-    [panelTabOverview, panelTabLicenses, panelTabProfile, panelTabPayments].forEach(t => t.classList.remove('active'));
-    [panelOverviewView, panelLicensesView, panelProfileView, panelPaymentsView].forEach(v => v.style.display = 'none');
-    tab.el.classList.add('active');
-    tab.view.style.display = 'block';
+  const TABS = {
+    overview: { tab: 'panelTabOverview', views: ['panelOverviewView'] },
+    strategy: { tab: 'panelTabStrategy', views: ['panelRequestsView'], filter: 'custom', label: 'Strategy automation requests', btn: ['#request', '+ New strategy request'] },
+    bots: { tab: 'panelTabBots', views: ['panelRequestsView', 'panelLicensesView'], filter: 'bot', label: 'Bot orders', btn: ['#start-bots', '+ Browse bots'] },
+    invest: { tab: 'panelTabInvest', views: ['panelInvestView'] },
+    trans: { tab: 'panelTabTrans', views: ['panelTransView', 'panelPaymentsView'] },
+    profile: { tab: 'panelTabProfile', views: ['panelProfileView'] }
+  };
+  const ALL_VIEWS = ['panelOverviewView', 'panelRequestsView', 'panelLicensesView', 'panelInvestView', 'panelTransView', 'panelPaymentsView', 'panelProfileView'];
+  function showTabKey(key) {
+    const t = TABS[key]; if (!t) return;
+    Object.values(TABS).forEach(x => document.getElementById(x.tab).classList.remove('active'));
+    ALL_VIEWS.forEach(id => document.getElementById(id).style.display = 'none');
+    document.getElementById(t.tab).classList.add('active');
+    t.views.forEach(id => document.getElementById(id).style.display = 'block');
+    if (t.filter) {
+      document.getElementById('clientTypeFilter').value = t.filter;
+      document.getElementById('requestsLabel').textContent = t.label;
+      const nb = document.getElementById('newRequestBtn'); nb.setAttribute('href', t.btn[0]); nb.textContent = t.btn[1];
+      renderFilteredRequests();
+    }
   }
-  panelTabOverview.addEventListener('click', () => showTab({el: panelTabOverview, view: panelOverviewView}));
-  panelTabLicenses.addEventListener('click', () => showTab({el: panelTabLicenses, view: panelLicensesView}));
-  panelTabProfile.addEventListener('click', () => showTab({el: panelTabProfile, view: panelProfileView}));
-  panelTabPayments.addEventListener('click', () => showTab({el: panelTabPayments, view: panelPaymentsView}));
+  window.ktShowTab = showTabKey;
+  Object.keys(TABS).forEach(k => document.getElementById(TABS[k].tab).addEventListener('click', () => showTabKey(k)));
+  document.getElementById('svcCards').addEventListener('click', (e) => { const c = e.target.closest('[data-goto]'); if (c) showTabKey(c.getAttribute('data-goto')); });
+  document.getElementById('overviewStartBtn').addEventListener('click', () => closeDrawer());
 
   // Pay widget -> choose Mobile Money or Card, then trigger a MarzPay payment
   document.getElementById('requestsList').addEventListener('click', async (e) => {
@@ -2477,6 +2565,7 @@
     const licensesList = document.getElementById('licensesList');
     const q = query(collection(db, 'licenses'), where('uid', '==', uid));
     onSnapshot(q, (snapshot) => {
+      window.__ktCnt = window.__ktCnt || {}; window.__ktCnt.l = snapshot.size; if (window.ktCounts) window.ktCounts();
       if (snapshot.empty) {
         licensesList.innerHTML = '<p class="text-dim-note">No licenses yet — these appear here once a purchase or rental is confirmed.</p>';
         return;
@@ -2593,6 +2682,13 @@
         if (status === 'completed' || status === 'delivered') done++;
         else active++;
       });
+      let nCustom = 0, nBot = 0;
+      docs.forEach((x) => { ((x.data().service || '').includes('Custom')) ? nCustom++ : nBot++; });
+      window.__ktCnt = window.__ktCnt || {}; window.__ktCnt.s = nCustom; window.__ktCnt.b = nBot;
+      window.__ktTx = window.__ktTx || {};
+      window.__ktTx.req = docs.map((x) => { const d = x.data(); return { t: d.createdAt ? d.createdAt.toMillis() : 0, svc: (d.service || '').includes('Custom') ? 'Strategy' : 'Bots', label: d.title || d.service || 'Request', amt: d.amountDue || 0, st: d.status || 'Received', ref: d.ticketId || '' }; });
+      if (window.ktCounts) window.ktCounts();
+      if (window.ktRenderTx) window.ktRenderTx();
       document.getElementById('statTotal').textContent = total;
       document.getElementById('statActive').textContent = active;
       document.getElementById('statDone').textContent = done;
@@ -2608,7 +2704,8 @@
     }
     return `
       <div class="pay-widget" data-ticket="${d.ticketId || ''}" data-amount="${d.amountDue || 0}">
-        <button type="button" class="download-btn pay-start-btn">🔒 Pay $${d.amountDue || 0} to unlock</button>
+        <button type="button" class="bot-buy-btn pay-wallet-btn" data-ticket="${d.ticketId || ''}" data-amount="${d.amountDue || 0}" style="width:100%;margin-bottom:8px;">💼 Pay $${d.amountDue || 0} from wallet</button>
+          <button type="button" class="download-btn pay-start-btn">🔒 Pay $${d.amountDue || 0} to unlock</button>
         <div class="pay-method-choice" style="display:none;">
           <p class="text-dim-note" style="margin:10px 0 8px;">Choose how you'd like to pay:</p>
           <div style="display:flex;gap:8px;">
@@ -3304,34 +3401,38 @@ for(let i=0;i<24;i++){
   tlHours.appendChild(d);
 }
 
-// Session bands, in EAT (UTC+3)
-// Asia (Tokyo) ~ 09:00-18:00 JST -> 03:00-12:00 EAT
-// London ~ 08:00-17:00 BST -> 10:00-19:00 EAT (approx, ignoring DST precisely)
-// New York ~ 08:00-17:00 EST -> 15:00-24:00 EAT (approx)
-function setBand(id, startHr, endHr){
-  const el = document.getElementById(id);
-  const left = (startHr/24)*100;
-  const width = ((endHr-startHr)/24)*100;
-  el.style.left = left + '%';
-  el.style.width = width + '%';
+// Session bands are defined in UTC and shown in the visitor's own time zone
+// Asia ~ 00:00-09:00 UTC, London ~ 07:00-16:00 UTC, New York ~ 12:00-21:00 UTC (approximate)
+const BANDS = [['bandAsia', 0, 9], ['bandLondon', 7, 16], ['bandNY', 12, 21]];
+function tzNow(){
+  const tz = (window.ktLocale && window.ktLocale.tz) || undefined;
+  const parts = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }).formatToParts(new Date());
+  const g = t => parseInt((parts.find(p => p.type === t) || {}).value || '0', 10) % 24;
+  let abbr = ''; try { abbr = new Intl.DateTimeFormat('en-GB', { timeZone: tz, timeZoneName: 'short' }).formatToParts(new Date()).find(p => p.type === 'timeZoneName').value; } catch (e) {}
+  const offH = (function(){ const n = new Date(); const loc = new Date(n.toLocaleString('en-US', { timeZone: tz })); const utc = new Date(n.toLocaleString('en-US', { timeZone: 'UTC' })); return Math.round((loc - utc) / 3600000 * 4) / 4; })();
+  return { h: g('hour'), m: g('minute'), s: g('second'), abbr: abbr, off: offH };
 }
-setBand('bandAsia', 3, 12);
-setBand('bandLondon', 10, 19);
-setBand('bandNY', 15, 24);
-
+let lastOff = null;
+function layoutBands(off){
+  BANDS.forEach(([id, a, b]) => {
+    const el = document.getElementById(id);
+    let start = ((a + off) % 24 + 24) % 24, end = start + (b - a);
+    const old = document.getElementById(id + '2'); if (old) old.remove();
+    el.style.left = (start / 24 * 100) + '%';
+    if (end <= 24) { el.style.width = ((end - start) / 24 * 100) + '%'; }
+    else {
+      el.style.width = ((24 - start) / 24 * 100) + '%';
+      const c = el.cloneNode(true); c.id = id + '2'; c.textContent = ''; c.style.left = '0%'; c.style.width = ((end - 24) / 24 * 100) + '%'; el.parentNode.appendChild(c);
+    }
+  });
+}
 function updateClock(){
-  const now = new Date();
-  // Convert to EAT (UTC+3)
-  const utc = now.getTime() + (now.getTimezoneOffset()*60000);
-  const eat = new Date(utc + (3*3600000));
-  const h = eat.getHours(), m = eat.getMinutes(), s = eat.getSeconds();
+  const t = tzNow();
   const pad = n => String(n).padStart(2,'0');
-  document.getElementById('clockText').textContent = `${pad(h)}:${pad(m)}:${pad(s)} EAT`;
-
-  const hourFloat = h + m/60 + s/3600;
-  const pct = (hourFloat/24)*100;
-  const nowLine = document.getElementById('nowLine');
-  nowLine.style.left = pct + '%';
+  document.getElementById('clockText').textContent = `${pad(t.h)}:${pad(t.m)}:${pad(t.s)} ${t.abbr}`;
+  document.getElementById('sessionTitle').textContent = 'Market sessions, shown in your local time (' + t.abbr + ')';
+  if (t.off !== lastOff) { lastOff = t.off; layoutBands(t.off); }
+  document.getElementById('nowLine').style.left = ((t.h + t.m/60 + t.s/3600) / 24 * 100) + '%';
 }
 updateClock();
 setInterval(updateClock, 1000);
@@ -3501,7 +3602,7 @@ function updateRentalEstimate() {
   const days = parseInt(document.getElementById('f-rental-duration').value, 10);
   if (!monthlyRate || !days) return;
 
-  const durationMultipliers = { 7: 1.10, 14: 1.05, 30: 1.00, 60: 0.95, 90: 0.90, 365: 0.75 };
+  const durationMultipliers = { 7: 1.10, 14: 1.05, 30: 1.00, 60: 0.95, 90: 0.90, 120: 0.88, 180: 0.82, 365: 0.75 };
   const durMult = durationMultipliers[days] || 1;
   const estimate = Math.round((monthlyRate / 30) * days * durMult * platformMult);
 
@@ -3730,20 +3831,8 @@ document.getElementById('f-service').addEventListener('change', function() {
     document.addEventListener('keydown',function(e){ if(e.key==='Escape') setMenu(false); });
     addEventListener('resize',function(){ if(innerWidth>1100) setMenu(false); });
   }
-  /* approximate UGX prices (only shown when the exchange rate is available) */
-  function fmt(n){ return Math.round(n/1000)*1000; }
-  window.ktAddUgx=function(){
-    var r=window.KT_RATE; if(!r) return;
-    document.querySelectorAll('.ugx-target, .bot-price').forEach(function(el){
-      var raw=el.getAttribute('data-usd-text');
-      if(raw===null){ raw=el.textContent; el.setAttribute('data-usd-text',raw); }
-      if(!/\$\s*\d/.test(raw)) return;
-      var txt='≈ '+raw.replace(/\$\s*(\d+(?:\.\d+)?)/g,function(_,n){ return 'UGX '+fmt(parseFloat(n)*r).toLocaleString('en-US'); });
-      var tag=el.querySelector('.ugx');
-      if(!tag){ el.textContent=raw; tag=document.createElement('small'); tag.className='ugx'; el.appendChild(tag); }
-      if(tag.textContent!==txt) tag.textContent=txt;
-    });
-  };
+  /* approximate local-currency prices: handled by the locale script (window.ktAddUgx) */
+  window.ktAddUgx=function(){ if(window.ktAddLocal) window.ktAddLocal(); };
 
   /* structured data so search engines can read the catalog */
   var ld=document.createElement('script'); ld.type='application/ld+json'; ld.id='ktCatalogLd'; document.head.appendChild(ld);
@@ -3914,7 +4003,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       if(x.status==='pending'&&n<=c.winEnd) h+=chip('warn','Your '+p.name+' is waiting for payment confirmation. Enrolment closes in '+cd(c.winEnd)+'.');
       if(x.status==='active'&&st==='running'&&c.maturesAt-n<=3*D) h+=chip('info','Your '+p.name+' matures in '+cd(c.maturesAt)+'.');
       if(x.status==='active'&&st==='matured') h+=chip('info','Your '+p.name+' has matured. We are settling it now.');
-      if(x.status==='settled') h+=chip('go','Your '+p.name+' is ready: <a href="#" data-payout="'+x.id+'">withdraw or reinvest '+money(x.payout)+'</a>.'); });
+      if(x.status==='closed'&&x.payout>0&&x.settlement&&now()-x.settlement.at<14*D) h+=chip('go','Your '+p.name+' paid '+money(x.payout)+' into your wallet. <a href="#" data-payout="'+x.id+'">Reinvest</a> or withdraw it from My Account → Wallet.'); });
     myWds().forEach(function(w){ if(w.status==='requested') h+=chip('info','Withdrawal of '+money(w.amount)+' requested. We will release it soon.'); });
     el('ivRemind').innerHTML=h;
   }
@@ -3939,7 +4028,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
     PLANS.forEach(function(p){
       var c=openCohort(p.key), st=timeStatus(c), t=tgt(p.key), can=(st==='enrolling'||(S.isAdmin&&S.testOpen)), ready=S.targetsLoaded&&S.targets[p.key]!=null;
       var label=!S.user?'Log in to join':(!ready?'Opening soon':(can?'Join this cohort':'Opens '+fmtD(c.winStart)));
-      var opts=METHODS.map(function(m){return '<option>'+m+'</option>';}).join('');
+      var wav=window.ktWallet?window.ktWallet.available():0, opts=(S.user?'<option value="Wallet">Wallet balance ('+money(wav)+')</option>':'')+METHODS.map(function(m){return '<option>'+m+'</option>';}).join('');
       var d=document.createElement('div'); d.className='pool'; d.setAttribute('data-plan',p.key);
       d.innerHTML='<h3>'+p.name+'<span class="tag">TARGET +'+pct(t*100)+'</span></h3>'+
         '<p class="note">Aim: grow your amount by about <strong style="color:var(--text)">'+pct(t*100)+'</strong> over '+(p.days===14?'2 weeks':(p.days/30)+' month'+(p.days>30?'s':''))+'. Not guaranteed.</p>'+
@@ -3959,7 +4048,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       if(x.status==='pending'){ if(n>c.winEnd&&!S.testOpen){ badge='<span class="out bad">Expired</span>'; } else { badge='<span class="out mid">Awaiting confirmation</span>'; clock='Ref '+ref(x)+' · closes in '+cd(c.winEnd); act='<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/256774077467?text='+encodeURIComponent('Hello, I joined the '+p.name+' (ref '+ref(x)+', $'+x.amount+'). Please confirm my payment.')+'">Tell us on WhatsApp</a>'+(x.source==='reinvest'?'':' <button type="button" class="btn btn-ghost btn-sm" data-cancel="'+x.id+'">Cancel</button>'); } }
       else if(x.status==='active'){ if(st==='enrolling'||st==='starting'){ badge='<span class="out ok">Active</span>'; clock='Starts in '+cd(c.startAt); } else if(st==='running'){ badge='<span class="out ok">Running</span>'; clock='Day '+Math.min(p.days,Math.floor((n-c.startAt)/D)+1)+' of '+p.days+' · matures in '+cd(c.maturesAt); } else { badge='<span class="out mid">Matured</span>'; clock='Being settled'; } }
       else if(x.status==='settled'){ badge='<span class="out ok">Ready</span>'; act='<button type="button" class="btn btn-gold btn-sm" data-payout="'+x.id+'">Withdraw / reinvest</button>'; clock=money(x.payout)+' available'; }
-      else if(x.status==='closed'){ badge='<span class="out '+(x.out||'mid')+'">Completed</span>'; clock=money(x.payout)+' returned'; }
+      else if(x.status==='closed'){ badge='<span class="out '+(x.out||'mid')+'">Completed</span>'; clock=x.payout>0?money(x.payout)+' paid into your wallet':'Completed'; if(x.payout>0) act='<button type="button" class="btn btn-gold btn-sm" data-payout="'+x.id+'">Reinvest</button>'; }
       else return;
       rows+='<tr><td>'+p.name+(x.source==='reinvest'?' <small>(reinvested)</small>':'')+'<br><small>Cohort '+fmtD(c.winStart)+'</small></td><td class="num">'+money(x.amount)+'</td><td class="num">'+money(x.amount*(1+x.t))+'</td><td>'+badge+'<br><small>'+clock+'</small></td><td>'+act+'</td></tr>'; });
     var msg=S.user?'No plans yet. Choose a plan above to get started.':'Log in to see your plans.';
@@ -3993,7 +4082,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
     el('ivCalcList').innerHTML=cl.length?cl.map(function(c){ var p=plan(c.plan); return '<button type="button" class="calc-pick'+(c.id===calcId?' on':'')+'" data-calc="'+c.id+'"><strong>'+p.name+'</strong> · cohort '+fmtD(c.winStart)+'<br><small>'+actives(c).length+' members · '+money(total(actives(c)))+' · '+ST[cStatus(c)]+'</small></button>'; }).join(''):'<div class="empty">No active cohorts yet. Confirm a contribution or add a member below.</div>';
     if(!(document.activeElement&&document.activeElement.matches&&document.activeElement.matches('[data-final]'))) renderCalc();
     var wd=S.allWds.filter(function(w){return w.status==='requested';});
-    el('ivAdminWd').innerHTML=wd.length?'<div class="scroll-x"><table class="inv-table"><thead><tr><th>Date</th><th>Member</th><th class="num">Amount</th><th></th></tr></thead><tbody>'+wd.map(function(w){return '<tr><td>'+fmtDY(w.createdAt||Date.now())+'</td><td>'+esc(w.name||w.email||'')+'</td><td class="num">'+money(w.amount)+'</td><td><button type="button" class="btn btn-gold btn-sm" data-release="'+w.id+'">Mark as released</button></td></tr>';}).join('')+'</tbody></table></div>':'<div class="empty">No withdrawal requests waiting.</div>';
+    if(el('ivAdminWd')) el('ivAdminWd').innerHTML=wd.length?'<div class="scroll-x"><table class="inv-table"><thead><tr><th>Date</th><th>Member</th><th class="num">Amount</th><th></th></tr></thead><tbody>'+wd.map(function(w){return '<tr><td>'+fmtDY(w.createdAt||Date.now())+'</td><td>'+esc(w.name||w.email||'')+'</td><td class="num">'+money(w.amount)+'</td><td><button type="button" class="btn btn-gold btn-sm" data-release="'+w.id+'">Mark as released</button></td></tr>';}).join('')+'</tbody></table></div>':'<div class="empty">No withdrawal requests waiting.</div>';
   }
   function renderCalc(){
     var body=el('ivCalcBody'), c=calcId&&cohorts().filter(function(x){return x.id===calcId;})[0];
@@ -4012,19 +4101,29 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       '<button type="button" class="btn btn-gold btn-sm" data-settle="'+c.id+'"'+(can?'':' disabled')+'>Record settlement &amp; release to members</button><p class="note" style="margin-top:8px;">'+(can?'This marks every member\u2019s payout as available to withdraw or reinvest.':'Available once the cohort has matured ('+fmtD(c.maturesAt)+').')+'</p>';
   }
   function renderAll(){ renderEnrol(); renderPlans(); renderLists(); tick2(); }
-  function renderLists(){ renderPortfolio(); renderStatements(); remindCustomer(); renderAdmin(); tick2(); }
+  function dash(){
+    var list=myList(), wds=myWds(), tx=[], rows='';
+    list.slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);}).forEach(function(x){
+      var p=plan(x.plan), c=dates(x.plan,x.winStart);
+      var stt=x.status==='pending'?'Awaiting confirmation':(x.status==='active'?'Active':(x.status==='settled'?'Ready to withdraw':(x.status==='closed'?'Completed':x.status)));
+      if(x.fundedBy!=='wallet') tx.push({t:x.createdAt||0,svc:'Investments',label:p.name+(x.source==='reinvest'?' — reinvestment':' — contribution'),amt:x.amount,st:stt,ref:ref(x)});
+      rows+='<div class="tx-row"><div class="l">'+p.name+'<small>Cohort '+fmtD(c.winStart)+' · matures '+fmtD(c.maturesAt)+'</small></div><div class="r">'+money(x.amount)+'<small><span class="out '+(x.status==='pending'?'mid':'ok')+'">'+stt+'</span></small></div></div>';
+    });
+    window.__ktTx=window.__ktTx||{}; window.__ktTx.plan=tx; window.__ktCnt=window.__ktCnt||{}; window.__ktCnt.p=list.length;
+    var box=el('dashInvest'); if(box) box.innerHTML=rows||'<p class="text-dim-note">Your plans appear here once you join one.</p>';
+    if(window.ktCounts) window.ktCounts(); if(window.ktRenderTx) window.ktRenderTx();
+  }
+  function renderLists(){ renderPortfolio(); renderStatements(); remindCustomer(); renderAdmin(); dash(); tick2(); }
   function tick2(){ var n=now(); document.querySelectorAll('.cd').forEach(function(e){ var left=Math.max(0,parseInt(e.getAttribute('data-until'),10)-n), b=e.querySelectorAll('b'); b[0].textContent=Math.floor(left/D); b[1].textContent=('0'+Math.floor(left%D/H)).slice(-2); b[2].textContent=('0'+Math.floor(left%H/60000)).slice(-2); b[3].textContent=('0'+Math.floor(left%60000/1000)).slice(-2); }); }
 
   /* payout modal */
   function find(id){ var r=null; (S.isAdmin?S.all:S.mine).forEach(function(x){ if(x.id===id) r=x; }); return r; }
-  function openPayout(id){ var x=find(id); if(!x||x.status!=='settled') return; payCtx={id:id,pctRe:0,plan:x.plan}; drawPayout(); el('ivPayout').hidden=false; document.body.style.overflow='hidden'; }
+  function openPayout(id){ var x=find(id); if(!x||x.status!=='closed'||!(x.payout>0)) return; payCtx={id:id,pctRe:50,plan:x.plan}; drawPayout(); el('ivPayout').hidden=false; document.body.style.overflow='hidden'; }
   function drawPayout(){
-    var x=find(payCtx.id), avail=x.payout, re=Math.round(avail*payCtx.pctRe)/100, wd=Math.round((avail-re)*100)/100, tc=openCohort(payCtx.plan);
-    var pc=[0,50,75,100].map(function(v){return '<button type="button" class="chip'+(payCtx.pctRe===v?' on':'')+'" data-re="'+v+'">'+(v===0?'Withdraw all':'Reinvest '+v+'%')+'</button>';}).join('');
+    var x=find(payCtx.id), re=Math.round(x.payout*payCtx.pctRe)/100, tc=openCohort(payCtx.plan), wb=window.ktWallet?window.ktWallet.available():0;
+    var pc=[50,75,100].map(function(v){return '<button type="button" class="chip'+(payCtx.pctRe===v?' on':'')+'" data-re="'+v+'">Reinvest '+v+'%</button>';}).join('');
     var po=PLANS.map(function(p){return '<option value="'+p.key+'"'+(p.key===payCtx.plan?' selected':'')+'>'+p.name+'</option>';}).join('');
-    el('payBody').innerHTML='<p style="color:var(--text-dim);margin-bottom:12px;">Available: <strong style="color:var(--text)">'+money(avail)+'</strong> (your capital and returns together).</p><div class="chips" style="margin-bottom:12px;">'+pc+'</div>'+
-      (payCtx.pctRe>0?'<div class="inv-field" style="margin-bottom:10px;"><select data-replan>'+po+'</select></div><p class="note" style="margin-bottom:8px;">Reinvested into the cohort starting '+fmtD(tc.startAt)+', at that plan\u2019s current target of +'+pct(tgt(payCtx.plan)*100)+'. Not guaranteed. We confirm it before it starts.</p>':'')+
-      '<dl class="calc-sum"><dt>Reinvest</dt><dd>'+money(re)+'</dd><dt>Withdraw</dt><dd>'+money(wd)+'</dd></dl><button type="button" class="btn btn-gold" data-confirm-pay>Confirm</button>';
+    el('payBody').innerHTML='<p style="color:var(--text-dim);margin-bottom:12px;">This plan paid <strong style="color:var(--text)">'+money(x.payout)+'</strong> into your wallet (capital and returns together). Wallet available: <strong style="color:var(--text)">'+money(wb)+'</strong>.</p><div class="chips" style="margin-bottom:12px;">'+pc+'</div><div class="inv-field" style="margin-bottom:10px;"><select data-replan>'+po+'</select></div><p class="note" style="margin-bottom:8px;">Reinvested into the cohort starting '+fmtD(tc.startAt)+', at that plan\u2019s current target of +'+pct(tgt(payCtx.plan)*100)+'. Not guaranteed. We confirm it before it starts.</p><dl class="calc-sum"><dt>Reinvest from wallet</dt><dd>'+money(re)+'</dd><dt>Stays in your wallet</dt><dd>'+money(x.payout-re)+'</dd></dl><button type="button" class="btn btn-gold" data-confirm-pay'+(re>wb+0.0001?' disabled':'')+'>Confirm</button>'+(re>wb+0.0001?'<p class="note" style="margin-top:8px;">Your available wallet balance is lower than this amount.</p>':'');
   }
   function closePayout(){ var m=el('ivPayout'); if(m){ m.hidden=true; document.body.style.overflow=''; } payCtx=null; }
   function printStmt(id){
@@ -4051,21 +4150,29 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
     if((q=t.closest('[data-payout]'))){ e.preventDefault(); openPayout(q.getAttribute('data-payout')); return; }
     if((q=t.closest('[data-re]'))&&payCtx){ payCtx.pctRe=parseInt(q.getAttribute('data-re'),10); drawPayout(); return; }
     if(t.closest('[data-confirm-pay]')&&payCtx){
-      var x=find(payCtx.id), avail=x.payout, re=Math.round(avail*payCtx.pctRe)/100, wd=Math.round((avail-re)*100)/100, b=writeBatch(db), w=who();
-      b.update(doc(db,'contributions',x.id),{status:'closed',resolution:{reinvest:re,withdraw:wd,plan:payCtx.pctRe>0?payCtx.plan:null,at:Date.now()}});
-      if(wd>0) b.set(doc(collection(db,'withdrawals')),{uid:x.uid,name:x.name||w.name,email:x.email||w.email,contributionId:x.id,amount:wd,status:'requested',createdAt:Date.now()});
-      if(re>0){ var tc=openCohort(payCtx.plan); b.set(doc(collection(db,'contributions')),{uid:x.uid,name:x.name||w.name,email:x.email||w.email,plan:payCtx.plan,amount:re,status:'pending',cohortId:tc.id,winStart:tc.winStart,startAt:tc.startAt,maturesAt:tc.maturesAt,t:tgt(payCtx.plan),method:'Reinvested',source:'reinvest',fromId:x.id,createdAt:Date.now()}); }
-      await b.commit(); closePayout(); return;
+      var xx=find(payCtx.id), rr=Math.round(xx.payout*payCtx.pctRe)/100, ww=who();
+      if(rr>(window.ktWallet?window.ktWallet.available():0)+0.0001){ alert('Not enough wallet balance.'); return; }
+      var tc2=openCohort(payCtx.plan), cr=doc(collection(db,'contributions')), bb=writeBatch(db);
+      bb.set(cr,{uid:xx.uid,name:xx.name||ww.name,email:xx.email||ww.email,plan:payCtx.plan,amount:rr,status:'pending',cohortId:tc2.id,winStart:tc2.winStart,startAt:tc2.startAt,maturesAt:tc2.maturesAt,t:tgt(payCtx.plan),method:'Wallet',fundedBy:'wallet',source:'reinvest',fromId:xx.id,createdAt:Date.now()});
+      bb.set(doc(collection(db,'ledger')),{uid:xx.uid,name:xx.name||ww.name,email:xx.email||ww.email,type:'plan_join',amount:-rr,status:'pending',refKind:'contribution',refId:cr.id,service:'Investments',method:'Wallet',note:plan(payCtx.plan).name+' (reinvested)',createdBy:'member',createdAt:Date.now()});
+      await bb.commit(); closePayout(); return;
     }
-    if((q=t.closest('[data-cancel]'))){ await deleteDoc(doc(db,'contributions',q.getAttribute('data-cancel'))); return; }
-    if((q=t.closest('[data-confirm]'))){ await updateDoc(doc(db,'contributions',q.getAttribute('data-confirm')),{status:'active',confirmedAt:Date.now()}); return; }
-    if((q=t.closest('[data-reject]'))){ if(confirm('Reject and remove this contribution?')) await deleteDoc(doc(db,'contributions',q.getAttribute('data-reject'))); return; }
+    if((q=t.closest('[data-cancel]'))){ var cid=q.getAttribute('data-cancel'), bd=writeBatch(db); bd.delete(doc(db,'contributions',cid)); (window.ktWallet?window.ktWallet.entries():[]).forEach(function(le){ if(le.refId===cid&&le.status==='pending') bd.delete(doc(db,'ledger',le.id)); }); await bd.commit(); return; }
+    if((q=t.closest('[data-confirm]'))){
+      var cid2=q.getAttribute('data-confirm'), cx=S.all.filter(function(z){return z.id===cid2;})[0], bc=writeBatch(db);
+      if(cx&&cx.fundedBy==='wallet'){ var le=(window.ktWallet?window.ktWallet.entries():[]).filter(function(e2){return e2.refId===cid2&&e2.status==='pending';})[0];
+        if(le){ if(window.ktWallet.completedBalance(cx.uid)<cx.amount-0.005){ alert('This member does not have enough completed wallet balance.'); return; } bc.update(doc(db,'ledger',le.id),{status:'completed',completedAt:Date.now(),confirmedBy:'admin'}); } }
+      bc.update(doc(db,'contributions',cid2),{status:'active',confirmedAt:Date.now()}); await bc.commit(); return;
+    }
+    if((q=t.closest('[data-reject]'))){ var rid=q.getAttribute('data-reject'); if(confirm('Reject and remove this contribution?')){ var br=writeBatch(db); br.delete(doc(db,'contributions',rid)); (window.ktWallet?window.ktWallet.entries():[]).forEach(function(le){ if(le.refId===rid&&le.status==='pending') br.update(doc(db,'ledger',le.id),{status:'rejected',completedAt:Date.now()}); }); await br.commit(); } return; }
     if((q=t.closest('[data-settarget]'))){ var pk=q.getAttribute('data-settarget'), v=parseFloat(document.querySelector('[data-tgt="'+pk+'"]').value); if(isNaN(v)||v<0||v>200){ alert('Enter a target between 0 and 200%.'); return; } await setDoc(doc(db,'planSettings',pk),{target:Math.round(v*10)/1000,updatedAt:Date.now()}); return; }
     if((q=t.closest('[data-calc]'))){ e.preventDefault(); calcId=q.getAttribute('data-calc'); renderAdmin(); var cb=el('ivCalc'); if(cb&&cb.scrollIntoView) cb.scrollIntoView({behavior:'smooth',block:'start'}); return; }
     if((q=t.closest('[data-settle]'))){
       var c=cohorts().filter(function(z){return z.id===q.getAttribute('data-settle');})[0], fv=parseFloat(document.querySelector('[data-final]').value); if(!c||!(fv>=0)){ alert('Enter the final amount first.'); return; }
       var res=calc(actives(c),fv), b2=writeBatch(db);
-      res.rows.forEach(function(r){ b2.update(doc(db,'contributions',r.id),{status:'settled',payout:r.pay,out:r.out,settlement:{final:fv,fee:res.fee,at:Date.now()}}); });
+      var byId={}; actives(c).forEach(function(a){ byId[a.id]=a; });
+      res.rows.forEach(function(r){ var mx=byId[r.id]; b2.update(doc(db,'contributions',r.id),{status:'closed',payout:r.pay,out:r.out,settlement:{final:fv,fee:res.fee,at:Date.now()}});
+        if(mx&&mx.uid&&String(mx.uid).indexOf('manual:')!==0&&r.pay>0) b2.set(doc(collection(db,'ledger')),{uid:mx.uid,name:mx.name||'',email:mx.email||'',type:'plan_payout',amount:r.pay,status:'completed',refKind:'contribution',refId:r.id,service:'Investments',method:'Plan payout',note:plan(c.plan).name,createdBy:'admin',createdAt:Date.now(),completedAt:Date.now()}); });
       await b2.commit(); calcId=null; return;
     }
     if((q=t.closest('[data-release]'))){ await updateDoc(doc(db,'withdrawals',q.getAttribute('data-release')),{status:'released',releasedAt:Date.now()}); return; }
@@ -4083,8 +4190,12 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       if(!(timeStatus(co2)==='enrolling'||(S.isAdmin&&S.testOpen))){ msg.textContent='Enrolment is closed right now.'; return; }
       if(!(amt>=p.min)){ msg.textContent='Enter at least $'+p.min+'.'; return; }
       if(!card.querySelector('[data-agree]').checked){ msg.textContent='Please tick the box to accept the terms.'; return; }
-      act.disabled=true; var w2=who();
-      await addDoc(collection(db,'contributions'),{uid:w2.uid,name:w2.name,email:w2.email,plan:p.key,amount:amt,status:'pending',cohortId:co2.id,winStart:co2.winStart,startAt:co2.startAt,maturesAt:co2.maturesAt,t:tgt(p.key),method:card.querySelector('[data-method]').value,source:'new',createdAt:Date.now()});
+      act.disabled=true; var w2=who(), msel=card.querySelector('[data-method]').value, cref=doc(collection(db,'contributions'));
+      var cdata={uid:w2.uid,name:w2.name,email:w2.email,plan:p.key,amount:amt,status:'pending',cohortId:co2.id,winStart:co2.winStart,startAt:co2.startAt,maturesAt:co2.maturesAt,t:tgt(p.key),method:msel,fundedBy:msel==='Wallet'?'wallet':'manual',source:'new',createdAt:Date.now()};
+      if(msel==='Wallet'){
+        if(amt>(window.ktWallet?window.ktWallet.available():0)+0.0001){ msg.textContent='Not enough wallet balance. Deposit first in My Account → Wallet.'; act.disabled=false; return; }
+        var bw=writeBatch(db); bw.set(cref,cdata); bw.set(doc(collection(db,'ledger')),{uid:w2.uid,name:w2.name,email:w2.email,type:'plan_join',amount:-amt,status:'pending',refKind:'contribution',refId:cref.id,service:'Investments',method:'Wallet',note:p.name,createdBy:'member',createdAt:Date.now()}); await bw.commit();
+      } else { await setDoc(cref,cdata); }
       card.querySelector('[data-amt]').value=''; card.querySelector('[data-agree]').checked=false; card.querySelector('[data-exp]').textContent='—'; msg.textContent='Saved. Your contribution is waiting for payment confirmation. See My plans below.'; act.disabled=false;
     }
     }catch(err){ fail(err); renderAll(); }
@@ -4092,6 +4203,8 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
 
   /* data subscriptions */
   function snap(s){ var a=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; a.push(o); }); return a; }
+  document.addEventListener('ktwallet',function(){ var av=window.ktWallet?window.ktWallet.available():0; document.querySelectorAll('[data-method] option[value="Wallet"]').forEach(function(o){ o.textContent='Wallet balance ('+money(av)+')'; }); });
+  document.addEventListener('ktcountry',function(e){ if(S.user) setDoc(doc(db,'users',S.user.uid),{country:e.detail,updatedAt:Date.now()},{merge:true}).catch(function(){}); });
   function stop(){ unsubs.forEach(function(u){ try{u();}catch(e){} }); unsubs=[]; }
   onSnapshot(collection(db,'planSettings'),function(s){ var t={}; s.forEach(function(d){ var v=d.data().target; if(typeof v==='number') t[d.id]=v; }); S.targets=t; S.targetsLoaded=true;
     if(S.isAdmin) PLANS.forEach(function(p){ if(t[p.key]==null) setDoc(doc(db,'planSettings',p.key),{target:p.target,updatedAt:Date.now()}).catch(function(){}); });
@@ -4099,6 +4212,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   onAuthStateChanged(auth,function(user){
     stop(); S.user=user; S.isAdmin=!!(user&&user.email===ADMIN_EMAIL); S.mine=[];S.all=[];S.wds=[];S.allWds=[];
     if(user){
+      unsubs.push(onSnapshot(doc(db,'users',user.uid),function(s2){ var d=s2.exists()?s2.data():null; if(d&&d.country&&window.ktSetCountry) window.ktSetCountry(d.country,true); },function(){}));
       if(S.isAdmin){
         unsubs.push(onSnapshot(collection(db,'contributions'),function(s){ S.all=snap(s); renderLists(); },function(e){ console.error(e); }));
         unsubs.push(onSnapshot(collection(db,'withdrawals'),function(s){ S.allWds=snap(s); renderLists(); },function(e){ console.error(e); }));
@@ -4283,6 +4397,182 @@ import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/f
   bar.addEventListener('click',function(e){ var b=e.target.closest('[data-cat]'); if(!b) return; cat=b.getAttribute('data-cat'); bar.querySelectorAll('[data-cat]').forEach(function(x){ x.classList.toggle('on',x===b); }); view(); });
   document.getElementById('catSort').addEventListener('change',function(e){ sort=e.target.value; view(); });
   var box=document.getElementById('botsContainer'); if(box&&'MutationObserver' in window) new MutationObserver(function(){ setTimeout(view,120); }).observe(box,{childList:true});
+})();
+</script>
+
+<script>
+/* Region, currency and transactions */
+(function(){
+  var COUNTRIES=[
+    {c:'UG',n:'Uganda',cur:'UGX',tz:'Africa/Kampala'},{c:'KE',n:'Kenya',cur:'KES',tz:'Africa/Nairobi'},{c:'TZ',n:'Tanzania',cur:'TZS',tz:'Africa/Dar_es_Salaam'},
+    {c:'RW',n:'Rwanda',cur:'RWF',tz:'Africa/Kigali'},{c:'NG',n:'Nigeria',cur:'NGN',tz:'Africa/Lagos'},{c:'GH',n:'Ghana',cur:'GHS',tz:'Africa/Accra'},
+    {c:'ZA',n:'South Africa',cur:'ZAR',tz:'Africa/Johannesburg'},{c:'ZM',n:'Zambia',cur:'ZMW',tz:'Africa/Lusaka'},{c:'ET',n:'Ethiopia',cur:'ETB',tz:'Africa/Addis_Ababa'},
+    {c:'BW',n:'Botswana',cur:'BWP',tz:'Africa/Gaborone'},{c:'EG',n:'Egypt',cur:'EGP',tz:'Africa/Cairo'},{c:'GB',n:'United Kingdom',cur:'GBP',tz:'Europe/London'},
+    {c:'EU',n:'Europe (euro)',cur:'EUR',tz:'Europe/Paris'},{c:'US',n:'United States',cur:'USD',tz:'America/New_York'},{c:'AE',n:'United Arab Emirates',cur:'AED',tz:'Asia/Dubai'},
+    {c:'IN',n:'India',cur:'INR',tz:'Asia/Kolkata'},{c:'XX',n:'Other (US dollars)',cur:'USD',tz:''}
+  ];
+  var TZMAP={'Africa/Kampala':'UG','Africa/Nairobi':'KE','Africa/Dar_es_Salaam':'TZ','Africa/Kigali':'RW','Africa/Lagos':'NG','Africa/Accra':'GH','Africa/Johannesburg':'ZA','Africa/Lusaka':'ZM','Africa/Addis_Ababa':'ET','Africa/Gaborone':'BW','Africa/Cairo':'EG','Europe/London':'GB','Asia/Dubai':'AE','Asia/Kolkata':'IN','Asia/Calcutta':'IN'};
+  function find(c){ return COUNTRIES.filter(function(x){return x.c===c;})[0]; }
+  var browserTz=''; try{ browserTz=Intl.DateTimeFormat().resolvedOptions().timeZone||''; }catch(e){}
+  var saved=null; try{ saved=localStorage.getItem('kt_country'); }catch(e){}
+  var cur=find(saved)||find(TZMAP[browserTz])||find('UG');
+  window.ktLocale={country:cur.c,currency:cur.cur,tz:cur.tz||browserTz};
+  var RATES={}; try{ var cached=JSON.parse(localStorage.getItem('kt_fx')||'null'); if(cached&&cached.rates) RATES=cached.rates; }catch(e){}
+  function rateFor(cur){ if(cur==='USD') return 1; if(cur==='UGX'&&window.KT_RATE) return window.KT_RATE; return RATES[cur]||0; }
+  function fmt(usd,cur){ var r=rateFor(cur); if(!r) return null; var v=usd*r, step=r>=1000?1000:(r>=100?10:(r>=10?1:0.5)); v=Math.round(v/step)*step; return cur+' '+v.toLocaleString('en-US',{maximumFractionDigits:r<5?2:0}); }
+  window.ktAddLocal=function(){
+    var cur=window.ktLocale.currency;
+    document.querySelectorAll('.ugx-target, .bot-price').forEach(function(el){
+      var raw=el.getAttribute('data-usd-text'); if(raw===null){ raw=el.textContent; el.setAttribute('data-usd-text',raw); }
+      var tag=el.querySelector('.ugx');
+      if(cur==='USD'||!/\$\s*\d/.test(raw)){ if(tag) tag.remove(); return; }
+      var ok=true, txt='≈ '+raw.replace(/\$\s*(\d+(?:\.\d+)?)/g,function(_,n){ var f=fmt(parseFloat(n),cur); if(!f) ok=false; return f||''; });
+      if(!ok){ if(tag) tag.remove(); return; }
+      if(!tag){ el.textContent=raw; tag=document.createElement('small'); tag.className='ugx'; el.appendChild(tag); }
+      if(tag.textContent!==txt) tag.textContent=txt;
+    });
+  };
+  window.ktAddUgx=window.ktAddLocal;
+  function fetchRates(){
+    var need=Object.keys(RATES).length===0; try{ var c=JSON.parse(localStorage.getItem('kt_fx')||'null'); if(c&&Date.now()-c.t<86400000&&!need) return; }catch(e){}
+    if(window.ktLocale.currency==='USD') return;
+    fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json();}).then(function(j){ if(j&&j.rates){ RATES=j.rates; try{ localStorage.setItem('kt_fx',JSON.stringify({t:Date.now(),rates:j.rates})); }catch(e){} window.ktAddLocal(); } }).catch(function(){});
+  }
+  function fillSelects(){
+    ['reg-country','profCountry','footRegion'].forEach(function(id){ var s=document.getElementById(id); if(!s) return;
+      s.innerHTML=COUNTRIES.map(function(x){return '<option value="'+x.c+'">'+x.n+' ('+x.cur+')</option>';}).join(''); s.value=window.ktLocale.country; });
+  }
+  window.ktSetCountry=function(code,silent){
+    var x=find(code); if(!x) return; window.ktLocale={country:x.c,currency:x.cur,tz:x.tz||browserTz};
+    try{ localStorage.setItem('kt_country',x.c); }catch(e){}
+    fillSelects(); window.ktAddLocal(); fetchRates();
+    if(!silent) document.dispatchEvent(new CustomEvent('ktcountry',{detail:x.c}));
+  };
+  document.addEventListener('change',function(e){ var t=e.target; if(t&&(t.id==='profCountry'||t.id==='footRegion')) window.ktSetCountry(t.value); });
+  fillSelects(); fetchRates(); window.ktAddLocal();
+
+  /* service counts on the dashboard overview */
+  window.ktCounts=function(){
+    var c=window.__ktCnt||{}; function set(id,t){ var e=document.getElementById(id); if(e) e.textContent=t; }
+    set('svcCnt1',(c.s||0)+' request'+((c.s||0)===1?'':'s')); set('svcCnt2',(c.b||0)+' order'+((c.b||0)===1?'':'s')+' · '+(c.l||0)+' license'+((c.l||0)===1?'':'s')); set('svcCnt3',(c.p||0)+' plan'+((c.p||0)===1?'':'s')); set('svcCnt4',window.ktWallet?money(window.ktWallet.available()):'$0.00');
+  };
+  /* transactions list (read-only summary of orders, plan money and withdrawals) */
+  var txFilter='all';
+  function money(n){ return '$'+(Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function cls(st){ st=String(st).toLowerCase(); if(/complet|paid|released|active|delivered|ready/.test(st)) return 'ok'; if(/await|pending|request|received|progress/.test(st)) return 'mid'; return 'bad'; }
+  window.ktRenderTx=function(){
+    var box=document.getElementById('txList'); if(!box) return;
+    var all=((window.__ktTx&&window.__ktTx.req)||[]).concat((window.__ktTx&&window.__ktTx.plan)||[]).concat((window.__ktTx&&window.__ktTx.led)||[]).filter(function(x){ return txFilter==='all'||x.svc===txFilter; });
+    all.sort(function(a,b){return (b.t||0)-(a.t||0);});
+    if(!all.length){ box.innerHTML='<p class="text-dim-note">Nothing here yet. Orders, payments, plan contributions, payouts and withdrawals will be listed here.</p>'; return; }
+    box.innerHTML=all.map(function(x){ return '<div class="tx-row"><div class="l">'+esc(x.label)+'<small>'+esc(x.svc)+(x.t?' · '+new Date(x.t).toLocaleDateString():'')+(x.ref?' · '+esc(x.ref):'')+'</small></div><div class="r">'+(x.amt?((x.amt<0?'−':(x.signed?'+':''))+money(Math.abs(x.amt))):'—')+'<small><span class="out '+cls(x.st)+'">'+esc(x.st)+'</span></small></div></div>'; }).join('');
+  };
+  document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('#txChips [data-tx]'); if(!b) return; txFilter=b.getAttribute('data-tx'); document.querySelectorAll('#txChips [data-tx]').forEach(function(x){ x.classList.toggle('on',x===b); }); window.ktRenderTx(); });
+})();
+</script>
+
+<script type="module">
+/* Wallet: every balance is calculated from a ledger of entries. Nobody types a balance in by hand.
+   Prototype mode (WALLET_LIVE = false): virtual funds, confirmed by the admin. When your internal gateway is ready,
+   it writes completed entries itself (see wallet-gateway-spec.md). */
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+(function(){
+  var WALLET_LIVE=false, ADMIN_EMAIL='thekingdomtrader7@gmail.com';
+  var db=getFirestore(getApp()), auth=getAuth(getApp());
+  var S={user:null,isAdmin:false,entries:[]}, unsub=null;
+  function el(i){ return document.getElementById(i); }
+  function money(n){ var a=Math.abs(n); return (n<0?'−':'')+'$'+(Math.round(a*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function fmtDY(ts){ return new Date(ts).toLocaleDateString('en-GB',{timeZone:'Africa/Kampala',day:'numeric',month:'short',year:'numeric'}); }
+  function who(){ return {uid:S.user.uid,name:S.user.displayName||(S.user.email||'').split('@')[0],email:S.user.email||''}; }
+  function mine(){ return S.entries.filter(function(e){ return S.user&&e.uid===S.user.uid; }); }
+  function completedBal(uid){ return S.entries.filter(function(e){return e.uid===uid&&e.status==='completed';}).reduce(function(a,e){return a+e.amount;},0); }
+  function pendingDebits(uid){ return S.entries.filter(function(e){return e.uid===uid&&e.status==='pending'&&e.amount<0;}).reduce(function(a,e){return a+e.amount;},0); }
+  function pendingCredits(uid){ return S.entries.filter(function(e){return e.uid===uid&&e.status==='pending'&&e.amount>0;}).reduce(function(a,e){return a+e.amount;},0); }
+  function myUid(){ return S.user?S.user.uid:null; }
+  window.ktWallet={
+    live:WALLET_LIVE,
+    balance:function(){ return S.user?completedBal(S.user.uid):0; },
+    available:function(){ return S.user?completedBal(S.user.uid)+pendingDebits(S.user.uid):0; },
+    entries:function(){ return S.entries; },
+    completedBalance:completedBal
+  };
+  var LABEL={deposit:'Deposit',withdrawal:'Withdrawal',plan_join:'Plan contribution',plan_payout:'Plan payout',purchase:'Bot payment',adjustment:'Adjustment'};
+  function svcFor(e){ return e.type==='plan_join'||e.type==='plan_payout'?'Investments':(e.type==='purchase'?'Bots':'Wallet'); }
+  function stLabel(s){ return s==='completed'?'Completed':(s==='pending'?'Pending':'Rejected'); }
+
+  function render(){
+    var u=myUid(), box=el('walletBox'); if(!box) return;
+    el('walletTest').hidden=WALLET_LIVE;
+    var bal=u?completedBal(u):0, av=u?bal+pendingDebits(u):0, pc=u?pendingCredits(u):0;
+    el('wBal').textContent=money(bal); el('wAvail').textContent=money(av); el('wPend').textContent=money(pc);
+    var pend=mine().filter(function(e){return e.status==='pending'&&(e.type==='deposit'||e.type==='withdrawal'||e.type==='purchase');});
+    el('wPending').innerHTML=pend.length?'<div class="dash-section-label">Waiting for confirmation</div>'+pend.map(function(e){ return '<div class="tx-row"><div class="l">'+LABEL[e.type]+(e.method?' · '+esc(e.method):'')+'<small>'+fmtDY(e.createdAt||Date.now())+'</small></div><div class="r">'+money(e.amount)+'<small><button type="button" class="btn btn-ghost btn-sm" data-wcancel="'+e.id+'">Cancel</button></small></div></div>'; }).join(''):'';
+    window.__ktTx=window.__ktTx||{};
+    window.__ktTx.led=mine().map(function(e){ return {t:e.createdAt||0,svc:svcFor(e),label:(LABEL[e.type]||e.type)+(e.note?' — '+e.note:''),amt:e.amount,signed:true,st:stLabel(e.status),ref:e.method||''}; });
+    if(window.ktRenderTx) window.ktRenderTx(); if(window.ktCounts) window.ktCounts();
+    document.dispatchEvent(new CustomEvent('ktwallet'));
+    renderAdmin();
+  }
+  function renderAdmin(){
+    var wrap=el('ivAdminWallet'); if(!wrap) return; wrap.hidden=!S.isAdmin; if(!S.isAdmin) return;
+    var pend=S.entries.filter(function(e){return e.status==='pending'&&e.type!=='plan_join';}).sort(function(a,b){return (a.createdAt||0)-(b.createdAt||0);});
+    el('ivAdminWalletList').innerHTML=pend.length?'<div class="scroll-x"><table class="inv-table"><thead><tr><th>Date</th><th>Member</th><th>Type</th><th class="num">Amount</th><th>Method</th><th></th></tr></thead><tbody>'+pend.map(function(e){
+      return '<tr><td>'+fmtDY(e.createdAt||Date.now())+'</td><td>'+esc(e.name||e.email)+'</td><td>'+(LABEL[e.type]||e.type)+(e.note?'<br><small>'+esc(e.note)+'</small>':'')+'</td><td class="num">'+money(e.amount)+'</td><td>'+esc(e.method||'')+'</td><td><button type="button" class="btn btn-gold btn-sm" data-wconfirm="'+e.id+'">'+(e.type==='withdrawal'?'Mark released':'Confirm')+'</button> <button type="button" class="btn btn-ghost btn-sm" data-wreject="'+e.id+'">Reject</button></td></tr>'; }).join('')+'</tbody></table></div>':'<div class="empty">No wallet requests waiting.</div>';
+  }
+  async function createEntry(o){ var w=who(); var e=Object.assign({uid:w.uid,name:w.name,email:w.email,status:'pending',createdBy:'member',createdAt:Date.now()},o); return addDoc(collection(db,'ledger'),e); }
+  function fail(e){ console.error(e); alert('Could not save: '+(e&&e.code==='permission-denied'?'permission denied. Please check the Firebase rules.':(e&&e.message)||'try again.')); }
+
+  document.addEventListener('click',async function(e){
+    var t=e.target; if(!t.closest) return; var q;
+    try{
+      if(t.closest('#wDepBtn')){
+        if(!S.user){ location.hash='#account'; return; }
+        var a=parseFloat(el('wDepAmt').value), m=el('wDepMsg');
+        if(!(a>=5)){ m.textContent='Enter at least $5.'; return; }
+        await createEntry({type:'deposit',amount:a,method:el('wDepMethod').value,note:WALLET_LIVE?'':'Test funds'});
+        el('wDepAmt').value=''; m.textContent='Deposit requested. It will show as completed after we confirm it.'; return;
+      }
+      if(t.closest('#wWdBtn')){
+        if(!S.user){ location.hash='#account'; return; }
+        var w=parseFloat(el('wWdAmt').value), mm=el('wWdMsg'), to=el('wWdTo').value.trim();
+        if(!(w>=5)){ mm.textContent='Enter at least $5.'; return; }
+        if(w>window.ktWallet.available()+0.0001){ mm.textContent='That is more than your available balance.'; return; }
+        if(!to){ mm.textContent='Enter the phone number or account to send it to.'; return; }
+        await createEntry({type:'withdrawal',amount:-w,method:el('wWdMethod').value,note:'To '+to});
+        el('wWdAmt').value=''; mm.textContent='Withdrawal requested. We will release it and the status will update.'; return;
+      }
+      if((q=t.closest('[data-wcancel]'))){ await deleteDoc(doc(db,'ledger',q.getAttribute('data-wcancel'))); return; }
+      if((q=t.closest('.pay-wallet-btn'))){
+        if(!S.user){ return; }
+        var amt=parseFloat(q.getAttribute('data-amount')), tk=q.getAttribute('data-ticket');
+        if(!(amt>0)||!tk) return;
+        if(S.entries.some(function(x){return x.refId===tk&&x.status==='pending';})){ alert('You already sent this payment from your wallet. We will confirm it shortly.'); return; }
+        if(amt>window.ktWallet.available()+0.0001){ alert('Not enough wallet balance. Deposit first in My Account → Wallet.'); return; }
+        await createEntry({type:'purchase',amount:-amt,method:'Wallet',refKind:'request',refId:tk,service:'Bots',note:'Order '+tk});
+        q.disabled=true; q.textContent='Sent — awaiting confirmation'; return;
+      }
+      if((q=t.closest('[data-wconfirm]'))){
+        var en=S.entries.filter(function(x){return x.id===q.getAttribute('data-wconfirm');})[0]; if(!en) return;
+        if(en.amount<0&&completedBal(en.uid)<-en.amount-0.005){ alert('This member does not have enough completed balance.'); return; }
+        var b=writeBatch(db); b.update(doc(db,'ledger',en.id),{status:'completed',completedAt:Date.now(),confirmedBy:'admin'});
+        if(en.type==='purchase'&&en.refKind==='request'){ var rs=await getDocs(query(collection(db,'requests'),where('ticketId','==',en.refId))); rs.forEach(function(d){ b.update(doc(db,'requests',d.id),{status:'Completed',note:'Payment received from wallet.'}); }); }
+        await b.commit(); return;
+      }
+      if((q=t.closest('[data-wreject]'))){ if(confirm('Reject this request?')) await updateDoc(doc(db,'ledger',q.getAttribute('data-wreject')),{status:'rejected',completedAt:Date.now()}); return; }
+    }catch(err){ fail(err); }
+  });
+  function snap(s){ var a=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; a.push(o); }); return a; }
+  onAuthStateChanged(auth,function(user){
+    if(unsub){ try{unsub();}catch(e){} unsub=null; }
+    S.user=user; S.isAdmin=!!(user&&user.email===ADMIN_EMAIL); S.entries=[];
+    if(user){ var src=S.isAdmin?collection(db,'ledger'):query(collection(db,'ledger'),where('uid','==',user.uid)); unsub=onSnapshot(src,function(s){ S.entries=snap(s); render(); },function(e){ console.error(e); }); }
+    render();
+  });
+  render();
 })();
 </script>
 
