@@ -731,7 +731,6 @@
   .nav-menu a:last-child{border-bottom:none;}
   .nav-menu a.active,.nav-links a.active{color:var(--gold);}
   @media (max-width:860px){.nav-menu-btn{display:flex;}}
-  @media (min-width:1101px){.nav-menu{display:none !important;}}
   @media (max-width:400px){ .nav-menu-btn{width:38px;} #navAccountBtn{padding:8px 10px;font-size:11px;} }
 
   .proof-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;}
@@ -950,7 +949,6 @@
   .nav-pills a.active{border-color:var(--gold);color:var(--gold);background:rgba(198,161,83,.1);}
   @media (max-width:1100px){
     .nav-pills{display:flex;}
-    .nav-menu-btn,.nav-menu{display:none !important;}
     section{scroll-margin-top:120px;}
   }
   .legal{max-width:760px;} .legal h3{font-size:19px;margin:28px 0 8px;} .legal p{color:var(--text-dim);font-size:15px;margin-bottom:6px;} .legal a{color:var(--gold);text-decoration:underline;}
@@ -1028,6 +1026,28 @@
   .wallet-forms{display:grid;gap:12px;margin-bottom:14px;}
   .wallet-form{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:8px;} .wallet-form h4{font-size:14.5px;}
   .wallet-form .inv-field input,.wallet-form .inv-field select{width:100%;}
+
+  /* ---------- INLINE ACCOUNT, BACK BUTTON, HAMBURGER MENU (added) ---------- */
+  .nav-left{display:flex;align-items:center;gap:8px;min-width:0;}
+  .nav-back{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:18px;line-height:1;cursor:pointer;}
+  .nav-back:hover{border-color:var(--gold);color:var(--gold);}
+  .nav-menu-btn{display:flex !important;}
+  .nav-menu{max-height:calc(100vh - 120px);overflow-y:auto;}
+  .nm-link,.nm-head{display:flex;justify-content:space-between;align-items:center;width:100%;padding:14px 2px;border:none;border-bottom:1px solid var(--line);background:none;color:var(--text-dim);font:inherit;font-size:16px;text-align:left;cursor:pointer;}
+  .nm-head i{font-style:normal;transition:transform .2s ease;color:var(--gold);} .nm-head[aria-expanded="true"]{color:var(--gold);} .nm-head[aria-expanded="true"] i{transform:rotate(180deg);}
+  .nm-sub{padding:2px 0 8px 14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;} .nm-sub[hidden]{display:none;}
+  .nm-sub a,.nm-in a,.nm-out a{display:block;padding:10px 4px;font-size:15px;color:var(--text-dim);border:none;} .nm-in{display:none;} .nm-out{display:block;}
+  body.kt-in .nm-in{display:block;} body.kt-in .nm-out{display:none;}
+  .nm-sub a.active{color:var(--gold);}
+  @media (min-width:1101px){ .nav-menu{left:auto;right:28px;width:340px;border:1px solid var(--line);border-top:none;border-radius:0 0 8px 8px;} }
+  /* the dashboard is shown on the My Account page, not in a side drawer */
+  #account .dashboard-drawer{position:static;transform:none;width:auto;max-width:none;border:none;background:transparent;overflow:visible;display:none;z-index:auto;}
+  body.kt-in #account .dashboard-drawer{display:block;}
+  #account .drawer-inner{padding:6px 0 40px;max-width:760px;}
+  #drawerBackdrop,#drawerCloseBtn,#kebabBtn{display:none !important;}
+  body.kt-in #account .section-head{display:none;}
+  body[data-active="account"] #subTabs{display:none;}
+  #account .dashboard-head{display:none;}
 </style>
 </head>
 <body>
@@ -1035,11 +1055,12 @@
 
 <nav>
   <div class="wrap">
-    <div class="logo">
+    <div class="nav-left"><button type="button" id="navBack" class="nav-back" aria-label="Go back" hidden>←</button><div class="logo">
       <img src="logo.jpg" alt="The Kingdom Trader logo" class="logo-img">
       <div class="logo-text"><span class="logo-the">The </span>Kingdom Trader</div>
-    </div>
+    </div></div>
     <div class="nav-links">
+      <a href="#home">Home</a>
       <a href="#start">Get started</a>
       <a href="#bots">Bot catalog</a>
       <a href="#invest">Invest</a>
@@ -1052,11 +1073,20 @@
     </div>
   </div>
   <div id="navMenu" class="nav-menu" hidden>
-    <a href="#home">Home</a>
-    <a href="#start">Get started</a>
-    <a href="#bots">Bot catalog</a>
-    <a href="#invest">Invest</a>
-    <a href="#account">My Account</a>
+    <a href="#home" class="nm-link">Home</a>
+    <div class="nm-group" data-pages="start"><button type="button" class="nm-head" aria-expanded="false">Get started <i>▾</i></button>
+      <div class="nm-sub" hidden><a href="#start">1 · Strategy automation</a><a href="#start-bots">2 · Buy or rent a bot</a><a href="#start-invest">3 · Trade for me</a></div></div>
+    <div class="nm-group" data-pages="bots"><button type="button" class="nm-head" aria-expanded="false">Bot catalog <i>▾</i></button>
+      <div class="nm-sub" hidden><a href="#bots">All bots</a><a href="#bots-mt5">MT5 bots</a><a href="#bots-tv">TradingView bots</a></div></div>
+    <div class="nm-group" data-pages="invest"><button type="button" class="nm-head" aria-expanded="false">Invest <i>▾</i></button>
+      <div class="nm-sub" hidden><a href="#invest">Overview</a><a href="#invest-plans">Plans</a><a href="#invest-mine">My plans</a><a href="#invest-statements">Statements</a></div></div>
+    <div class="nm-group" data-pages="account"><button type="button" class="nm-head" aria-expanded="false">My Account <i>▾</i></button>
+      <div class="nm-sub" hidden>
+        <span class="nm-out"><a href="#account">Log in or register</a></span>
+        <span class="nm-in"><a href="#account">Overview</a><a href="#account-strategy">Strategy requests</a><a href="#account-bots">Bots</a><a href="#account-invest">Investments</a><a href="#account-wallet">Wallet &amp; transactions</a><a href="#account-profile">Profile</a></span>
+      </div></div>
+    <a href="#legal" class="nm-link">Legal &amp; risk</a>
+    <a href="#contact" class="nm-link">Contact &amp; support</a>
   </div>
   <div class="nav-pills" id="navPills" aria-label="Site pages">
     <a href="#home">Home</a>
@@ -1358,7 +1388,7 @@
 <section class="svc-after" data-page="start" data-start-panel="3"><div class="wrap"><div class="svc-proof"><h3>Proof</h3><div class="proof-cards"><div class="proof-card"><h4>Plan statements</h4><p>A sample statement will be shown here.</p><span class="proof-status">Updates coming</span></div><div class="proof-card"><h4>Verified results</h4><p>Trading results we can verify.</p><span class="proof-status">Updates coming</span></div><div class="proof-card"><h4>Member feedback</h4><p>Verified feedback, shared with permission.</p><span class="proof-status">Updates coming</span></div></div><p class="risk-note">Results depend on market conditions and are not guaranteed. We only publish results we can verify. <a href="#legal">Legal &amp; risk</a></p></div></div></section>
 
 
-<div class="page-banner" data-page="account" style="--img:url(fx-board.jpg)"><div class="wrap"><span class="eyebrow">My Account</span><h1>Your dashboard.</h1><p>Log in to see your requests, licenses and payments.</p></div></div>
+<div class="page-banner" data-page="account" style="--img:url(fx-board.jpg)"><div class="wrap"><span class="eyebrow">My Account</span><h1>Your dashboard.</h1><p>Your requests, bots, plans and wallet, all in one place.</p></div></div>
 <section id="account" data-page="account">
   <div class="wrap">
     <div class="section-head">
@@ -1489,8 +1519,8 @@
     <div class="enrol-strip" id="ivEnrol"></div>
     <div class="inv-plans" id="ivPlans"></div>
 
-    <div class="inv-sec"><h3>My plans</h3><div id="ivRemind"></div><div id="ivPortfolio"></div><div id="ivWithdrawals"></div></div>
-    <div class="inv-sec"><h3>Statements</h3><div id="ivStatements"></div></div>
+    <div class="inv-sec" id="ivMine"><h3>My plans</h3><div id="ivRemind"></div><div id="ivPortfolio"></div><div id="ivWithdrawals"></div></div>
+    <div class="inv-sec" id="ivStmts"><h3>Statements</h3><div id="ivStatements"></div></div>
 
     <div class="inv-sec" id="ivAdminWrap" hidden>
       <h3>Admin view <span class="adm-tag">only you can see this</span></h3>
@@ -3821,16 +3851,6 @@ document.getElementById('f-service').addEventListener('change', function() {
 <script>
 /* Added: mobile menu, active-section highlight, approximate UGX prices, catalog structured data */
 (function(){
-  /* mobile menu */
-  var btn=document.getElementById('navMenuBtn'), menu=document.getElementById('navMenu');
-  function setMenu(open){ if(!btn||!menu) return; menu.hidden=!open; btn.setAttribute('aria-expanded',open?'true':'false'); btn.setAttribute('aria-label',open?'Close menu':'Open menu'); }
-  if(btn&&menu){
-    btn.addEventListener('click',function(e){ e.stopPropagation(); setMenu(menu.hidden); });
-    menu.addEventListener('click',function(e){ if(e.target.tagName==='A') setMenu(false); });
-    document.addEventListener('click',function(e){ if(!menu.hidden && !menu.contains(e.target)) setMenu(false); });
-    document.addEventListener('keydown',function(e){ if(e.key==='Escape') setMenu(false); });
-    addEventListener('resize',function(){ if(innerWidth>1100) setMenu(false); });
-  }
   /* approximate local-currency prices: handled by the locale script (window.ktAddUgx) */
   window.ktAddUgx=function(){ if(window.ktAddLocal) window.ktAddLocal(); };
 
@@ -4231,56 +4251,77 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
 
 
 <script>
-/* Page router: each menu item opens its own page (no long scrolling). Old #links still work. */
+/* Page router: each menu item opens its own page. Sub-sections have their own links so the back button works. */
 (function(){
-  var MAP={home:'home',why:'home',start:'start','start-bots':'start','start-invest':'start',request:'start',services:'start',how:'start',process:'start',proof:'start',bots:'bots',invest:'invest',account:'account',contact:'contact',legal:'legal',admin:'admin'};
+  var MAP={home:'home',why:'home',start:'start','start-bots':'start','start-invest':'start',request:'start',services:'start',how:'start',process:'start',proof:'start',
+    bots:'bots','bots-mt5':'bots','bots-tv':'bots',invest:'invest','invest-plans':'invest','invest-mine':'invest','invest-statements':'invest',
+    account:'account','account-strategy':'account','account-bots':'account','account-invest':'account','account-wallet':'account','account-profile':'account',
+    contact:'contact',legal:'legal',admin:'admin'};
   var PANEL={start:1,request:1,services:1,how:1,process:1,proof:1,'start-bots':2,'start-invest':3};
-  var TOP={home:1,start:1,'start-bots':1,'start-invest':1,bots:1,invest:1,account:1,contact:1,legal:1,admin:1};
-  var cur=document.body.getAttribute('data-active')||'home';
+  var ACC={account:'overview','account-strategy':'strategy','account-bots':'bots','account-invest':'invest','account-wallet':'trans','account-profile':'profile'};
+  var SUBT={'bots-mt5':'mt5BotsGrid','bots-tv':'tvBotsGrid','invest-plans':'ivPlans','invest-mine':'ivMine','invest-statements':'ivStmts'};
+  var TOP={home:1,start:1,'start-bots':1,'start-invest':1,bots:1,invest:1,account:1,'account-strategy':1,'account-bots':1,'account-invest':1,'account-wallet':1,'account-profile':1,contact:1,legal:1,admin:1};
+  var TITLES={home:'The Kingdom Trader — Strategy Automation & Trading Bots',start:'Get started — The Kingdom Trader',bots:'Bot catalog — The Kingdom Trader',invest:'Invest (demo) — The Kingdom Trader',account:'My Account — The Kingdom Trader',contact:'Contact — The Kingdom Trader',legal:'Legal & risk — The Kingdom Trader',admin:'Admin — The Kingdom Trader'};
+  var TABID={panelTabOverview:'account',panelTabStrategy:'account-strategy',panelTabBots:'account-bots',panelTabInvest:'account-invest',panelTabTrans:'account-wallet',panelTabProfile:'account-profile'};
+  var GOTO={strategy:'account-strategy',bots:'account-bots',invest:'account-invest',trans:'account-wallet'};
+  var cur=document.body.getAttribute('data-active')||'home', idx=(history.state&&history.state.i)||0;
+  try{ history.replaceState({i:idx},''); }catch(e){}
+
   function showPanel(n){
     document.body.setAttribute('data-start',String(n));
     document.querySelectorAll('.start-tabs [data-start-tab]').forEach(function(t){ t.classList.toggle('on',t.getAttribute('data-start-tab')===String(n)); });
   }
   function setActive(){
-    document.querySelectorAll('.nav-links a, .nav-menu a, .nav-pills a').forEach(function(a){
-      var id=(a.getAttribute('href')||'').slice(1);
-      a.classList.toggle('active',MAP[id]===cur && (id===cur||(id==='start'&&cur==='start')));
-    });
+    var h=(location.hash||'').slice(1)||'home';
+    document.querySelectorAll('.nav-links a, .nav-pills a').forEach(function(a){ var id=(a.getAttribute('href')||'').slice(1); a.classList.toggle('active',MAP[id]===cur&&id===cur); });
+    document.querySelectorAll('.nav-menu a').forEach(function(a){ a.classList.toggle('active',(a.getAttribute('href')||'').slice(1)===h); });
     var act=document.querySelector('.nav-pills a.active'); if(act&&act.parentNode) act.parentNode.scrollLeft=act.offsetLeft-(act.parentNode.clientWidth-act.offsetWidth)/2;
   }
+  function updateBack(){ var b=document.getElementById('navBack'); if(b) b.hidden=(cur==='home'); }
   function show(page){
-    cur=page; document.body.setAttribute('data-active',page); setActive();
-    var t=({home:'The Kingdom Trader — Strategy Automation & Trading Bots',start:'Get started — The Kingdom Trader',bots:'Bot catalog — The Kingdom Trader',request:'Get started — The Kingdom Trader',invest:'Invest (demo) — The Kingdom Trader',account:'My Account — The Kingdom Trader',contact:'Contact — The Kingdom Trader',legal:'Legal & risk — The Kingdom Trader',admin:'Admin — The Kingdom Trader'})[page];
-    if(t) document.title=t;
+    cur=page; document.body.setAttribute('data-active',page); setActive(); updateBack();
+    if(TITLES[page]) document.title=TITLES[page];
+    document.dispatchEvent(new CustomEvent('ktroute',{detail:page}));
   }
+  function accTab(key){ var n=0; (function t(){ if(window.ktShowTab){ window.ktShowTab(key); document.dispatchEvent(new CustomEvent('ktroute',{detail:'account'})); } else if(n++<30) setTimeout(t,100); })(); }
   function go(id,instant){
-    var page=MAP[id]||'home';
-    var was=cur; if(page!==cur) show(page); if(page==='start') showPanel(PANEL[id]||1); setActive();
-    var el=document.getElementById(id);
+    var page=MAP[id]||'home', was=cur;
+    if(page!==cur) show(page);
+    if(page==='start') showPanel(PANEL[id]||1);
+    if(page==='account') accTab(ACC[id]||'overview');
+    setActive(); updateBack();
+    var el=document.getElementById(SUBT[id]||id);
+    if(el&&SUBT[id]) el=el.closest('.platform-section')||el;
     if(page==='start'&&was==='start'&&TOP[id]&&!instant){ var tb=document.getElementById('startTabs'); if(tb){ tb.scrollIntoView({behavior:'smooth',block:'start'}); return; } }
     if(TOP[id]||!el){ window.scrollTo({top:0,behavior:instant?'auto':'smooth'}); }
     else { setTimeout(function(){ el.scrollIntoView({behavior:instant?'auto':'smooth',block:'start'}); },30); }
   }
+  function push(id){ if(location.hash==='#'+id) return; idx++; history.pushState({i:idx},'','#'+id); }
+  window.ktNav=function(id){ push(id); go(id); };
   /* make existing code that scrolls to a hidden element open its page first */
   var orig=Element.prototype.scrollIntoView;
   Element.prototype.scrollIntoView=function(o){
     var self=this, sec=this.closest&&this.closest('[data-page]'), sp=this.closest&&this.closest('[data-start-panel]');
-    if(sec){ var pg=sec.getAttribute('data-page'), pnl=sp?parseInt(sp.getAttribute('data-start-panel'),10):0; if(pg!==cur||(pnl&&String(pnl)!==document.body.getAttribute('data-start'))){ if(pg!==cur) show(pg); if(pnl) showPanel(pnl); setTimeout(function(){ orig.call(self,o); },40); return; } }
+    if(sec){ var pg=sec.getAttribute('data-page'), pnl=sp?parseInt(sp.getAttribute('data-start-panel'),10):0;
+      if(pg!==cur||(pnl&&String(pnl)!==document.body.getAttribute('data-start'))){ if(pg!==cur) show(pg); if(pnl) showPanel(pnl); setTimeout(function(){ orig.call(self,o); },40); return; } }
     return orig.call(this,o);
   };
   document.addEventListener('click',function(e){
-    var a=e.target.closest&&e.target.closest('a[href^="#"]'); if(!a) return;
+    var t=e.target; if(!t.closest) return;
+    var pt=t.closest('.panel-tab'); if(pt&&TABID[pt.id]){ push(TABID[pt.id]); return; }
+    var gc=t.closest('#svcCards [data-goto]'); if(gc&&GOTO[gc.getAttribute('data-goto')]){ push(GOTO[gc.getAttribute('data-goto')]); return; }
+    if(t.closest('#navBack')){ if(idx>0) history.back(); else window.ktNav('home'); return; }
+    var a=t.closest('a[href^="#"]'); if(!a) return;
     var id=(a.getAttribute('href')||'').slice(1); if(!id||!MAP[id]) return;
-    e.preventDefault();
-    if(location.hash!=='#'+id) history.pushState(null,'','#'+id);
-    go(id);
+    e.preventDefault(); window.ktNav(id);
   });
   function fromHash(){ var id=location.hash.slice(1)||'home'; go(MAP[id]?id:'home',true); }
-  addEventListener('popstate',fromHash); addEventListener('hashchange',fromHash);
-  var logo=document.querySelector('nav .logo'); if(logo){ logo.style.cursor='pointer'; logo.addEventListener('click',function(){ if(location.hash!=='#home') history.pushState(null,'','#home'); go('home'); }); }
+  addEventListener('popstate',function(e){ idx=(e.state&&e.state.i)||0; fromHash(); });
+  addEventListener('hashchange',fromHash);
+  var logo=document.querySelector('nav .logo'); if(logo){ logo.style.cursor='pointer'; logo.addEventListener('click',function(){ window.ktNav('home'); }); }
   function navH(){ var n=document.querySelector('nav'); if(n) document.documentElement.style.setProperty('--nav-h',n.offsetHeight+'px'); }
   navH(); addEventListener('resize',navH); addEventListener('load',navH); setTimeout(navH,400);
-  setActive(); showPanel(parseInt(document.body.getAttribute('data-start')||'1',10));
+  setActive(); updateBack(); showPanel(parseInt(document.body.getAttribute('data-start')||'1',10));
   var tx=0,ty=0,tt=null;
   document.addEventListener('touchstart',function(e){ var t=e.touches[0]; tx=t.clientX; ty=t.clientY; tt=e.target; },{passive:true});
   document.addEventListener('touchend',function(e){
@@ -4288,11 +4329,12 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
     if(Math.abs(dx)<70||Math.abs(dy)>50) return;
     if(tt.closest&&tt.closest('input,textarea,select,.bots,.nav-pills,.sub-tabs,table')) return;
     var n=parseInt(document.body.getAttribute('data-start')||'1',10)+(dx<0?1:-1); if(n<1||n>3) return;
-    var id=n===1?'start':(n===2?'start-bots':'start-invest'); history.pushState(null,'','#'+id); go(id);
+    window.ktNav(n===1?'start':(n===2?'start-bots':'start-invest'));
   },{passive:true});
   if(location.hash && location.hash.length>1) setTimeout(fromHash,0);
 })();
 </script>
+
 
 <script>
 /* Modals (find-your-path quiz, plan terms) */
@@ -4327,19 +4369,51 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
 </script>
 
 <script>
-/* dashboard tabs under the welcome line: open the dashboard on the chosen tab */
+/* Account page shows the dashboard inline; hamburger menu with sub-sections; dashboard strip */
 (function(){
-  var strip=document.getElementById('subTabs'); if(!strip) return;
-  var drawer=document.getElementById('dashboardDrawer');
-  function sync(){ var open=drawer&&drawer.classList.contains('open'); strip.querySelectorAll('button').forEach(function(b){ var t=document.getElementById(b.getAttribute('data-subtab')); b.classList.toggle('on',!!(open&&t&&t.classList.contains('active'))); }); }
-  strip.addEventListener('click',function(e){
-    var b=e.target.closest('button[data-subtab]'); if(!b) return;
-    if(!drawer.classList.contains('open')) document.getElementById('kebabBtn').click();
-    document.getElementById(b.getAttribute('data-subtab')).click(); setTimeout(sync,30);
-  });
-  if('MutationObserver' in window){ var mo=new MutationObserver(sync); mo.observe(drawer,{attributes:true,attributeFilter:['class']}); document.querySelectorAll('.panel-tab').forEach(function(t){ mo.observe(t,{attributes:true,attributeFilter:['class']}); }); }
+  /* 1. the dashboard now lives on the My Account page itself */
+  var d=document.getElementById('dashboardDrawer'), host=document.querySelector('#account > .wrap');
+  if(d&&host) host.appendChild(d);
+  var gb=document.getElementById('navGreeting');
+  function sync(){
+    var on=!!gb&&getComputedStyle(gb).display!=='none';
+    document.body.classList.toggle('kt-in',on);
+    if(on&&d&&!d.classList.contains('open')){ var k=document.getElementById('kebabBtn'); if(k) k.click(); }
+  }
+  if(gb&&'MutationObserver' in window) new MutationObserver(sync).observe(gb,{attributes:true,attributeFilter:['style']});
+  sync();
+
+  /* 2. hamburger menu: tabs that break down into their sections */
+  var btn=document.getElementById('navMenuBtn'), menu=document.getElementById('navMenu');
+  function openGroup(g,open){ var h=g.querySelector('.nm-head'), s=g.querySelector('.nm-sub'); if(!h||!s) return; s.hidden=!open; h.setAttribute('aria-expanded',open?'true':'false'); }
+  function setMenu(open){
+    if(!btn||!menu) return; menu.hidden=!open; btn.setAttribute('aria-expanded',open?'true':'false'); btn.setAttribute('aria-label',open?'Close menu':'Open menu');
+    if(open){ var page=document.body.getAttribute('data-active'); menu.querySelectorAll('.nm-group').forEach(function(g){ openGroup(g,g.getAttribute('data-pages')===page); }); }
+  }
+  if(btn&&menu){
+    btn.addEventListener('click',function(e){ e.stopPropagation(); setMenu(menu.hidden); });
+    menu.addEventListener('click',function(e){
+      var h=e.target.closest('.nm-head'); if(h){ var g=h.parentNode; openGroup(g,g.querySelector('.nm-sub').hidden); return; }
+      if(e.target.closest('a')) setMenu(false);
+    });
+    document.addEventListener('click',function(e){ if(!menu.hidden&&!menu.contains(e.target)&&!btn.contains(e.target)) setMenu(false); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') setMenu(false); });
+    document.addEventListener('ktroute',function(){ setMenu(false); });
+  }
+
+  /* 3. dashboard tab strip under the welcome line */
+  var strip=document.getElementById('subTabs');
+  var NAV={panelTabOverview:'account',panelTabStrategy:'account-strategy',panelTabBots:'account-bots',panelTabInvest:'account-invest',panelTabTrans:'account-wallet',panelTabProfile:'account-profile'};
+  function syncStrip(){ if(!strip) return; strip.querySelectorAll('button').forEach(function(b){ var t=document.getElementById(b.getAttribute('data-subtab')); b.classList.toggle('on',document.body.getAttribute('data-active')==='account'&&!!(t&&t.classList.contains('active'))); }); }
+  if(strip){
+    strip.addEventListener('click',function(e){ var b=e.target.closest('button[data-subtab]'); if(!b) return; window.ktNav(NAV[b.getAttribute('data-subtab')]||'account'); setTimeout(syncStrip,60); });
+    document.addEventListener('ktroute',function(){ setTimeout(syncStrip,60); });
+    document.querySelectorAll('.panel-tab').forEach(function(t){ if('MutationObserver' in window) new MutationObserver(syncStrip).observe(t,{attributes:true,attributeFilter:['class']}); });
+    syncStrip();
+  }
 })();
 </script>
+
 
 <script type="module">
 import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
