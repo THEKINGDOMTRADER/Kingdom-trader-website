@@ -1046,12 +1046,53 @@
   #account .drawer-inner{padding:6px 0 40px;max-width:760px;}
   #drawerBackdrop,#drawerCloseBtn,#kebabBtn{display:none !important;}
   body.kt-in #account .section-head{display:none;}
-  body[data-active="account"] #subTabs{display:none;}
+  #subTabs,.panel-tabs{display:none !important;}
   #account .dashboard-head{display:none;}
+
+  /* ---------- batch 1: watermark, nav icons, bell, alerts, FAQ, wallet extras ---------- */
+  #ktWatermark{position:fixed;inset:-4%;z-index:-1;pointer-events:none;display:none;background:url(chart-bg.jpg) center/cover no-repeat;opacity:.09;animation:ktWm 70s ease-in-out infinite alternate;}
+  body:not([data-active="home"]) #ktWatermark{display:block;}
+  @keyframes ktWm{from{transform:scale(1) translate3d(-1.5%,0,0);}to{transform:scale(1.08) translate3d(1.5%,-1%,0);}}
+  @media (prefers-reduced-motion:reduce){ #ktWatermark{animation:none;} }
+  .nav-icon-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;padding:0;}
+  .nav-icon-btn:hover{border-color:var(--gold);color:var(--gold);}
+  .nav-bell{display:none;} body.kt-in .nav-bell{display:inline-flex;}
+  .bell-count{position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--sell);color:#fff;font-size:10.5px;font-weight:700;line-height:17px;text-align:center;} .bell-count[hidden]{display:none;}
+  @media (max-width:520px){ #navAccountBtn{display:none !important;} }
+  #bellPanel{position:fixed;right:12px;top:calc(var(--nav-h,64px) + 6px);width:min(390px,calc(100vw - 24px));max-height:min(75vh,560px);display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.5);z-index:1500;overflow:hidden;} #bellPanel[hidden]{display:none;}
+  .bell-head{display:flex;justify-content:space-between;align-items:center;padding:12px 14px 6px;font-weight:700;font-size:15px;} .bell-head button{background:none;border:none;color:var(--gold);font:inherit;font-size:12.5px;cursor:pointer;}
+  .bell-tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 12px 10px;scrollbar-width:none;} .bell-tabs::-webkit-scrollbar{display:none;}
+  .bell-tabs button{flex:0 0 auto;background:transparent;border:1px solid var(--line);color:var(--text-dim);font:inherit;font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:16px;cursor:pointer;} .bell-tabs button.on{border-color:var(--gold);color:var(--gold);background:rgba(198,161,83,.1);}
+  .bell-list{overflow-y:auto;padding:0 10px 10px;display:grid;gap:8px;}
+  .bell-item{display:block;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;padding:10px 12px;background:var(--panel-2);}
+  .bell-item.ok{border-left-color:var(--buy);} .bell-item.warn{border-left-color:#E0A526;} .bell-item.err{border-left-color:var(--sell);}
+  .bell-item.unread{background:rgba(198,161,83,.09);}
+  .bell-item b{display:block;font-size:13.5px;color:var(--text);} .bell-item span{display:block;font-size:12.5px;color:var(--text-dim);margin-top:2px;} .bell-item small{display:block;font-size:11px;color:var(--text-dim);margin-top:4px;}
+  .bell-item em{font-style:normal;color:var(--gold);font-size:12px;font-weight:600;}
+  .bell-empty{padding:22px 14px;text-align:center;color:var(--text-dim);font-size:13.5px;}
+  #ktToasts{position:fixed;top:calc(var(--nav-h,64px) + 10px);left:50%;transform:translateX(-50%);width:min(540px,calc(100vw - 24px));display:grid;gap:8px;z-index:3000;pointer-events:none;}
+  .kt-toast{pointer-events:auto;display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:8px;border:1px solid var(--line);border-left-width:6px;background:#18223A;color:#fff;font-size:14px;font-weight:600;line-height:1.4;box-shadow:0 10px 30px rgba(0,0,0,.55);animation:ktToastIn .25s ease;}
+  .kt-toast .ic{flex:0 0 auto;font-size:17px;line-height:1.2;} .kt-toast .tx{flex:1;} .kt-toast button{background:none;border:none;color:inherit;opacity:.75;font-size:18px;line-height:1;cursor:pointer;padding:0 2px;}
+  .kt-toast.err{background:#4A1C1F;border-color:#E5585A;} .kt-toast.warn{background:#4A3A12;border-color:#E0A526;} .kt-toast.ok{background:#12392A;border-color:#2BAE72;} .kt-toast.info{background:#1B2A4A;border-color:#C6A153;}
+  @keyframes ktToastIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:none;}}
+  #ktOffline{position:fixed;left:0;right:0;top:var(--nav-h,64px);background:#B3262B;color:#fff;text-align:center;font-weight:700;font-size:14px;padding:9px 14px;z-index:2900;box-shadow:0 4px 16px rgba(0,0,0,.4);} #ktOffline[hidden]{display:none;}
+  .note.say-err,.say-err{color:#FF7B7D !important;font-weight:600;} .note.say-ok,.say-ok{color:#4ED394 !important;font-weight:600;} .note.say-warn,.say-warn{color:#F0B93A !important;font-weight:600;}
+  .phone-hint{font-size:12.5px;min-height:16px;margin-top:4px;} .phone-hint.err{color:#FF7B7D;} .phone-hint.ok{color:#4ED394;}
+  .wallet-rule{background:rgba(198,161,83,.09);border:1px solid var(--gold);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text);margin:0 0 12px;}
+  .pay-fund-link{display:block;text-align:center;color:var(--gold);font-size:13px;font-weight:600;margin:2px 0 6px;}
+  .chips.sub{margin-top:8px;}
+  .tx-sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px;} .tx-sum div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;} .tx-sum small{display:block;color:var(--text-dim);font-size:11.5px;} .tx-sum b{font-family:'JetBrains Mono',monospace;font-size:15px;} .tx-sum .in b{color:#4ED394;} .tx-sum .out b{color:#FF7B7D;}
+  .tx-flow{font-size:12.5px;color:var(--text-dim);margin:6px 0 0;display:grid;gap:3px;} .tx-flow span{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:3px 0;} .tx-flow b{font-family:'JetBrains Mono',monospace;color:var(--text);font-weight:600;}
+  .tx-row .rt{color:var(--gold);}
+  .faq-sec{padding:60px 0;} .faq-list{max-width:780px;display:grid;gap:10px;margin-top:8px;}
+  .faq-list details{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:0 16px;} .faq-list details[open]{border-color:var(--gold);}
+  .faq-list summary{cursor:pointer;padding:14px 0;font-weight:600;font-size:15px;list-style:none;display:flex;justify-content:space-between;gap:12px;} .faq-list summary::-webkit-details-marker{display:none;} .faq-list summary::after{content:'+';color:var(--gold);font-size:20px;line-height:1;} .faq-list details[open] summary::after{content:'–';}
+  .faq-list p{color:var(--text-dim);font-size:14px;line-height:1.6;padding:0 0 14px;}
 </style>
 </head>
 <body>
-<script>(function(){var m={home:'home',why:'home',start:'start','start-bots':'start','start-invest':'start',request:'start',services:'start',how:'start',process:'start',proof:'start',bots:'bots',invest:'invest',account:'account',contact:'contact',legal:'legal',admin:'admin'};var pn={start:1,request:1,services:1,how:1,process:1,proof:1,'start-bots':2,'start-invest':3};var id=(location.hash||'').slice(1)||'home';document.body.setAttribute('data-active',m[id]||'home');document.body.setAttribute('data-start',pn[id]||1);})();</script>
+<div id="ktWatermark" aria-hidden="true"></div>
+<script>(function(){var m={home:'home',why:'home',start:'start','start-bots':'start','start-invest':'start',request:'start',services:'start',how:'start',process:'start',proof:'start',bots:'bots',invest:'invest',account:'account',contact:'contact',faq:'contact',legal:'legal',admin:'admin'};var pn={start:1,request:1,services:1,how:1,process:1,proof:1,'start-bots':2,'start-invest':3};var id=(location.hash||'').slice(1)||'home';document.body.setAttribute('data-active',m[id]||'home');document.body.setAttribute('data-start',pn[id]||1);})();</script>
 
 <nav>
   <div class="wrap">
@@ -1064,10 +1105,13 @@
       <a href="#start">Get started</a>
       <a href="#bots">Bot catalog</a>
       <a href="#invest">Invest</a>
+      <a href="#account-wallet">Wallet</a>
       <a href="#account">My Account</a>
     </div>
     <div class="nav-cta">
+      <button type="button" id="navBell" class="nav-icon-btn nav-bell" aria-label="Notifications" aria-expanded="false"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span id="navBellCount" class="bell-count" hidden>0</span></button>
       <a href="#account" id="navAccountBtn" class="btn btn-ghost">Log in</a>
+      <a href="#account-profile" id="navProfileBtn" class="nav-icon-btn nav-profile" aria-label="Profile"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></a>
       <a href="https://wa.me/256774077467" class="btn btn-gold" target="_blank" rel="noopener"><span class="wa-full">WhatsApp</span><span class="wa-short">Chat</span></a>
       <button type="button" id="navMenuBtn" class="nav-menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="navMenu"><span></span><span></span><span></span></button>
     </div>
@@ -1085,6 +1129,7 @@
         <span class="nm-out"><a href="#account">Log in or register</a></span>
         <span class="nm-in"><a href="#account">Overview</a><a href="#account-strategy">Strategy requests</a><a href="#account-bots">Bots</a><a href="#account-invest">Investments</a><a href="#account-wallet">Wallet &amp; transactions</a><a href="#account-profile">Profile</a></span>
       </div></div>
+    <a href="#faq" class="nm-link">FAQs</a>
     <a href="#legal" class="nm-link">Legal &amp; risk</a>
     <a href="#contact" class="nm-link">Contact &amp; support</a>
   </div>
@@ -1093,6 +1138,7 @@
     <a href="#start">Get started</a>
     <a href="#bots">Bot catalog</a>
     <a href="#invest">Invest</a>
+    <a href="#account-wallet">Wallet</a>
     <a href="#account">My Account</a>
   </div>
 </nav>
@@ -1112,7 +1158,7 @@
     </div>
   </div>
 
-<section class="hero" data-bg="waves,zones" data-page="home">
+<section class="hero" data-bg="waves" data-page="home">
   <div class="hero-overlay"></div>
   <div class="hero-grid"></div>
   <div class="wrap">
@@ -1212,7 +1258,7 @@
 
 <div class="page-banner" data-page="bots" style="--img:url(ai-bots.jpg)"><div class="wrap"><span class="eyebrow">Bot catalog</span><h1>Bots ready to deploy.</h1><p>Pick a ready-made bot, or rent one by the month. Prices are shown in USD with an approximate UGX amount.</p></div></div>
 <div class="promo" id="promoBots" data-page="bots" hidden><div class="wrap promo-in"><div><strong class="promo-title"></strong> <span class="promo-text"></span></div><a class="btn btn-gold btn-sm promo-btn" href="#request">Claim</a></div></div>
-<section id="bots" data-bg="candles" data-page="bots">
+<section id="bots" data-page="bots">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Catalog</span>
@@ -1452,7 +1498,7 @@
 </section>
 
 <div class="page-banner" data-page="contact" style="--img:url(phone-trader.jpg)"><div class="wrap"><span class="eyebrow">Contact</span><h1>Talk to us.</h1><p>Questions about a bot, a custom build or the new plans? Message us and we will reply.</p></div></div>
-<section id="contact" data-bg="waves,zones" data-page="contact">
+<section id="contact" data-bg="waves" data-page="contact">
   <div class="wrap">
     <div class="contact">
       <span class="eyebrow">Get in touch</span>
@@ -1492,6 +1538,26 @@
   </div>
 </section>
 
+
+<section id="faq" data-page="contact" class="faq-sec">
+  <div class="wrap">
+    <div class="section-head"><span class="eyebrow">FAQs</span><h2>Frequently asked questions.</h2><p>Quick answers to what people ask us most. Can't find yours? <a href="#contact" style="color:var(--gold);">Message us</a>.</p></div>
+    <div class="faq-list">
+      <details><summary>How does the wallet work?</summary><p>Your wallet is where all your money on The Kingdom Trader sits. Money you add goes into your wallet. You then use the wallet to pay for bots, rentals and trade-for-me plans. Anything we pay you, such as a plan payout or a refund, comes back into the same wallet. From the wallet you can withdraw to MTN, Airtel or a bank/card.</p></details>
+      <details><summary>Can I pay for a bot or plan directly from my phone number?</summary><p>No. To keep every shilling traceable, payments for services are made from your wallet only. Add money to your wallet first, then pay from it.</p></details>
+      <details><summary>Is the wallet using real money yet?</summary><p>Not yet. The wallet is in test mode with virtual funds while we finish the payment gateway and legal checks. This page will tell you clearly when real payments go live.</p></details>
+      <details><summary>Which mobile money numbers can I use?</summary><p>MTN and Airtel Uganda numbers. We check the number as you type: it must be a valid Ugandan number, and it must match the network you chose (for example an Airtel number cannot be used with MTN Mobile Money).</p></details>
+      <details><summary>How do I see where my money went?</summary><p>Open <a href="#account-wallet" style="color:var(--gold);">My Account → Wallet</a>. The transactions list shows every movement, and you can filter by money in, money out, service and period. Each line shows where the money came from and where it went.</p></details>
+      <details><summary>How do I get my bot after paying?</summary><p>When your order is ready you will get a notification on the bell icon. Open <a href="#account-bots" style="color:var(--gold);">My Account → Bots</a> to find your licence and download link.</p></details>
+      <details><summary>Which platforms do your bots run on?</summary><p>MetaTrader 5 and TradingView.</p></details>
+      <details><summary>Can I swap a bot I bought?</summary><p>Yes. You can request a swap from your Licenses for another bot of equal or lesser value. See the <a href="#legal" style="color:var(--gold);">legal &amp; risk page</a> for the full policy.</p></details>
+      <details><summary>When can I join a trade-for-me plan?</summary><p>Enrolment for each weekly cohort is open from Sunday to Tuesday. Everyone who joins that week starts together. The amount shown on each plan is a target, not a guarantee.</p></details>
+      <details><summary>Are results guaranteed?</summary><p>No. Trading carries risk and results depend on market conditions. We only publish results we can verify. Please read the <a href="#legal" style="color:var(--gold);">legal &amp; risk page</a> before you invest.</p></details>
+      <details><summary>How long does a withdrawal take?</summary><p>You request the withdrawal from your wallet, and we release it to the MTN, Airtel or bank details you gave. The status in your transactions list updates when it is sent.</p></details>
+      <details><summary>How do I contact support?</summary><p>Tap the round WhatsApp button or the Chat button at the top of any page, or use the form on the contact page.</p></details>
+    </div>
+  </div>
+</section>
 <div class="page-banner" data-page="invest" style="--img:url(invest-scales.jpg)"><div class="wrap"><span class="eyebrow">Trade for me · Prototype</span><h1>Trade-for-me plans.</h1><p>Choose a plan, see the amount you are aiming for, and track it from your account. Virtual funds only for now.</p></div></div>
 <section id="invest" data-page="invest">
   <div class="wrap">
@@ -1947,22 +2013,27 @@
       <div class="dash-section-label" style="margin-top:0;">Your wallet</div>
       <div id="walletBox">
         <div class="wallet-test" id="walletTest">Test wallet · virtual funds only. No real money is accepted yet.</div>
+        <div class="wallet-rule">💼 Every payment goes through your wallet. Add money here first, then pay for bots and plans from it. Payouts and refunds come back here, and you can withdraw to MTN, Airtel or bank.</div>
         <div class="wallet-cards"><div><small>Balance</small><b id="wBal">$0.00</b></div><div><small>Available</small><b id="wAvail">$0.00</b></div><div><small>Pending</small><b id="wPend">$0.00</b></div></div>
         <div class="wallet-forms">
           <div class="wallet-form"><h4>Deposit</h4>
             <div class="inv-field"><input type="number" inputmode="decimal" id="wDepAmt" placeholder="Amount in USD" aria-label="Deposit amount"></div>
             <div class="inv-field"><select id="wDepMethod" aria-label="Deposit method"><option>MTN Mobile Money</option><option>Airtel Money</option><option>Card</option></select></div>
+            <div class="inv-field" id="wDepPhoneBox"><input type="tel" inputmode="tel" id="wDepPhone" placeholder="Number you will pay from, e.g. 0771234567" aria-label="Mobile money number" autocomplete="tel"><p class="phone-hint" id="wDepHint"></p></div>
             <button type="button" class="btn btn-gold btn-sm" id="wDepBtn">Request deposit</button><p class="note" id="wDepMsg"></p></div>
           <div class="wallet-form"><h4>Withdraw</h4>
             <div class="inv-field"><input type="number" inputmode="decimal" id="wWdAmt" placeholder="Amount in USD" aria-label="Withdrawal amount"></div>
             <div class="inv-field"><select id="wWdMethod" aria-label="Withdrawal method"><option>MTN Mobile Money</option><option>Airtel Money</option><option>Bank / card</option></select></div>
-            <div class="inv-field"><input type="text" id="wWdTo" placeholder="Phone number or account" aria-label="Send to"></div>
+            <div class="inv-field"><input type="text" id="wWdTo" placeholder="Phone number or account" aria-label="Send to"><p class="phone-hint" id="wWdHint"></p></div>
             <button type="button" class="btn btn-gold btn-sm" id="wWdBtn">Request withdrawal</button><p class="note" id="wWdMsg"></p></div>
         </div>
         <div id="wPending"></div>
       </div>
       <div class="dash-section-label">Transactions</div>
       <div class="chips" id="txChips"><button type="button" class="chip on" data-tx="all">All</button><button type="button" class="chip" data-tx="Wallet">Wallet</button><button type="button" class="chip" data-tx="Strategy">Strategy</button><button type="button" class="chip" data-tx="Bots">Bots</button><button type="button" class="chip" data-tx="Investments">Investments</button></div>
+      <div class="chips sub" id="txDir"><button type="button" class="chip on" data-dir="all">All money</button><button type="button" class="chip" data-dir="in">Money in</button><button type="button" class="chip" data-dir="out">Money out</button></div>
+      <div class="chips sub" id="txPer"><button type="button" class="chip on" data-per="0">All time</button><button type="button" class="chip" data-per="7">Last 7 days</button><button type="button" class="chip" data-per="30">Last 30 days</button></div>
+      <div id="txSummary"></div>
       <div id="txList" class="tx-list"><p class="text-dim-note">Nothing yet. Orders, payments, plan contributions, payouts and withdrawals will be listed here.</p></div>
       <p class="text-dim-note" style="margin-top:10px;">Amounts are in US dollars. Statuses update automatically.</p>
     </div>
@@ -2702,6 +2773,7 @@
         return tb - ta;
       });
       currentDocs = docs;
+      window.__ktReq = docs.map(function(x){ var d = x.data(); d.id = x.id; return d; }); document.dispatchEvent(new CustomEvent('ktnotes'));
       checkUnreadNotes();
 
       // Update stats (always reflects ALL requests, regardless of the list filter below)
@@ -2735,7 +2807,8 @@
     return `
       <div class="pay-widget" data-ticket="${d.ticketId || ''}" data-amount="${d.amountDue || 0}">
         <button type="button" class="bot-buy-btn pay-wallet-btn" data-ticket="${d.ticketId || ''}" data-amount="${d.amountDue || 0}" style="width:100%;margin-bottom:8px;">💼 Pay $${d.amountDue || 0} from wallet</button>
-          <button type="button" class="download-btn pay-start-btn">🔒 Pay $${d.amountDue || 0} to unlock</button>
+          <a href="#account-wallet" class="pay-fund-link">Not enough in your wallet? Add money first →</a>
+          <button type="button" class="download-btn pay-start-btn" style="display:none;">🔒 Pay $${d.amountDue || 0} to unlock</button>
         <div class="pay-method-choice" style="display:none;">
           <p class="text-dim-note" style="margin:10px 0 8px;">Choose how you'd like to pay:</p>
           <div style="display:flex;gap:8px;">
@@ -4048,7 +4121,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
     PLANS.forEach(function(p){
       var c=openCohort(p.key), st=timeStatus(c), t=tgt(p.key), can=(st==='enrolling'||(S.isAdmin&&S.testOpen)), ready=S.targetsLoaded&&S.targets[p.key]!=null;
       var label=!S.user?'Log in to join':(!ready?'Opening soon':(can?'Join this cohort':'Opens '+fmtD(c.winStart)));
-      var wav=window.ktWallet?window.ktWallet.available():0, opts=(S.user?'<option value="Wallet">Wallet balance ('+money(wav)+')</option>':'')+METHODS.map(function(m){return '<option>'+m+'</option>';}).join('');
+      var wav=window.ktWallet?window.ktWallet.available():0, opts='<option value="Wallet">Wallet balance ('+money(wav)+')</option>';
       var d=document.createElement('div'); d.className='pool'; d.setAttribute('data-plan',p.key);
       d.innerHTML='<h3>'+p.name+'<span class="tag">TARGET +'+pct(t*100)+'</span></h3>'+
         '<p class="note">Aim: grow your amount by about <strong style="color:var(--text)">'+pct(t*100)+'</strong> over '+(p.days===14?'2 weeks':(p.days/30)+' month'+(p.days>30?'s':''))+'. Not guaranteed.</p>'+
@@ -4129,7 +4202,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       if(x.fundedBy!=='wallet') tx.push({t:x.createdAt||0,svc:'Investments',label:p.name+(x.source==='reinvest'?' — reinvestment':' — contribution'),amt:x.amount,st:stt,ref:ref(x)});
       rows+='<div class="tx-row"><div class="l">'+p.name+'<small>Cohort '+fmtD(c.winStart)+' · matures '+fmtD(c.maturesAt)+'</small></div><div class="r">'+money(x.amount)+'<small><span class="out '+(x.status==='pending'?'mid':'ok')+'">'+stt+'</span></small></div></div>';
     });
-    window.__ktTx=window.__ktTx||{}; window.__ktTx.plan=tx; window.__ktCnt=window.__ktCnt||{}; window.__ktCnt.p=list.length;
+    window.__ktTx=window.__ktTx||{}; window.__ktTx.plan=tx; document.dispatchEvent(new CustomEvent('ktplan')); window.__ktCnt=window.__ktCnt||{}; window.__ktCnt.p=list.length;
     var box=el('dashInvest'); if(box) box.innerHTML=rows||'<p class="text-dim-note">Your plans appear here once you join one.</p>';
     if(window.ktCounts) window.ktCounts(); if(window.ktRenderTx) window.ktRenderTx();
   }
@@ -4213,7 +4286,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       act.disabled=true; var w2=who(), msel=card.querySelector('[data-method]').value, cref=doc(collection(db,'contributions'));
       var cdata={uid:w2.uid,name:w2.name,email:w2.email,plan:p.key,amount:amt,status:'pending',cohortId:co2.id,winStart:co2.winStart,startAt:co2.startAt,maturesAt:co2.maturesAt,t:tgt(p.key),method:msel,fundedBy:msel==='Wallet'?'wallet':'manual',source:'new',createdAt:Date.now()};
       if(msel==='Wallet'){
-        if(amt>(window.ktWallet?window.ktWallet.available():0)+0.0001){ msg.textContent='Not enough wallet balance. Deposit first in My Account → Wallet.'; act.disabled=false; return; }
+        if(amt>(window.ktWallet?window.ktWallet.available():0)+0.0001){ window.ktSay(msg,'Funds are not enough. Add money in My Account → Wallet first.','err'); act.disabled=false; return; }
         var bw=writeBatch(db); bw.set(cref,cdata); bw.set(doc(collection(db,'ledger')),{uid:w2.uid,name:w2.name,email:w2.email,type:'plan_join',amount:-amt,status:'pending',refKind:'contribution',refId:cref.id,service:'Investments',method:'Wallet',note:p.name,createdBy:'member',createdAt:Date.now()}); await bw.commit();
       } else { await setDoc(cref,cdata); }
       card.querySelector('[data-amt]').value=''; card.querySelector('[data-agree]').checked=false; card.querySelector('[data-exp]').textContent='—'; msg.textContent='Saved. Your contribution is waiting for payment confirmation. See My plans below.'; act.disabled=false;
@@ -4256,7 +4329,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   var MAP={home:'home',why:'home',start:'start','start-bots':'start','start-invest':'start',request:'start',services:'start',how:'start',process:'start',proof:'start',
     bots:'bots','bots-mt5':'bots','bots-tv':'bots',invest:'invest','invest-plans':'invest','invest-mine':'invest','invest-statements':'invest',
     account:'account','account-strategy':'account','account-bots':'account','account-invest':'account','account-wallet':'account','account-profile':'account',
-    contact:'contact',legal:'legal',admin:'admin'};
+    contact:'contact',faq:'contact',legal:'legal',admin:'admin'};
   var PANEL={start:1,request:1,services:1,how:1,process:1,proof:1,'start-bots':2,'start-invest':3};
   var ACC={account:'overview','account-strategy':'strategy','account-bots':'bots','account-invest':'invest','account-wallet':'trans','account-profile':'profile'};
   var SUBT={'bots-mt5':'mt5BotsGrid','bots-tv':'tvBotsGrid','invest-plans':'ivPlans','invest-mine':'ivMine','invest-statements':'ivStmts'};
@@ -4273,7 +4346,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   }
   function setActive(){
     var h=(location.hash||'').slice(1)||'home';
-    document.querySelectorAll('.nav-links a, .nav-pills a').forEach(function(a){ var id=(a.getAttribute('href')||'').slice(1); a.classList.toggle('active',MAP[id]===cur&&id===cur); });
+    document.querySelectorAll('.nav-links a, .nav-pills a').forEach(function(a){ var id=(a.getAttribute('href')||'').slice(1); a.classList.toggle('active',(MAP[id]===cur&&id===cur&&!(cur==='account'&&h==='account-wallet'))||(id==='account-wallet'&&h==='account-wallet'&&cur==='account')); });
     document.querySelectorAll('.nav-menu a').forEach(function(a){ a.classList.toggle('active',(a.getAttribute('href')||'').slice(1)===h); });
     var act=document.querySelector('.nav-pills a.active'); if(act&&act.parentNode) act.parentNode.scrollLeft=act.offsetLeft-(act.parentNode.clientWidth-act.offsetWidth)/2;
   }
@@ -4576,6 +4649,8 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
   };
   var LABEL={deposit:'Deposit',withdrawal:'Withdrawal',plan_join:'Plan contribution',plan_payout:'Plan payout',purchase:'Bot payment',adjustment:'Adjustment'};
   function svcFor(e){ return e.type==='plan_join'||e.type==='plan_payout'?'Investments':(e.type==='purchase'?'Bots':'Wallet'); }
+  function routeFor(e){ var m=e.method||'', to=String(e.note||'').indexOf('To ')===0?String(e.note).slice(3):'';
+    switch(e.type){ case 'deposit': return (m||'Outside')+' → Wallet'; case 'withdrawal': return 'Wallet → '+(m||'Outside')+(to?' ('+to+')':''); case 'purchase': return 'Wallet → Bots'; case 'plan_join': return 'Wallet → Investments'; case 'plan_payout': return 'Investments → Wallet'; default: return e.amount>=0?'Adjustment → Wallet':'Wallet → Adjustment'; } }
   function stLabel(s){ return s==='completed'?'Completed':(s==='pending'?'Pending':'Rejected'); }
 
   function render(){
@@ -4586,7 +4661,7 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
     var pend=mine().filter(function(e){return e.status==='pending'&&(e.type==='deposit'||e.type==='withdrawal'||e.type==='purchase');});
     el('wPending').innerHTML=pend.length?'<div class="dash-section-label">Waiting for confirmation</div>'+pend.map(function(e){ return '<div class="tx-row"><div class="l">'+LABEL[e.type]+(e.method?' · '+esc(e.method):'')+'<small>'+fmtDY(e.createdAt||Date.now())+'</small></div><div class="r">'+money(e.amount)+'<small><button type="button" class="btn btn-ghost btn-sm" data-wcancel="'+e.id+'">Cancel</button></small></div></div>'; }).join(''):'';
     window.__ktTx=window.__ktTx||{};
-    window.__ktTx.led=mine().map(function(e){ return {t:e.createdAt||0,svc:svcFor(e),label:(LABEL[e.type]||e.type)+(e.note?' — '+e.note:''),amt:e.amount,signed:true,st:stLabel(e.status),ref:e.method||''}; });
+    window.__ktTx.led=mine().map(function(e){ return {t:e.createdAt||0,svc:svcFor(e),label:(LABEL[e.type]||e.type)+(e.note?' — '+e.note:''),amt:e.amount,signed:true,st:stLabel(e.status),ref:'',rt:routeFor(e)}; });
     if(window.ktRenderTx) window.ktRenderTx(); if(window.ktCounts) window.ktCounts();
     document.dispatchEvent(new CustomEvent('ktwallet'));
     renderAdmin();
@@ -4606,18 +4681,22 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
       if(t.closest('#wDepBtn')){
         if(!S.user){ location.hash='#account'; return; }
         var a=parseFloat(el('wDepAmt').value), m=el('wDepMsg');
-        if(!(a>=5)){ m.textContent='Enter at least $5.'; return; }
-        await createEntry({type:'deposit',amount:a,method:el('wDepMethod').value,note:WALLET_LIVE?'':'Test funds'});
-        el('wDepAmt').value=''; m.textContent='Deposit requested. It will show as completed after we confirm it.'; return;
+        if(!(a>=5)){ window.ktSay(m,'Enter at least $5.','err'); return; }
+        var dm=el('wDepMethod').value, dph='';
+        if(/MTN|Airtel/.test(dm)){ var pv=window.ktPhone(el('wDepPhone').value,dm); if(!pv.ok){ window.ktSay(m,pv.msg,'err'); return; } dph=pv.local; }
+        await createEntry({type:'deposit',amount:a,method:dm,note:(WALLET_LIVE?'':'Test funds')+(dph?(WALLET_LIVE?'':' · ')+'From '+dph:'')});
+        el('wDepAmt').value=''; window.ktSay(m,'Deposit requested. It will show as completed after we confirm it.','ok'); return;
       }
       if(t.closest('#wWdBtn')){
         if(!S.user){ location.hash='#account'; return; }
         var w=parseFloat(el('wWdAmt').value), mm=el('wWdMsg'), to=el('wWdTo').value.trim();
-        if(!(w>=5)){ mm.textContent='Enter at least $5.'; return; }
-        if(w>window.ktWallet.available()+0.0001){ mm.textContent='That is more than your available balance.'; return; }
-        if(!to){ mm.textContent='Enter the phone number or account to send it to.'; return; }
-        await createEntry({type:'withdrawal',amount:-w,method:el('wWdMethod').value,note:'To '+to});
-        el('wWdAmt').value=''; mm.textContent='Withdrawal requested. We will release it and the status will update.'; return;
+        if(!(w>=5)){ window.ktSay(mm,'Enter at least $5.','err'); return; }
+        if(w>window.ktWallet.available()+0.0001){ window.ktSay(mm,'Funds are not enough. That is more than your available balance.','err'); return; }
+        var wm=el('wWdMethod').value;
+        if(!to){ window.ktSay(mm,'Enter the phone number or account to send it to.','err'); return; }
+        if(/MTN|Airtel/.test(wm)){ var wv=window.ktPhone(to,wm); if(!wv.ok){ window.ktSay(mm,wv.msg,'err'); return; } to=wv.local; }
+        await createEntry({type:'withdrawal',amount:-w,method:wm,note:'To '+to});
+        el('wWdAmt').value=''; window.ktSay(mm,'Withdrawal requested. We will release it and the status will update.','ok'); return;
       }
       if((q=t.closest('[data-wcancel]'))){ await deleteDoc(doc(db,'ledger',q.getAttribute('data-wcancel'))); return; }
       if((q=t.closest('.pay-wallet-btn'))){
@@ -4647,6 +4726,140 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
     render();
   });
   render();
+})();
+</script>
+
+<script>
+/* Batch 1: visible alerts, offline bar, phone checks, richer transactions, notification bell */
+(function(){
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function money(n){ var a=Math.abs(n); return (n<0?'−':'')+'$'+(Math.round(a*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+  /* ---- coloured alerts ---- */
+  var box=document.createElement('div'); box.id='ktToasts'; box.setAttribute('aria-live','assertive'); document.body.appendChild(box);
+  var ICON={err:'⛔',warn:'⚠️',ok:'✅',info:'ℹ️'};
+  window.ktToast=function(msg,type){
+    type=ICON[type]?type:'info';
+    var t=document.createElement('div'); t.className='kt-toast '+type; t.setAttribute('role',type==='err'||type==='warn'?'alert':'status');
+    t.innerHTML='<span class="ic">'+ICON[type]+'</span><span class="tx">'+esc(msg)+'</span><button type="button" aria-label="Dismiss">×</button>';
+    function kill(){ if(t.parentNode) t.parentNode.removeChild(t); }
+    t.querySelector('button').onclick=kill; box.appendChild(t);
+    while(box.children.length>3) box.removeChild(box.firstChild);
+    setTimeout(kill,(type==='err'||type==='warn')?9000:5500);
+  };
+  window.ktSay=function(el,text,type){ if(!el) return; el.textContent=text; el.className=(el.className||'').replace(/\bsay-\w+/g,'').trim()+' say-'+type; if(type==='err'||type==='warn') window.ktToast(text,type); };
+  window.alert=function(m){ m=String(m); var ty=/not enough|insufficient|could not|can.?t |cannot|denied|fail|error|invalid|wrong|unable|offline|enter a/i.test(m)?'err':(/success|saved|sent|thank|done/i.test(m)?'ok':'info'); window.ktToast(m,ty); };
+  var off=document.createElement('div'); off.id='ktOffline'; off.hidden=true; off.setAttribute('role','alert'); off.textContent='⚠️ You are offline. Reconnect to the internet before you save or pay.'; document.body.appendChild(off);
+  function net(){ off.hidden=navigator.onLine!==false; }
+  addEventListener('offline',function(){ net(); }); addEventListener('online',function(){ net(); window.ktToast('You are back online.','ok'); }); net();
+
+  /* ---- Ugandan MTN / Airtel number check ---- */
+  var MTN={'76':1,'77':1,'78':1}, AIR={'70':1,'74':1,'75':1};
+  window.ktPhone=function(v,method){
+    var d=String(v||'').replace(/[\s\-().]/g,''); if(d.charAt(0)==='+') d=d.slice(1);
+    if(d.indexOf('256')===0) d='0'+d.slice(3); else if(d.length===9&&d.charAt(0)==='7') d='0'+d;
+    if(!/^0\d{9}$/.test(d)) return {ok:false,msg:'Enter a valid Ugandan number, for example 0771234567.'};
+    var pre=d.slice(1,3), net=MTN[pre]?'MTN':(AIR[pre]?'Airtel':'');
+    if(!net) return {ok:false,msg:'That number is not an MTN or Airtel number. Please check it.',local:d};
+    var want=/MTN/.test(method||'')?'MTN':(/Airtel/.test(method||'')?'Airtel':'');
+    if(want&&want!==net) return {ok:false,net:net,local:d,msg:'That is an '+net+' number, but you chose '+method+'. Change the method or the number.'};
+    return {ok:true,net:net,local:d,intl:'+256'+d.slice(1)};
+  };
+  function hint(inp,sel,out){
+    var i=document.getElementById(inp), s=document.getElementById(sel), h=document.getElementById(out); if(!i||!s||!h) return;
+    function run(){ var v=i.value.trim(); if(!v||!/MTN|Airtel/.test(s.value)){ h.textContent=''; h.className='phone-hint'; return; }
+      var r=window.ktPhone(v,s.value); h.textContent=r.ok?('✓ '+r.net+' number '+r.local):('✗ '+r.msg); h.className='phone-hint '+(r.ok?'ok':'err'); }
+    i.addEventListener('input',run); s.addEventListener('change',run); run();
+  }
+  function wire(){ hint('wDepPhone','wDepMethod','wDepHint'); hint('wWdTo','wWdMethod','wWdHint');
+    var dm=document.getElementById('wDepMethod'), pb=document.getElementById('wDepPhoneBox');
+    if(dm&&pb){ var sw=function(){ pb.style.display=/MTN|Airtel/.test(dm.value)?'':'none'; }; dm.addEventListener('change',sw); sw(); } }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire); else wire();
+
+  /* ---- transactions: filter by service, money in/out, period; show source and destination ---- */
+  var dirF='all', perF=0;
+  function cls(st){ st=String(st).toLowerCase(); if(/complet|paid|released|active|delivered|ready/.test(st)) return 'ok'; if(/await|pending|request|received|progress/.test(st)) return 'mid'; return 'bad'; }
+  window.ktRenderTx=function(){
+    var list=document.getElementById('txList'); if(!list) return;
+    var on=document.querySelector('#txChips .chip.on'), svc=on?on.getAttribute('data-tx'):'all', T=window.__ktTx||{};
+    var all=(T.req||[]).concat(T.plan||[]).concat(T.led||[]), since=perF?Date.now()-perF*864e5:0;
+    all=all.filter(function(x){ return (svc==='all'||x.svc===svc)&&(!since||(x.t||0)>=since)&&(dirF==='all'||(x.signed&&(dirF==='in'?x.amt>0:x.amt<0))); });
+    all.sort(function(a,b){return (b.t||0)-(a.t||0);});
+    var sum=document.getElementById('txSummary'), led=all.filter(function(x){return x.signed&&x.st==='Completed';});
+    if(sum){
+      var inn=0,out=0,flow={}; led.forEach(function(x){ if(x.amt>0) inn+=x.amt; else out+=-x.amt; if(x.rt) flow[x.rt]=(flow[x.rt]||0)+x.amt; });
+      var keys=Object.keys(flow);
+      sum.innerHTML=led.length?('<div class="tx-sum"><div class="in"><small>Money in (completed)</small><b>'+money(inn)+'</b></div><div class="out"><small>Money out (completed)</small><b>'+money(out)+'</b></div></div><div class="tx-flow">'+keys.map(function(k){ return '<span>'+esc(k)+'<b>'+money(flow[k])+'</b></span>'; }).join('')+'</div>'):'';
+    }
+    if(!all.length){ list.innerHTML='<p class="text-dim-note">'+(dirF!=='all'?'No wallet money movements match these filters.':'Nothing here yet. Orders, payments, plan contributions, payouts and withdrawals will be listed here.')+'</p>'; return; }
+    list.innerHTML=all.map(function(x){ return '<div class="tx-row"><div class="l">'+esc(x.label)+'<small>'+esc(x.svc)+(x.t?' · '+new Date(x.t).toLocaleDateString():'')+(x.ref?' · '+esc(x.ref):'')+'</small>'+(x.rt?'<small class="rt">'+esc(x.rt)+'</small>':'')+'</div><div class="r">'+(x.amt?((x.amt<0?'−':(x.signed?'+':''))+money(Math.abs(x.amt))):'—')+'<small><span class="out '+cls(x.st)+'">'+esc(x.st)+'</span></small></div></div>'; }).join('');
+  };
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('#txDir [data-dir], #txPer [data-per]'); if(!b) return;
+    var row=b.parentNode; row.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on',c===b); });
+    if(b.hasAttribute('data-dir')) dirF=b.getAttribute('data-dir'); else perF=parseInt(b.getAttribute('data-per'),10)||0;
+    window.ktRenderTx();
+  });
+
+  /* ---- notification bell ---- */
+  var KEY='ktReadNotes', readSet={}, firstBuild=true, seen={}, cat='All', items=[];
+  try{ (JSON.parse(localStorage.getItem(KEY)||'[]')||[]).forEach(function(k){ readSet[k]=1; }); }catch(e){}
+  function saveRead(){ try{ localStorage.setItem(KEY,JSON.stringify(Object.keys(readSet).slice(-300))); }catch(e){} }
+  function ms(v){ return v&&v.toMillis?v.toMillis():(typeof v==='number'?v:0); }
+  function rel(t){ if(!t) return ''; var m=Math.round((Date.now()-t)/60000); if(m<1) return 'Just now'; if(m<60) return m+' min ago'; var h=Math.round(m/60); if(h<24) return h+' h ago'; return new Date(t).toLocaleDateString(); }
+  function build(){
+    var out=[];
+    (window.__ktReq||[]).forEach(function(d){
+      var isS=(d.service||'').indexOf('Custom')>-1, c=isS?'Strategy':'Bots', title=d.title||d.service||'Your request', st=String(d.status||'Received'), t=ms(d.updatedAt)||ms(d.createdAt), href=isS?'#account-strategy':'#account-bots', ty='info', tx='has been received. We will update you here.';
+      if(/complete|deliver/i.test(st)){ ty='ok'; tx=isS?'is ready. Open it to see your delivery.':'is ready. Open it to get your licence and download link.'; }
+      else if(/await/i.test(st)){ ty='warn'; tx='is waiting for payment'+(d.amountDue?' ($'+d.amountDue+')':'')+'. Pay from your wallet to unlock it.'; }
+      else if(/progress/i.test(st)){ tx='is in progress.'; }
+      out.push({key:'req:'+d.id+':'+st,cat:c,ty:ty,title:title,text:tx,t:t,href:href});
+      if(d.note){ var nk=String(d.note), h=0; for(var i=0;i<nk.length;i++) h=(h*31+nk.charCodeAt(i))|0; out.push({key:'note:'+d.id+':'+h,cat:c,ty:'info',title:'Message from The Kingdom Trader',text:nk.length>150?nk.slice(0,150)+'…':nk,t:t,href:href}); }
+    });
+    var T=window.__ktTx||{};
+    (T.led||[]).forEach(function(x){ var ty=x.st==='Completed'?'ok':(x.st==='Pending'?'warn':'err'), tt=x.st==='Completed'?'Completed':(x.st==='Pending'?'Pending':'Not approved');
+      out.push({key:'led:'+x.t+':'+x.st+':'+x.amt,cat:x.svc==='Wallet'?'Wallet':x.svc,ty:ty,title:String(x.label).split(' — ')[0]+' · '+tt,text:(x.rt?x.rt+' · ':'')+money(x.amt),t:x.t,href:'#account-wallet'}); });
+    (T.plan||[]).forEach(function(x){ var ty=/ready|complet|active/i.test(x.st)?'ok':(/await|pending/i.test(x.st)?'warn':'info'); out.push({key:'plan:'+(x.ref||x.label)+':'+x.st,cat:'Investments',ty:ty,title:x.label,text:x.st,t:x.t,href:'#account-invest'}); });
+    out=out.filter(function(n){ return n.t&&Date.now()-n.t<60*864e5; }).sort(function(a,b){return b.t-a.t;}).slice(0,40);
+    out.forEach(function(n){ n.read=!!readSet[n.key]||Date.now()-n.t>7*864e5; });
+    return out;
+  }
+  function paint(){
+    var cnt=items.filter(function(n){return !n.read;}).length, c=document.getElementById('navBellCount');
+    if(c){ c.textContent=cnt>9?'9+':cnt; c.hidden=!cnt; }
+    var panel=document.getElementById('bellPanel'); if(!panel||panel.hidden) return;
+    var list=items.filter(function(n){return cat==='All'||n.cat===cat;});
+    panel.querySelector('.bell-list').innerHTML=list.length?list.map(function(n){ return '<a class="bell-item '+n.ty+(n.read?'':' unread')+'" href="'+n.href+'"><b>'+esc(n.title)+'</b><span>'+esc(n.text)+'</span><small>'+rel(n.t)+' · <em>Open</em></small></a>'; }).join(''):'<div class="bell-empty">No notifications here yet.</div>';
+    panel.querySelectorAll('.bell-tabs button').forEach(function(b){ b.classList.toggle('on',b.getAttribute('data-cat')===cat); });
+  }
+  function refresh(){
+    items=build();
+    var fresh=items.filter(function(n){ return !n.read&&!seen[n.key]; });
+    if(!firstBuild&&fresh.length){ var f=fresh[0]; window.ktToast(f.title+' — '+f.text,f.ty==='info'?'info':f.ty); }
+    items.forEach(function(n){ seen[n.key]=1; });
+    if(items.length||window.__ktReq) firstBuild=false;
+    paint();
+  }
+  function markAll(){ items.forEach(function(n){ readSet[n.key]=1; n.read=true; }); saveRead(); paint(); }
+  function closeBell(){ var p=document.getElementById('bellPanel'); if(p&&!p.hidden){ p.hidden=true; var b=document.getElementById('navBell'); if(b) b.setAttribute('aria-expanded','false'); markAll(); } }
+  function mount(){
+    var p=document.createElement('div'); p.id='bellPanel'; p.hidden=true;
+    p.innerHTML='<div class="bell-head"><span>Notifications</span><button type="button" id="bellMark">Mark all read</button></div><div class="bell-tabs"><button type="button" data-cat="All" class="on">All</button><button type="button" data-cat="Bots">Bots</button><button type="button" data-cat="Strategy">Strategy</button><button type="button" data-cat="Investments">Invest</button><button type="button" data-cat="Wallet">Wallet</button></div><div class="bell-list"></div>';
+    document.body.appendChild(p);
+    document.addEventListener('click',function(e){
+      var t=e.target; if(!t.closest) return;
+      if(t.closest('#navBell')){ e.stopPropagation(); if(p.hidden){ p.hidden=false; document.getElementById('navBell').setAttribute('aria-expanded','true'); refresh(); } else closeBell(); return; }
+      if(t.closest('#bellMark')){ markAll(); return; }
+      var tb=t.closest('#bellPanel .bell-tabs button'); if(tb){ cat=tb.getAttribute('data-cat'); paint(); return; }
+      if(t.closest('#bellPanel a')){ closeBell(); return; }
+      if(!p.hidden&&!t.closest('#bellPanel')) closeBell();
+    });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeBell(); });
+    ['ktnotes','ktplan','ktwallet'].forEach(function(ev){ document.addEventListener(ev,refresh); });
+    setInterval(function(){ var p2=document.getElementById('bellPanel'); if(p2&&!p2.hidden) paint(); },60000);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',mount); else mount();
 })();
 </script>
 
