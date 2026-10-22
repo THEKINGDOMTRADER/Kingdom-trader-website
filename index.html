@@ -1061,8 +1061,8 @@
   @media (max-width:520px){ #navAccountBtn{display:none !important;} }
   #bellPanel{position:fixed;right:12px;top:calc(var(--nav-h,64px) + 6px);width:min(390px,calc(100vw - 24px));max-height:min(75vh,560px);display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.5);z-index:1500;overflow:hidden;} #bellPanel[hidden]{display:none;}
   .bell-head{display:flex;justify-content:space-between;align-items:center;padding:12px 14px 6px;font-weight:700;font-size:15px;} .bell-head button{background:none;border:none;color:var(--gold);font:inherit;font-size:12.5px;cursor:pointer;}
-  .bell-tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 12px 10px;scrollbar-width:none;} .bell-tabs::-webkit-scrollbar{display:none;}
-  .bell-tabs button{flex:0 0 auto;background:transparent;border:1px solid var(--line);color:var(--text-dim);font:inherit;font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:16px;cursor:pointer;} .bell-tabs button.on{border-color:var(--gold);color:var(--gold);background:rgba(198,161,83,.1);}
+  .bell-tabs{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:4px 12px 10px;scrollbar-width:none;} .bell-tabs::-webkit-scrollbar{display:none;}
+  .bell-tabs button{-webkit-appearance:none;appearance:none;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:50px;height:32px;margin:0;background:transparent;border:1px solid var(--line);color:var(--text-dim);font-family:inherit;font-size:12.5px;font-weight:600;line-height:1;text-align:center;white-space:nowrap;padding:0 14px;border-radius:16px;cursor:pointer;} .bell-tabs button.on{border-color:var(--gold);color:var(--gold);background:rgba(198,161,83,.1);}
   .bell-list{overflow-y:auto;padding:0 10px 10px;display:grid;gap:8px;}
   .bell-item{display:block;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;padding:10px 12px;background:var(--panel-2);}
   .bell-item.ok{border-left-color:var(--buy);} .bell-item.warn{border-left-color:#E0A526;} .bell-item.err{border-left-color:var(--sell);}
@@ -1084,6 +1084,8 @@
   .tx-sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px;} .tx-sum div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;} .tx-sum small{display:block;color:var(--text-dim);font-size:11.5px;} .tx-sum b{font-family:'JetBrains Mono',monospace;font-size:15px;} .tx-sum .in b{color:#4ED394;} .tx-sum .out b{color:#FF7B7D;}
   .tx-flow{font-size:12.5px;color:var(--text-dim);margin:6px 0 0;display:grid;gap:3px;} .tx-flow span{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:3px 0;} .tx-flow b{font-family:'JetBrains Mono',monospace;color:var(--text);font-weight:600;}
   .tx-row .rt{color:var(--gold);}
+  .page-back-wrap{padding:26px 0 34px;text-align:center;} .page-back-wrap[hidden],.page-back[hidden]{display:none;}
+  .page-back{background:var(--panel);border:1px solid var(--gold);color:var(--gold);font:inherit;font-size:14px;font-weight:600;padding:9px 22px;border-radius:999px;cursor:pointer;} .page-back:hover{background:rgba(198,161,83,.12);} .page-back.sm{font-size:12.5px;padding:5px 14px;margin-left:auto;}
   .faq-sec{padding:60px 0;} .faq-list{max-width:780px;display:grid;gap:10px;margin-top:8px;}
   .faq-list details{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:0 16px;} .faq-list details[open]{border-color:var(--gold);}
   .faq-list summary{cursor:pointer;padding:14px 0;font-weight:600;font-size:15px;list-style:none;display:flex;justify-content:space-between;gap:12px;} .faq-list summary::-webkit-details-marker{display:none;} .faq-list summary::after{content:'+';color:var(--gold);font-size:20px;line-height:1;} .faq-list details[open] summary::after{content:'–';}
@@ -1096,7 +1098,7 @@
 
 <nav>
   <div class="wrap">
-    <div class="nav-left"><button type="button" id="navBack" class="nav-back" aria-label="Go back" hidden>←</button><div class="logo">
+    <div class="nav-left"><div class="logo">
       <img src="logo.jpg" alt="The Kingdom Trader logo" class="logo-img">
       <div class="logo-text"><span class="logo-the">The </span>Kingdom Trader</div>
     </div></div>
@@ -1146,6 +1148,7 @@
     <div class="sub-nav-inner">
       <button type="button" id="kebabBtn" class="kebab-btn menu-btn" aria-label="Open dashboard">☰<span id="notifDot" class="notif-dot" style="display:none;"></span></button>
       <span id="navGreetingText"></span>
+      <button type="button" id="greetBack" class="page-back sm" hidden>← Back</button>
       <a href="#admin" id="adminLink" class="admin-link" style="display:none;">Admin Panel →</a>
     </div>
     <div class="sub-tabs" id="subTabs" role="tablist" aria-label="My dashboard">
@@ -1677,6 +1680,7 @@
     <p>Questions about any of this? Message us on <a href="https://wa.me/256774077467" target="_blank" rel="noopener">WhatsApp</a>.</p>
   </div>
 </section>
+<div id="pageBack" class="page-back-wrap" hidden><div class="wrap"><button type="button" id="pageBackBtn" class="page-back">← Back</button></div></div>
 <footer>
   <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;width:100%;">
     <div class="foot-risk" style="flex-basis:100%;">Prices in other currencies are approximate. <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener" style="text-decoration:underline;">Rates by Exchange Rate API</a>. Risk warning: trading carries a high risk of loss, and results are not guaranteed. Prices shown in UGX are approximate; the final amount is confirmed at checkout.</div>
@@ -4350,7 +4354,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
     document.querySelectorAll('.nav-menu a').forEach(function(a){ a.classList.toggle('active',(a.getAttribute('href')||'').slice(1)===h); });
     var act=document.querySelector('.nav-pills a.active'); if(act&&act.parentNode) act.parentNode.scrollLeft=act.offsetLeft-(act.parentNode.clientWidth-act.offsetWidth)/2;
   }
-  function updateBack(){ var b=document.getElementById('navBack'); if(b) b.hidden=(cur==='home'); }
+  function updateBack(){ ['pageBack','greetBack'].forEach(function(i){ var b=document.getElementById(i); if(b) b.hidden=(cur==='home'); }); }
   function show(page){
     cur=page; document.body.setAttribute('data-active',page); setActive(); updateBack();
     if(TITLES[page]) document.title=TITLES[page];
@@ -4383,7 +4387,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
     var t=e.target; if(!t.closest) return;
     var pt=t.closest('.panel-tab'); if(pt&&TABID[pt.id]){ push(TABID[pt.id]); return; }
     var gc=t.closest('#svcCards [data-goto]'); if(gc&&GOTO[gc.getAttribute('data-goto')]){ push(GOTO[gc.getAttribute('data-goto')]); return; }
-    if(t.closest('#navBack')){ if(idx>0) history.back(); else window.ktNav('home'); return; }
+    if(t.closest('#navBack,#pageBackBtn,#greetBack')){ if(idx>0) history.back(); else window.ktNav('home'); return; }
     var a=t.closest('a[href^="#"]'); if(!a) return;
     var id=(a.getAttribute('href')||'').slice(1); if(!id||!MAP[id]) return;
     e.preventDefault(); window.ktNav(id);
