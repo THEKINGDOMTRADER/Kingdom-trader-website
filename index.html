@@ -1713,6 +1713,7 @@
       <button type="button" id="adminTabRequests" class="auth-tab active">All Requests</button>
       <button type="button" id="adminTabLicenses" class="auth-tab">Licenses</button>
       <button type="button" id="adminTabProducts" class="auth-tab">Products</button>
+      <button type="button" id="adminTabTools" class="auth-tab">Accounts</button>
     </div>
 
     <div id="adminRequestsView">
@@ -1816,6 +1817,39 @@
 
       <div class="dash-section-label">All licenses</div>
       <div id="adminLicensesList" class="requests-list"></div>
+    </div>
+
+    <div id="adminToolsView" style="display:none;">
+      <h3 style="margin:6px 0 4px;">Trading accounts and cohorts</h3>
+      <p class="note">Link each broker account to the cohort whose money it holds. Balances are typed by you for now.</p>
+      <div class="form-row" style="margin-bottom:10px;">
+        <div class="form-group"><label for="acBroker">Broker</label><input type="text" id="acBroker" placeholder="e.g. Exness"></div>
+        <div class="form-group"><label for="acNumber">Account number</label><input type="text" id="acNumber" inputmode="numeric" placeholder="e.g. 4821"></div>
+        <div class="form-group"><label for="acCohort">Cohort</label><input type="text" id="acCohort" placeholder="e.g. Cohort A, 6 months"></div>
+      </div>
+      <div class="form-row" style="margin-bottom:10px;">
+        <div class="form-group"><label for="acMode">Type</label><select id="acMode"><option>Demo</option><option>Real</option></select></div>
+        <div class="form-group"><label for="acMature">Matures on</label><input type="date" id="acMature"></div>
+        <div class="form-group"><label for="acBalance">Balance ($)</label><input type="number" id="acBalance" step="0.01" min="0" placeholder="0.00"></div>
+      </div>
+      <button type="button" class="btn btn-gold" id="acSave">Save account</button>
+      <p class="note" id="acMsg"></p>
+      <div id="acList" class="requests-list" style="margin-top:12px;"></div>
+
+      <h3 style="margin:28px 0 4px;">Clear old test orders</h3>
+      <p class="note">Deletes can't be undone. Download a backup first, then preview how many will be removed.</p>
+      <div class="form-row" style="margin-bottom:10px;">
+        <div class="form-group"><label for="clWhat">What to clear</label><select id="clWhat"><option value="requests">Orders / requests</option><option value="licenses">Licenses</option></select></div>
+        <div class="form-group"><label for="clBefore">Created before</label><input type="date" id="clBefore"></div>
+      </div>
+      <label style="display:flex;gap:8px;align-items:center;margin:0 0 10px;font-size:14px;"><input type="checkbox" id="clAll"> Everything, whatever the date</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <button type="button" class="btn btn-ghost" id="clPreview">1. Preview count</button>
+        <button type="button" class="btn btn-ghost" id="clBackup">2. Download backup</button>
+      </div>
+      <div class="form-group"><label for="clConfirm">3. Type DELETE to confirm</label><input type="text" id="clConfirm" autocomplete="off" placeholder="DELETE"></div>
+      <button type="button" class="btn btn-gold" id="clRun" disabled>Delete now</button>
+      <p class="note" id="clMsg"></p>
     </div>
 
     <div id="adminProductsView" style="display:none;">
@@ -2035,6 +2069,7 @@
       </div>
       <div class="dash-section-label">Transactions</div>
       <div class="chips" id="txChips"><button type="button" class="chip on" data-tx="all">All</button><button type="button" class="chip" data-tx="Wallet">Wallet</button><button type="button" class="chip" data-tx="Strategy">Strategy</button><button type="button" class="chip" data-tx="Bots">Bots</button><button type="button" class="chip" data-tx="Investments">Investments</button></div>
+      <div class="chips sub" id="txMode"><button type="button" class="chip on" data-mode="demo">Demo</button><button type="button" class="chip" data-mode="real" disabled title="Not active yet">Real · soon</button></div>
       <div class="chips sub" id="txDir"><button type="button" class="chip on" data-dir="all">All money</button><button type="button" class="chip" data-dir="in">Money in</button><button type="button" class="chip" data-dir="out">Money out</button></div>
       <div class="chips sub" id="txPer"><button type="button" class="chip on" data-per="0">All time</button><button type="button" class="chip" data-per="7">Last 7 days</button><button type="button" class="chip" data-per="30">Last 30 days</button></div>
       <div id="txSummary"></div>
@@ -4665,7 +4700,7 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
     var pend=mine().filter(function(e){return e.status==='pending'&&(e.type==='deposit'||e.type==='withdrawal'||e.type==='purchase');});
     el('wPending').innerHTML=pend.length?'<div class="dash-section-label">Waiting for confirmation</div>'+pend.map(function(e){ return '<div class="tx-row"><div class="l">'+LABEL[e.type]+(e.method?' · '+esc(e.method):'')+'<small>'+fmtDY(e.createdAt||Date.now())+'</small></div><div class="r">'+money(e.amount)+'<small><button type="button" class="btn btn-ghost btn-sm" data-wcancel="'+e.id+'">Cancel</button></small></div></div>'; }).join(''):'';
     window.__ktTx=window.__ktTx||{};
-    window.__ktTx.led=mine().map(function(e){ return {t:e.createdAt||0,svc:svcFor(e),label:(LABEL[e.type]||e.type)+(e.note?' — '+e.note:''),amt:e.amount,signed:true,st:stLabel(e.status),ref:'',rt:routeFor(e)}; });
+    window.__ktTx.led=mine().map(function(e){ return {t:e.createdAt||0,svc:svcFor(e),label:(LABEL[e.type]||e.type)+(e.note?' — '+e.note:''),amt:e.amount,signed:true,st:stLabel(e.status),ref:'',rt:routeFor(e),mode:e.mode?(String(e.mode).toLowerCase()==='real'?'Real':'Demo'):((String(e.note||'').indexOf('Test funds')>-1||!WALLET_LIVE)?'Demo':'Real')}; });
     if(window.ktRenderTx) window.ktRenderTx(); if(window.ktCounts) window.ktCounts();
     document.dispatchEvent(new CustomEvent('ktwallet'));
     renderAdmin();
@@ -4733,6 +4768,7 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
 })();
 </script>
 
+<script>window.KT_REAL_ENABLED=false; /* change to true to switch on Real transactions */</script>
 <script>
 /* Batch 1: visible alerts, offline bar, phone checks, richer transactions, notification bell */
 (function(){
@@ -4781,13 +4817,14 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire); else wire();
 
   /* ---- transactions: filter by service, money in/out, period; show source and destination ---- */
-  var dirF='all', perF=0;
+  var dirF='all', perF=0, modeF='demo';
+  function syncReal(){ var rb=document.querySelector('#txMode [data-mode="real"]'); if(rb){ var on=!!window.KT_REAL_ENABLED; rb.disabled=!on; rb.textContent=on?'Real':'Real · soon'; } } syncReal(); setInterval(syncReal,2000);
   function cls(st){ st=String(st).toLowerCase(); if(/complet|paid|released|active|delivered|ready/.test(st)) return 'ok'; if(/await|pending|request|received|progress/.test(st)) return 'mid'; return 'bad'; }
   window.ktRenderTx=function(){
     var list=document.getElementById('txList'); if(!list) return;
     var on=document.querySelector('#txChips .chip.on'), svc=on?on.getAttribute('data-tx'):'all', T=window.__ktTx||{};
     var all=(T.req||[]).concat(T.plan||[]).concat(T.led||[]), since=perF?Date.now()-perF*864e5:0;
-    all=all.filter(function(x){ return (svc==='all'||x.svc===svc)&&(!since||(x.t||0)>=since)&&(dirF==='all'||(x.signed&&(dirF==='in'?x.amt>0:x.amt<0))); });
+    all=all.filter(function(x){ return ((x.mode||'Demo').toLowerCase()===modeF)&&(svc==='all'||x.svc===svc)&&(!since||(x.t||0)>=since)&&(dirF==='all'||(x.signed&&(dirF==='in'?x.amt>0:x.amt<0))); });
     all.sort(function(a,b){return (b.t||0)-(a.t||0);});
     var sum=document.getElementById('txSummary'), led=all.filter(function(x){return x.signed&&x.st==='Completed';});
     if(sum){
@@ -4795,13 +4832,13 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
       var keys=Object.keys(flow);
       sum.innerHTML=led.length?('<div class="tx-sum"><div class="in"><small>Money in (completed)</small><b>'+money(inn)+'</b></div><div class="out"><small>Money out (completed)</small><b>'+money(out)+'</b></div></div><div class="tx-flow">'+keys.map(function(k){ return '<span>'+esc(k)+'<b>'+money(flow[k])+'</b></span>'; }).join('')+'</div>'):'';
     }
-    if(!all.length){ list.innerHTML='<p class="text-dim-note">'+(dirF!=='all'?'No wallet money movements match these filters.':'Nothing here yet. Orders, payments, plan contributions, payouts and withdrawals will be listed here.')+'</p>'; return; }
+    if(!all.length){ list.innerHTML='<p class="text-dim-note">'+(modeF==='real'?'No real transactions yet.':dirF!=='all'?'No wallet money movements match these filters.':'Nothing here yet. Orders, payments, plan contributions, payouts and withdrawals will be listed here.')+'</p>'; return; }
     list.innerHTML=all.map(function(x){ return '<div class="tx-row"><div class="l">'+esc(x.label)+'<small>'+esc(x.svc)+(x.t?' · '+new Date(x.t).toLocaleDateString():'')+(x.ref?' · '+esc(x.ref):'')+'</small>'+(x.rt?'<small class="rt">'+esc(x.rt)+'</small>':'')+'</div><div class="r">'+(x.amt?((x.amt<0?'−':(x.signed?'+':''))+money(Math.abs(x.amt))):'—')+'<small><span class="out '+cls(x.st)+'">'+esc(x.st)+'</span></small></div></div>'; }).join('');
   };
   document.addEventListener('click',function(e){
-    var b=e.target.closest&&e.target.closest('#txDir [data-dir], #txPer [data-per]'); if(!b) return;
+    var b=e.target.closest&&e.target.closest('#txMode [data-mode], #txDir [data-dir], #txPer [data-per]'); if(!b||b.disabled) return;
     var row=b.parentNode; row.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on',c===b); });
-    if(b.hasAttribute('data-dir')) dirF=b.getAttribute('data-dir'); else perF=parseInt(b.getAttribute('data-per'),10)||0;
+    if(b.hasAttribute('data-mode')) modeF=b.getAttribute('data-mode'); else if(b.hasAttribute('data-dir')) dirF=b.getAttribute('data-dir'); else perF=parseInt(b.getAttribute('data-per'),10)||0;
     window.ktRenderTx();
   });
 
@@ -4864,6 +4901,84 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
     setInterval(function(){ var p2=document.getElementById('bellPanel'); if(p2&&!p2.hidden) paint(); },60000);
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',mount); else mount();
+})();
+</script>
+
+<script type="module">
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+(function(){
+  var db=getFirestore(getApp()), el=function(i){return document.getElementById(i);}, started=false, preview=null;
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function say(id,t,ty){ if(window.ktSay) window.ktSay(el(id),t,ty); else el(id).textContent=t; }
+  var VIEWS=['adminRequestsView','adminLicensesView','adminProductsView'], TABS=['adminTabRequests','adminTabLicenses','adminTabProducts'];
+  function openTools(){
+    VIEWS.forEach(function(v){ if(el(v)) el(v).style.display='none'; });
+    document.querySelectorAll('.admin-tabs .auth-tab').forEach(function(b){ b.classList.toggle('active',b.id==='adminTabTools'); });
+    el('adminToolsView').style.display='block'; start();
+  }
+  el('adminTabTools').addEventListener('click',openTools);
+  TABS.forEach(function(t){ if(el(t)) el(t).addEventListener('click',function(){ el('adminToolsView').style.display='none'; el('adminTabTools').classList.remove('active'); }); });
+
+  /* trading accounts <-> cohorts */
+  function start(){ if(started) return; started=true;
+    onSnapshot(collection(db,'mtAccounts'),function(s){
+      var rows=s.docs.map(function(d){ var x=d.data(); x.id=d.id; return x; }).sort(function(a,b){ return String(a.cohort||'').localeCompare(String(b.cohort||'')); });
+      el('acList').innerHTML=rows.length?rows.map(function(x){
+        var left=x.matures?Math.ceil((new Date(x.matures+'T23:59:59')-Date.now())/864e5):null;
+        var upd=x.updatedAt?new Date(x.updatedAt).toLocaleString():'never';
+        return '<div class="request-card" style="padding:12px 14px;"><b>'+esc(x.cohort||'No cohort')+'</b> · '+esc(x.mode||'Demo')+'<br><span class="note">'+esc(x.broker||'')+' · Account '+esc(x.account||'')+'</span><br>Balance: <b>$'+(Number(x.balance)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</b> <span class="note">(updated '+esc(upd)+')</span><br><span class="note">'+(x.matures?('Matures '+esc(x.matures)+(left!=null?(left>=0?' · '+left+' days left':' · matured'):'')):'No maturity date')+'</span><div style="display:flex;gap:8px;margin-top:8px;"><button type="button" class="btn btn-ghost" data-acbal="'+esc(x.id)+'">Update balance</button><button type="button" class="btn btn-ghost" data-acdel="'+esc(x.id)+'">Remove</button></div></div>';
+      }).join(''):'<p class="note">No accounts added yet.</p>';
+    },function(e){ say('acMsg','Could not load accounts. Check the Firestore rules for the mtAccounts collection.','err'); console.error(e); });
+  }
+  el('acSave').addEventListener('click',async function(){
+    var acc=el('acNumber').value.trim(), coh=el('acCohort').value.trim();
+    if(!acc||!coh){ say('acMsg','Enter the account number and the cohort.','err'); return; }
+    try{
+      await addDoc(collection(db,'mtAccounts'),{broker:el('acBroker').value.trim(),account:acc,cohort:coh,mode:el('acMode').value,matures:el('acMature').value||'',balance:parseFloat(el('acBalance').value)||0,updatedAt:Date.now(),createdAt:Date.now()});
+      ['acBroker','acNumber','acCohort','acMature','acBalance'].forEach(function(i){ el(i).value=''; }); say('acMsg','Account saved.','ok');
+    }catch(e){ say('acMsg','Could not save. Add the mtAccounts rule to Firestore first.','err'); console.error(e); }
+  });
+  el('acList').addEventListener('click',async function(e){
+    var b=e.target.closest('[data-acbal],[data-acdel]'); if(!b) return;
+    try{
+      if(b.hasAttribute('data-acbal')){ var v=prompt('New balance in $ for this account:'); if(v===null) return; var n=parseFloat(v); if(!(n>=0)){ say('acMsg','Enter a valid balance.','err'); return; } await updateDoc(doc(db,'mtAccounts',b.getAttribute('data-acbal')),{balance:n,updatedAt:Date.now()}); }
+      else if(confirm('Remove this account from the list?')){ await deleteDoc(doc(db,'mtAccounts',b.getAttribute('data-acdel'))); }
+    }catch(er){ say('acMsg','That change could not be saved.','err'); console.error(er); }
+  });
+
+  /* clear old test orders */
+  function cutoff(){ if(el('clAll').checked) return Infinity; var v=el('clBefore').value; return v?new Date(v+'T00:00:00').getTime():null; }
+  function reset(){ preview=null; el('clRun').disabled=true; }
+  ['clWhat','clBefore','clAll'].forEach(function(i){ el(i).addEventListener('change',reset); });
+  el('clConfirm').addEventListener('input',function(){ el('clRun').disabled=!(preview&&el('clConfirm').value.trim()==='DELETE'); });
+  async function find(){
+    var c=cutoff(); if(c===null){ say('clMsg','Choose a date, or tick "Everything".','err'); return null; }
+    var name=el('clWhat').value, snap=await getDocs(collection(db,name));
+    var docs=snap.docs.filter(function(d){ if(c===Infinity) return true; var t=d.data().createdAt; t=t&&t.toMillis?t.toMillis():(typeof t==='number'?t:0); return t<c; });
+    return {name:name,docs:docs,total:snap.size};
+  }
+  el('clPreview').addEventListener('click',async function(){
+    try{ var f=await find(); if(!f) return; preview=f; say('clMsg',f.docs.length+' of '+f.total+' items would be deleted. Now download the backup, then type DELETE.',f.docs.length?'warn':'ok'); el('clRun').disabled=!(f.docs.length&&el('clConfirm').value.trim()==='DELETE'); }
+    catch(e){ say('clMsg','Could not read the data. Check the Firestore rules.','err'); console.error(e); }
+  });
+  el('clBackup').addEventListener('click',async function(){
+    try{ var f=preview||await find(); if(!f) return; var out=f.docs.map(function(d){ return {id:d.id,data:d.data()}; });
+      var blob=new Blob([JSON.stringify(out,function(k,v){ return v&&typeof v==='object'&&typeof v.toMillis==='function'?{__ms:v.toMillis()}:v; },2)],{type:'application/json'});
+      var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='kt-backup-'+f.name+'-'+new Date().toISOString().slice(0,10)+'.json'; document.body.appendChild(a); a.click(); a.remove();
+      say('clMsg','Backup downloaded ('+out.length+' items).','ok');
+    }catch(e){ say('clMsg','Could not create the backup.','err'); console.error(e); }
+  });
+  el('clRun').addEventListener('click',async function(){
+    if(!preview||el('clConfirm').value.trim()!=='DELETE') return;
+    if(!confirm('Delete '+preview.docs.length+' items permanently?')) return;
+    el('clRun').disabled=true;
+    try{
+      var list=preview.docs.slice(), name=preview.name;
+      for(var i=0;i<list.length;i+=400){ var b=writeBatch(db); list.slice(i,i+400).forEach(function(d){ b.delete(doc(db,name,d.id)); }); await b.commit(); }
+      say('clMsg','Deleted '+list.length+' items.','ok'); preview=null; el('clConfirm').value='';
+    }catch(e){ say('clMsg','Delete was refused. Add the admin delete rule to Firestore first.','err'); console.error(e); }
+  });
 })();
 </script>
 
