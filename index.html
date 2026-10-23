@@ -2952,8 +2952,8 @@
               amountDue = Math.round((productData.buyPrice || 0) * mult);
             }
 
-            matchedProduct = selectedPlatforms.some(p => productData.downloadLinks && productData.downloadLinks[p]);
-            deliveryLink = selectedPlatforms.length === 1 && productData.downloadLinks ? (productData.downloadLinks[selectedPlatforms[0]] || '') : '';
+            matchedProduct = selectedPlatforms.some(p => (productData.downloadAvail && productData.downloadAvail[p]) || (productData.downloadLinks && productData.downloadLinks[p]));
+            deliveryLink = ''; // the file link is attached by the admin only after payment is confirmed
 
             if (matchedProduct) {
               note = `Thanks for your order! Your license(s) and file(s) are ready — you owe $${amountDue}. Head to the Payments tab to complete payment, then send us your payment screenshot + this ticket ID on WhatsApp to unlock your download.`;
@@ -2989,8 +2989,9 @@
       // Auto-create one locked license PER platform selected, each with its own file link
       if (matchedProduct && productData) {
         for (const p of selectedPlatforms) {
-          const link = (productData.downloadLinks && productData.downloadLinks[p]) || '';
-          if (!link) continue; // skip platforms this product doesn't actually have a file for
+          const hasFile = (productData.downloadAvail && productData.downloadAvail[p]) || (productData.downloadLinks && productData.downloadLinks[p]);
+          if (!hasFile) continue; // skip platforms this product doesn't actually have a file for
+          const link = ''; // attached by the admin after payment
           await addDoc(collection(db, 'licenses'), {
             uid: user.uid,
             ticketId: ticketId,
@@ -3418,9 +3419,13 @@
           document.getElementById('prod-advantages').value = d.advantages || '';
           document.getElementById('prod-buyprice').value = d.buyPrice || '';
           document.getElementById('prod-rentprice').value = d.rentPrice || '';
-          document.getElementById('prod-link-mt5').value = (d.downloadLinks && d.downloadLinks.MT5) || '';
-          document.getElementById('prod-link-mt4').value = (d.downloadLinks && d.downloadLinks.MT4) || '';
-          document.getElementById('prod-link-tv').value = (d.downloadLinks && d.downloadLinks.TradingView) || '';
+          (async () => {
+            let L = d.downloadLinks || {};
+            try { const pf = await getDoc(doc(db, 'productFiles', docSnap.id)); if (pf.exists() && pf.data().downloadLinks) L = pf.data().downloadLinks; } catch (e) { console.error(e); }
+            document.getElementById('prod-link-mt5').value = L.MT5 || '';
+            document.getElementById('prod-link-mt4').value = L.MT4 || '';
+            document.getElementById('prod-link-tv').value = L.TradingView || '';
+          })();
           updateProductLinkVisibility();
           document.getElementById('productForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
@@ -3464,11 +3469,22 @@
         advantages: document.getElementById('prod-advantages').value,
         buyPrice: Number(document.getElementById('prod-buyprice').value),
         rentPrice: Number(document.getElementById('prod-rentprice').value),
-        downloadLinks: {
-          MT5: document.getElementById('prod-link-mt5').value.trim(),
-          MT4: document.getElementById('prod-link-mt4').value.trim(),
-          TradingView: document.getElementById('prod-link-tv').value.trim()
+        downloadAvail: {
+          MT5: !!document.getElementById('prod-link-mt5').value.trim(),
+          MT4: !!document.getElementById('prod-link-mt4').value.trim(),
+          TradingView: !!document.getElementById('prod-link-tv').value.trim()
         },
+        updatedAt: serverTimestamp()
+      });
+      // Download links are kept in a private, admin-only record. They are never stored in the public product.
+      const privLinks = {
+        MT5: document.getElementById('prod-link-mt5').value.trim(),
+        MT4: document.getElementById('prod-link-mt4').value.trim(),
+        TradingView: document.getElementById('prod-link-tv').value.trim()
+      };
+      await setDoc(doc(db, 'productFiles', name), {
+        driveLink: privLinks.MT5 || privLinks.MT4 || privLinks.TradingView || '',
+        downloadLinks: privLinks,
         updatedAt: serverTimestamp()
       });
       msg.textContent = 'Saved ✓ — live on the site now.';
@@ -4664,7 +4680,7 @@ import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/f
    it writes completed entries itself (see wallet-gateway-spec.md). */
 import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, getDocs, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 (function(){
   var WALLET_LIVE=false, ADMIN_EMAIL='thekingdomtrader7@gmail.com';
   var db=getFirestore(getApp()), auth=getAuth(getApp());
@@ -4751,7 +4767,16 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
         var en=S.entries.filter(function(x){return x.id===q.getAttribute('data-wconfirm');})[0]; if(!en) return;
         if(en.amount<0&&completedBal(en.uid)<-en.amount-0.005){ alert('This member does not have enough completed balance.'); return; }
         var b=writeBatch(db); b.update(doc(db,'ledger',en.id),{status:'completed',completedAt:Date.now(),confirmedBy:'admin'});
-        if(en.type==='purchase'&&en.refKind==='request'){ var rs=await getDocs(query(collection(db,'requests'),where('ticketId','==',en.refId))); rs.forEach(function(d){ b.update(doc(db,'requests',d.id),{status:'Completed',note:'Payment received from wallet.'}); }); }
+        if(en.type==='purchase'&&en.refKind==='request'){
+          var rs=await getDocs(query(collection(db,'requests'),where('ticketId','==',en.refId))), L={};
+          for(var ri=0; ri<rs.docs.length; ri++){ var d=rs.docs[ri], rd=d.data();
+            try{ var pf=await getDoc(doc(db,'productFiles',rd.title||rd.service||'')); L=(pf.exists()&&pf.data().downloadLinks)||{}; }catch(e){}
+            var pl=(rd.platforms&&rd.platforms.length)?rd.platforms:[rd.platform], upd={status:'Completed',note:'Payment received from wallet.'};
+            if(pl.length===1&&L[pl[0]]) upd.deliveryLink=L[pl[0]];
+            b.update(doc(db,'requests',d.id),upd); }
+          var ls=await getDocs(query(collection(db,'licenses'),where('ticketId','==',en.refId)));
+          ls.forEach(function(ld){ var lk=L[ld.data().platform]; if(lk) b.update(doc(db,'licenses',ld.id),{deliveryLink:lk}); });
+        }
         await b.commit(); return;
       }
       if((q=t.closest('[data-wreject]'))){ if(confirm('Reject this request?')) await updateDoc(doc(db,'ledger',q.getAttribute('data-wreject')),{status:'rejected',completedAt:Date.now()}); return; }
