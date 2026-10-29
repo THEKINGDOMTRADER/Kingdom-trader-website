@@ -37,12 +37,12 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;overflow-x:hidden;max-width:100%;}
   body{
-    overflow-x:hidden;max-width:100%;
+    overflow-x:clip;max-width:100%;
     background:var(--bg);
     color:var(--text);
     font-family:'Inter',sans-serif;
     line-height:1.5;
-    overflow-x:hidden;
+    overflow-x:clip;
   }
   ::selection{background:var(--gold);color:#0C121C;}
   a{color:inherit;text-decoration:none;}
@@ -60,7 +60,7 @@
 
   /* ---------- NAV ---------- */
   nav{
-    position:sticky;top:0;z-index:50;
+    position:-webkit-sticky;position:sticky;top:0;z-index:50;
     background:rgba(12,18,28,0.85);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
@@ -1274,7 +1274,6 @@
         <button type="button" class="chip" data-cat="PC">PC</button>
         <button type="button" class="chip" data-cat="Mobile">Mobile (pocket)</button>
         <button type="button" class="chip" data-cat="Combo">Combo</button>
-        <button type="button" class="chip" data-cat="Indicator">Indicator</button>
       </div>
       <select id="catSort" aria-label="Sort bots"><option value="">Sort: Featured</option><option value="plh">Price: low to high</option><option value="phl">Price: high to low</option><option value="az">Name: A to Z</option></select>
     </div>
@@ -1894,7 +1893,7 @@
           <div class="form-row">
             <div class="form-group">
               <label for="prod-category">Category</label>
-              <select id="prod-category"><option value="PC">PC (MT5 on computer)</option><option value="Mobile">Mobile (pocket version)</option><option value="Combo">Combo (PC + mobile)</option><option value="Indicator">Indicator</option></select>
+              <select id="prod-category"><option value="PC">PC (MT5 on computer)</option><option value="Mobile">Mobile (pocket version)</option><option value="Combo">Combo (PC + mobile)</option></select>
             </div>
             <div class="form-group">
               <label for="prod-image">Picture (link or file name)</label>
