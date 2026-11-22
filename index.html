@@ -2149,7 +2149,7 @@
   // ---- Push notifications (Firebase Cloud Messaging) ----
   // Replace this with YOUR OWN key from: Firebase Console -> Project settings
   // -> Cloud Messaging tab -> "Web configuration" -> Generate key pair
-  const FCM_VAPID_KEY = "PASTE_YOUR_VAPID_KEY_HERE";
+  const FCM_VAPID_KEY = "BCjUPfzjU4lEUSriDiExsPXIMBg67cAfcT7znactGynHaah3Su1DMNGCaosRGJ9K1vwwg33EXkzDZc5p3t5V2BA";
 
   async function saveFcmToken(uid) {
     try {
@@ -2529,6 +2529,46 @@
   document.getElementById('overviewStartBtn').addEventListener('click', () => closeDrawer());
 
   // Pay widget -> choose Mobile Money or Card, then trigger a MarzPay payment
+  // ONE place to switch the payment server. Today it is the Pipedream endpoint.
+  // When the Cloudflare Worker is live, replace this address with the Worker address (https://....workers.dev/pay).
+  const KT_PAY_API = 'https://kingdom-trader-pay.thekingdomtrader7.workers.dev';
+  // Sends a request to the payment server together with the logged-in member's proof of identity.
+  async function ktPayPost(path, body) {
+    const user = auth.currentUser;
+    if (!user) throw new Error('Not logged in');
+    const token = await user.getIdToken();
+    const res = await fetch(KT_PAY_API + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Payment request failed');
+    return data;
+  }
+  // Backup check: while a payment is in progress, ask the server every few seconds if it has gone through.
+  // The page updates by itself when the request becomes Completed.
+  function ktWatchPayment(ticketId) {
+    let tries = 0;
+    const timer = setInterval(async () => {
+      tries++;
+      try {
+        const r = await ktPayPost('/verify', { ticketId });
+        if (r.paid || tries >= 40) clearInterval(timer);
+      } catch (e) { if (tries >= 40) clearInterval(timer); }
+    }, 6000);
+  }
+  // Opens the card checkout page. Inside the Android app it opens an in-app browser, so the customer is not thrown out of the app. On the normal website it just redirects as before.
+  function ktOpenCheckout(url) {
+    try {
+      const cap = window.Capacitor;
+      if (cap && cap.isNativePlatform && cap.isNativePlatform() && cap.Plugins && cap.Plugins.Browser) {
+        cap.Plugins.Browser.open({ url: url });
+        return;
+      }
+    } catch (e) {}
+    window.location.href = url;
+  }
   document.getElementById('requestsList').addEventListener('click', async (e) => {
     const startBtn = e.target.closest('.pay-start-btn');
     if (startBtn) {
@@ -2552,21 +2592,17 @@
       chooseBtn.disabled = true;
       chooseBtn.textContent = 'Redirecting...';
       try {
-        const res = await fetch('https://eo58fg1ynk6ao86.m.pipedream.net', {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ ticketId, amountUSD: amount, paymentMethod: 'card' })
-        });
-        const data = await res.json();
+        const data = await ktPayPost('/pay', { ticketId, paymentMethod: 'card' });
         if (data.redirectUrl) {
-          window.location.href = data.redirectUrl;
+          ktWatchPayment(ticketId);
+          ktOpenCheckout(data.redirectUrl);
         } else {
           throw new Error('No redirect URL returned');
         }
       } catch (err) {
         chooseBtn.disabled = false;
         chooseBtn.textContent = '💳 Card';
-        errMsg.textContent = 'Could not start card payment — try again, or use Mobile Money.';
+        errMsg.textContent = (err && err.message && err.message.length < 90 ? err.message + ' — ' : '') + 'try again, or use Mobile Money.';
         errMsg.style.display = 'block';
       }
       return;
@@ -2588,14 +2624,10 @@
       phoneSubmitBtn.disabled = true;
       phoneSubmitBtn.textContent = 'Sending prompt...';
       try {
-        const res = await fetch('https://eo58fg1ynk6ao86.m.pipedream.net', {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ ticketId, amountUSD: amount, phoneNumber: phone, paymentMethod: 'mobile_money' })
-        });
-        const data = await res.json();
+        const data = await ktPayPost('/pay', { ticketId, phoneNumber: phone, paymentMethod: 'mobile_money' });
         if (data.transactionUuid) {
           payWidgetState[ticketId] = 'waiting';
+          ktWatchPayment(ticketId);
           renderFilteredRequests();
         } else {
           throw new Error('No transaction returned');
@@ -2603,7 +2635,7 @@
       } catch (err) {
         phoneSubmitBtn.disabled = false;
         phoneSubmitBtn.textContent = 'Send payment prompt';
-        errMsg.textContent = 'Could not send payment prompt — check the number and try again.';
+        errMsg.textContent = (err && err.message && err.message.length < 90 ? err.message + ' — ' : 'Could not send payment prompt — ') + 'check the number and try again.';
         errMsg.style.display = 'block';
       }
       return;

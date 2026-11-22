@@ -1,0 +1,9 @@
+{
+  "appId": "com.kingdomtrader.app",
+  "appName": "The Kingdom Trader",
+  "webDir": "www",
+  "backgroundColor": "#0C121C",
+  "server": {
+    "androidScheme": "https"
+  }
+}

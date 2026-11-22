@@ -1,0 +1,14 @@
+{
+  "name": "kingdom-trader-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The Kingdom Trader Android app (Capacitor wrapper of the website)",
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/browser": "^6.0.2",
+    "@capacitor/core": "^6.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  }
+}
