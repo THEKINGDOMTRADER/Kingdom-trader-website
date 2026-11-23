@@ -1,6 +1,5 @@
 name: Build Android APK
 
-# Runs by hand: GitHub > Actions > "Build Android APK" > Run workflow.
 on:
   workflow_dispatch:
 
@@ -32,6 +31,17 @@ jobs:
         run: |
           npx cap add android
           npx cap sync android
+
+      - name: Use the Kingdom Trader logo as the app icon
+        run: |
+          RES=android/app/src/main/res
+          rm -f $RES/mipmap-anydpi-v26/ic_launcher.xml $RES/mipmap-anydpi-v26/ic_launcher_round.xml
+          for pair in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
+            d=${pair%%:*}; s=${pair##*:}
+            convert icon-512.png -resize ${s}x${s} $RES/mipmap-$d/ic_launcher.png
+            convert icon-512.png -resize ${s}x${s} $RES/mipmap-$d/ic_launcher_round.png
+            rm -f $RES/mipmap-$d/ic_launcher_foreground.png
+          done
 
       - name: Build debug APK
         run: |
