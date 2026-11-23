@@ -4,6 +4,7 @@
   "webDir": "www",
   "backgroundColor": "#0C121C",
   "server": {
+    "url": "https://kingdom-trader-website.thekingdomtrader7.workers.dev",
     "androidScheme": "https"
   }
 }
