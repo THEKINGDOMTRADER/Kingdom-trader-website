@@ -1166,7 +1166,7 @@
   <div class="hero-grid"></div>
   <div class="wrap">
     <div class="hero-content">
-      <span class="eyebrow">Strategy Automation · Trading Bots · Kampala, Uganda</span>
+      <span class="eyebrow">Strategy Automation · Trading Bots</span>
       <div class="tagline-strip">From paper to automation.</div>
       <h1>Your strategy, <em>running while you sleep.</em></h1>
       <p>Build a bot from your own strategy, buy or rent a ready-made one, or let us trade for you. Pick the path that fits you.</p>
@@ -1985,7 +1985,7 @@
       <button type="button" id="drawerCloseBtn" class="kebab-btn" aria-label="Close dashboard">✕</button>
     </div>
 
-    <div id="enableNotifBanner" style="display:none;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+    <div id="enableNotifBanner" style="display:none;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:14px;align-items:center;justify-content:space-between;gap:10px;">
       <span style="font-size:13px;color:var(--text);">🔔 Get notified when we reply — even when the site is closed.</span>
       <button type="button" id="enableNotifBtn" class="btn btn-gold" style="white-space:nowrap;">Enable</button>
     </div>
@@ -2167,28 +2167,28 @@
   }
 
   function initPushNotifications(uid) {
-    if (!('Notification' in window)) return;
     const banner = document.getElementById('enableNotifBanner');
     const btn = document.getElementById('enableNotifBtn');
-    if (Notification.permission === 'granted') {
-      banner.style.display = 'none';
-      saveFcmToken(uid);
-    } else if (Notification.permission === 'default') {
-      banner.style.display = 'flex';
-      if (!btn.dataset.wired) {
-        btn.addEventListener('click', async () => {
+    if (!banner || !btn) return;
+    const hide = () => { banner.style.display = 'none'; };
+    // Inside the Android app the browser-style permission prompt does not work, so we do not show the banner there.
+    const inApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+    if (inApp || !('Notification' in window)) { hide(); return; }
+    let asked = false;
+    try { asked = localStorage.getItem('kt_notif_asked') === '1'; } catch (e) {}
+    if (Notification.permission === 'granted') { hide(); saveFcmToken(uid); return; }
+    if (Notification.permission !== 'default' || asked) { hide(); return; }
+    banner.style.display = 'flex';
+    if (!btn.dataset.wired) {
+      btn.addEventListener('click', async () => {
+        hide();
+        try { localStorage.setItem('kt_notif_asked', '1'); } catch (e) {}
+        try {
           const permission = await Notification.requestPermission();
-          if (permission === 'granted') {
-            banner.style.display = 'none';
-            saveFcmToken(uid);
-          } else {
-            banner.style.display = 'none';
-          }
-        });
-        btn.dataset.wired = 'true';
-      }
-    } else {
-      banner.style.display = 'none';
+          if (permission === 'granted') saveFcmToken(auth.currentUser ? auth.currentUser.uid : uid);
+        } catch (e) {}
+      });
+      btn.dataset.wired = 'true';
     }
   }
 
@@ -2532,6 +2532,8 @@
   // ONE place to switch the payment server. Today it is the Pipedream endpoint.
   // When the Cloudflare Worker is live, replace this address with the Worker address (https://....workers.dev/pay).
   const KT_PAY_API = 'https://kingdom-trader-pay.thekingdomtrader7.workers.dev';
+  // REAL PAYMENTS SWITCH: true = members pay bot orders with real Mobile Money / Card (MarzPay). false = back to the virtual-wallet test button.
+  window.KT_REAL_PAYMENTS = true;
   // Sends a request to the payment server together with the logged-in member's proof of identity.
   async function ktPayPost(path, body) {
     const user = auth.currentUser;
@@ -2876,9 +2878,9 @@
     }
     return `
       <div class="pay-widget" data-ticket="${d.ticketId || ''}" data-amount="${d.amountDue || 0}">
-        <button type="button" class="bot-buy-btn pay-wallet-btn" data-ticket="${d.ticketId || ''}" data-amount="${d.amountDue || 0}" style="width:100%;margin-bottom:8px;">💼 Pay $${d.amountDue || 0} from wallet</button>
-          <a href="#account-wallet" class="pay-fund-link">Not enough in your wallet? Add money first →</a>
-          <button type="button" class="download-btn pay-start-btn" style="display:none;">🔒 Pay $${d.amountDue || 0} to unlock</button>
+        <button type="button" class="bot-buy-btn pay-wallet-btn" data-ticket="${d.ticketId || ''}" data-amount="${d.amountDue || 0}" style="width:100%;margin-bottom:8px;${window.KT_REAL_PAYMENTS ? 'display:none;' : ''}">💼 Pay $${d.amountDue || 0} from wallet</button>
+          <a href="#account-wallet" class="pay-fund-link" style="${window.KT_REAL_PAYMENTS ? 'display:none;' : ''}">Not enough in your wallet? Add money first →</a>
+          <button type="button" class="download-btn pay-start-btn" style="${window.KT_REAL_PAYMENTS ? 'display:block;width:100%;' : 'display:none;'}">🔒 Pay $${d.amountDue || 0} to unlock</button>
         <div class="pay-method-choice" style="display:none;">
           <p class="text-dim-note" style="margin:10px 0 8px;">Choose how you'd like to pay:</p>
           <div style="display:flex;gap:8px;">
