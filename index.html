@@ -2532,8 +2532,8 @@
   // ONE place to switch the payment server. Today it is the Pipedream endpoint.
   // When the Cloudflare Worker is live, replace this address with the Worker address (https://....workers.dev/pay).
   const KT_PAY_API = 'https://kingdom-trader-pay.thekingdomtrader7.workers.dev';
-  // REAL PAYMENTS SWITCH: true = members pay bot orders with real Mobile Money / Card (MarzPay). false = back to the virtual-wallet test button.
-  window.KT_REAL_PAYMENTS = true;
+  // DIRECT PAYMENT SWITCH: false (normal) = members pay orders from their wallet only. true = also shows a direct Mobile Money / Card button (testing only).
+  window.KT_REAL_PAYMENTS = false;
   // Sends a request to the payment server together with the logged-in member's proof of identity.
   async function ktPayPost(path, body) {
     const user = auth.currentUser;
