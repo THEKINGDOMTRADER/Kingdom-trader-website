@@ -2049,7 +2049,9 @@
     <div id="panelTransView" style="display:none;">
       <div class="dash-section-label" style="margin-top:0;">Your wallet</div>
       <div id="walletBox">
-        <div class="wallet-test" id="walletTest">Test wallet · virtual funds only. No real money is accepted yet.</div>
+        <div class="chips sub" id="wMode"><button type="button" class="chip on" data-wmode="demo">Demo wallet</button><button type="button" class="chip" data-wmode="real" id="wModeReal" style="display:none;">Real wallet</button></div>
+        <div class="wallet-test" id="walletTest">Test wallet · virtual funds only. No real money is accepted here.</div>
+        <div class="wallet-test" id="walletRealNote" hidden>Real wallet · deposits are paid with real Mobile Money or Card and your balance updates by itself.</div>
         <div class="wallet-rule">💼 Every payment goes through your wallet. Add money here first, then pay for bots and plans from it. Payouts and refunds come back here, and you can withdraw to MTN, Airtel or bank.</div>
         <div class="wallet-cards"><div><small>Balance</small><b id="wBal">$0.00</b></div><div><small>Available</small><b id="wAvail">$0.00</b></div><div><small>Pending</small><b id="wPend">$0.00</b></div></div>
         <div class="wallet-forms">
@@ -4335,7 +4337,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       if(rr>(window.ktWallet?window.ktWallet.available():0)+0.0001){ alert('Not enough wallet balance.'); return; }
       var tc2=openCohort(payCtx.plan), cr=doc(collection(db,'contributions')), bb=writeBatch(db);
       bb.set(cr,{uid:xx.uid,name:xx.name||ww.name,email:xx.email||ww.email,plan:payCtx.plan,amount:rr,status:'pending',cohortId:tc2.id,winStart:tc2.winStart,startAt:tc2.startAt,maturesAt:tc2.maturesAt,t:tgt(payCtx.plan),method:'Wallet',fundedBy:'wallet',source:'reinvest',fromId:xx.id,createdAt:Date.now()});
-      bb.set(doc(collection(db,'ledger')),{uid:xx.uid,name:xx.name||ww.name,email:xx.email||ww.email,type:'plan_join',amount:-rr,status:'pending',refKind:'contribution',refId:cr.id,service:'Investments',method:'Wallet',note:plan(payCtx.plan).name+' (reinvested)',createdBy:'member',createdAt:Date.now()});
+      bb.set(doc(collection(db,'ledger')),{uid:xx.uid,name:xx.name||ww.name,email:xx.email||ww.email,type:'plan_join',mode:(window.ktWallet&&window.ktWallet.mode?window.ktWallet.mode():'demo'),amount:-rr,status:'pending',refKind:'contribution',refId:cr.id,service:'Investments',method:'Wallet',note:plan(payCtx.plan).name+' (reinvested)',createdBy:'member',createdAt:Date.now()});
       await bb.commit(); closePayout(); return;
     }
     if((q=t.closest('[data-cancel]'))){ var cid=q.getAttribute('data-cancel'), bd=writeBatch(db); bd.delete(doc(db,'contributions',cid)); (window.ktWallet?window.ktWallet.entries():[]).forEach(function(le){ if(le.refId===cid&&le.status==='pending') bd.delete(doc(db,'ledger',le.id)); }); await bd.commit(); return; }
@@ -4375,7 +4377,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       var cdata={uid:w2.uid,name:w2.name,email:w2.email,plan:p.key,amount:amt,status:'pending',cohortId:co2.id,winStart:co2.winStart,startAt:co2.startAt,maturesAt:co2.maturesAt,t:tgt(p.key),method:msel,fundedBy:msel==='Wallet'?'wallet':'manual',source:'new',createdAt:Date.now()};
       if(msel==='Wallet'){
         if(amt>(window.ktWallet?window.ktWallet.available():0)+0.0001){ window.ktSay(msg,'Funds are not enough. Add money in My Account → Wallet first.','err'); act.disabled=false; return; }
-        var bw=writeBatch(db); bw.set(cref,cdata); bw.set(doc(collection(db,'ledger')),{uid:w2.uid,name:w2.name,email:w2.email,type:'plan_join',amount:-amt,status:'pending',refKind:'contribution',refId:cref.id,service:'Investments',method:'Wallet',note:p.name,createdBy:'member',createdAt:Date.now()}); await bw.commit();
+        var bw=writeBatch(db); bw.set(cref,cdata); bw.set(doc(collection(db,'ledger')),{uid:w2.uid,name:w2.name,email:w2.email,type:'plan_join',mode:(window.ktWallet&&window.ktWallet.mode?window.ktWallet.mode():'demo'),amount:-amt,status:'pending',refKind:'contribution',refId:cref.id,service:'Investments',method:'Wallet',note:p.name,createdBy:'member',createdAt:Date.now()}); await bw.commit();
       } else { await setDoc(cref,cdata); }
       card.querySelector('[data-amt]').value=''; card.querySelector('[data-agree]').checked=false; card.querySelector('[data-exp]').textContent='—'; msg.textContent='Saved. Your contribution is waiting for payment confirmation. See My plans below.'; act.disabled=false;
     }
@@ -4717,37 +4719,47 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
 (function(){
   var WALLET_LIVE=false, ADMIN_EMAIL='thekingdomtrader7@gmail.com';
   var db=getFirestore(getApp()), auth=getAuth(getApp());
-  var S={user:null,isAdmin:false,entries:[]}, unsub=null;
+  var S={user:null,isAdmin:false,entries:[],mode:'demo',pref:'demo'}, unsub=null;
+  var REAL_API='https://kingdom-trader-pay.thekingdomtrader7.workers.dev';
+  try{ S.pref=localStorage.getItem('kt_wallet_mode')==='real'?'real':'demo'; }catch(e){}
+  function realOpen(){ var em=S.user?String(S.user.email||'').toLowerCase():''; var ts=(window.KT_REAL_TESTERS||[]).map(function(x){return String(x).toLowerCase();}); return !!(window.KT_REAL_PUBLIC||S.isAdmin||(em&&ts.indexOf(em)>-1)); }
+  function modeOf(e){ return e.mode?(String(e.mode).toLowerCase()==='real'?'real':'demo'):(WALLET_LIVE?'real':'demo'); }
+  function inMode(e){ return modeOf(e)===S.mode; }
   function el(i){ return document.getElementById(i); }
   function money(n){ var a=Math.abs(n); return (n<0?'−':'')+'$'+(Math.round(a*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
   function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
   function fmtDY(ts){ return new Date(ts).toLocaleDateString('en-GB',{timeZone:'Africa/Kampala',day:'numeric',month:'short',year:'numeric'}); }
   function who(){ return {uid:S.user.uid,name:S.user.displayName||(S.user.email||'').split('@')[0],email:S.user.email||''}; }
   function mine(){ return S.entries.filter(function(e){ return S.user&&e.uid===S.user.uid; }); }
-  function completedBal(uid){ return S.entries.filter(function(e){return e.uid===uid&&e.status==='completed';}).reduce(function(a,e){return a+e.amount;},0); }
-  function pendingDebits(uid){ return S.entries.filter(function(e){return e.uid===uid&&e.status==='pending'&&e.amount<0;}).reduce(function(a,e){return a+e.amount;},0); }
-  function pendingCredits(uid){ return S.entries.filter(function(e){return e.uid===uid&&e.status==='pending'&&e.amount>0;}).reduce(function(a,e){return a+e.amount;},0); }
+  function completedBal(uid){ return S.entries.filter(function(e){return e.uid===uid&&e.status==='completed'&&inMode(e);}).reduce(function(a,e){return a+e.amount;},0); }
+  function pendingDebits(uid){ return S.entries.filter(function(e){return e.uid===uid&&(e.status==='pending'||e.status==='processing')&&e.amount<0&&inMode(e);}).reduce(function(a,e){return a+e.amount;},0); }
+  function pendingCredits(uid){ return S.entries.filter(function(e){return e.uid===uid&&(e.status==='pending'||e.status==='processing')&&e.amount>0&&inMode(e);}).reduce(function(a,e){return a+e.amount;},0); }
   function myUid(){ return S.user?S.user.uid:null; }
   window.ktWallet={
     live:WALLET_LIVE,
     balance:function(){ return S.user?completedBal(S.user.uid):0; },
     available:function(){ return S.user?completedBal(S.user.uid)+pendingDebits(S.user.uid):0; },
     entries:function(){ return S.entries; },
-    completedBalance:completedBal
+    completedBalance:completedBal,
+    mode:function(){ return S.mode; }
   };
   var LABEL={deposit:'Deposit',withdrawal:'Withdrawal',plan_join:'Plan contribution',plan_payout:'Plan payout',purchase:'Bot payment',adjustment:'Adjustment'};
   function svcFor(e){ return e.type==='plan_join'||e.type==='plan_payout'?'Investments':(e.type==='purchase'?'Bots':'Wallet'); }
   function routeFor(e){ var m=e.method||'', to=String(e.note||'').indexOf('To ')===0?String(e.note).slice(3):'';
     switch(e.type){ case 'deposit': return (m||'Outside')+' → Wallet'; case 'withdrawal': return 'Wallet → '+(m||'Outside')+(to?' ('+to+')':''); case 'purchase': return 'Wallet → Bots'; case 'plan_join': return 'Wallet → Investments'; case 'plan_payout': return 'Investments → Wallet'; default: return e.amount>=0?'Adjustment → Wallet':'Wallet → Adjustment'; } }
-  function stLabel(s){ return s==='completed'?'Completed':(s==='pending'?'Pending':'Rejected'); }
+  function stLabel(s){ return s==='completed'?'Completed':(s==='pending'||s==='processing'?'Pending':'Rejected'); }
 
   function render(){
     var u=myUid(), box=el('walletBox'); if(!box) return;
-    el('walletTest').hidden=WALLET_LIVE;
+    S.mode=(S.pref==='real'&&realOpen())?'real':'demo';
+    el('walletTest').hidden=(S.mode==='real'); el('walletRealNote').hidden=(S.mode!=='real');
+    el('wModeReal').style.display=realOpen()?'':'none';
+    document.querySelectorAll('#wMode [data-wmode]').forEach(function(b){ b.classList.toggle('on',b.getAttribute('data-wmode')===S.mode); });
+    el('wDepBtn').textContent=S.mode==='real'?'Pay now':'Request deposit';
     var bal=u?completedBal(u):0, av=u?bal+pendingDebits(u):0, pc=u?pendingCredits(u):0;
     el('wBal').textContent=money(bal); el('wAvail').textContent=money(av); el('wPend').textContent=money(pc);
-    var pend=mine().filter(function(e){return e.status==='pending'&&(e.type==='deposit'||e.type==='withdrawal'||e.type==='purchase');});
-    el('wPending').innerHTML=pend.length?'<div class="dash-section-label">Waiting for confirmation</div>'+pend.map(function(e){ return '<div class="tx-row"><div class="l">'+LABEL[e.type]+(e.method?' · '+esc(e.method):'')+'<small>'+fmtDY(e.createdAt||Date.now())+'</small></div><div class="r">'+money(e.amount)+'<small><button type="button" class="btn btn-ghost btn-sm" data-wcancel="'+e.id+'">Cancel</button></small></div></div>'; }).join(''):'';
+    var pend=mine().filter(function(e){return (e.status==='pending'||e.status==='processing')&&inMode(e)&&(e.type==='deposit'||e.type==='withdrawal'||e.type==='purchase');});
+    el('wPending').innerHTML=pend.length?'<div class="dash-section-label">Waiting for confirmation</div>'+pend.map(function(e){ return '<div class="tx-row"><div class="l">'+LABEL[e.type]+(e.method?' · '+esc(e.method):'')+'<small>'+fmtDY(e.createdAt||Date.now())+'</small></div><div class="r">'+money(e.amount)+'<small>'+(e.status==='pending'?'<button type="button" class="btn btn-ghost btn-sm" data-wcancel="'+e.id+'">Cancel</button>':'Being sent…')+'</small></div></div>'; }).join(''):'';
     window.__ktTx=window.__ktTx||{};
     window.__ktTx.led=mine().map(function(e){ return {t:e.createdAt||0,svc:svcFor(e),label:(LABEL[e.type]||e.type)+(e.note?' — '+e.note:''),amt:e.amount,signed:true,st:stLabel(e.status),ref:'',rt:routeFor(e),mode:e.mode?(String(e.mode).toLowerCase()==='real'?'Real':'Demo'):((String(e.note||'').indexOf('Test funds')>-1||!WALLET_LIVE)?'Demo':'Real')}; });
     if(window.ktRenderTx) window.ktRenderTx(); if(window.ktCounts) window.ktCounts();
@@ -4756,22 +4768,60 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
   }
   function renderAdmin(){
     var wrap=el('ivAdminWallet'); if(!wrap) return; wrap.hidden=!S.isAdmin; if(!S.isAdmin) return;
-    var pend=S.entries.filter(function(e){return e.status==='pending'&&e.type!=='plan_join';}).sort(function(a,b){return (a.createdAt||0)-(b.createdAt||0);});
+    var pend=S.entries.filter(function(e){return (e.status==='pending'||e.status==='processing')&&e.type!=='plan_join';}).sort(function(a,b){return (a.createdAt||0)-(b.createdAt||0);});
     el('ivAdminWalletList').innerHTML=pend.length?'<div class="scroll-x"><table class="inv-table"><thead><tr><th>Date</th><th>Member</th><th>Type</th><th class="num">Amount</th><th>Method</th><th></th></tr></thead><tbody>'+pend.map(function(e){
-      return '<tr><td>'+fmtDY(e.createdAt||Date.now())+'</td><td>'+esc(e.name||e.email)+'</td><td>'+(LABEL[e.type]||e.type)+(e.note?'<br><small>'+esc(e.note)+'</small>':'')+'</td><td class="num">'+money(e.amount)+'</td><td>'+esc(e.method||'')+'</td><td><button type="button" class="btn btn-gold btn-sm" data-wconfirm="'+e.id+'">'+(e.type==='withdrawal'?'Mark released':'Confirm')+'</button> <button type="button" class="btn btn-ghost btn-sm" data-wreject="'+e.id+'">Reject</button></td></tr>'; }).join('')+'</tbody></table></div>':'<div class="empty">No wallet requests waiting.</div>';
+      return '<tr><td>'+fmtDY(e.createdAt||Date.now())+'</td><td>'+esc(e.name||e.email)+'</td><td>'+(LABEL[e.type]||e.type)+' · <b>'+(modeOf(e)==='real'?'REAL':'Demo')+'</b>'+(e.note?'<br><small>'+esc(e.note)+'</small>':'')+'</td><td class="num">'+money(e.amount)+'</td><td>'+esc(e.method||'')+'</td><td><button type="button" class="btn btn-gold btn-sm" data-wconfirm="'+e.id+'">'+(e.type==='withdrawal'?'Mark released':'Confirm')+'</button> <button type="button" class="btn btn-ghost btn-sm" data-wreject="'+e.id+'">Reject</button></td></tr>'; }).join('')+'</tbody></table></div>':'<div class="empty">No wallet requests waiting.</div>';
   }
-  async function createEntry(o){ var w=who(); var e=Object.assign({uid:w.uid,name:w.name,email:w.email,status:'pending',createdBy:'member',createdAt:Date.now()},o); return addDoc(collection(db,'ledger'),e); }
+  async function createEntry(o){ var w=who(); var e=Object.assign({uid:w.uid,name:w.name,email:w.email,status:'pending',createdBy:'member',createdAt:Date.now(),mode:S.mode},o); return addDoc(collection(db,'ledger'),e); }
   function fail(e){ console.error(e); alert('Could not save: '+(e&&e.code==='permission-denied'?'permission denied. Please check the Firebase rules.':(e&&e.message)||'try again.')); }
+
+  async function realDeposit(a,dm,dph,m){
+    var btn=el('wDepBtn'); btn.disabled=true;
+    try{
+      var tok=await auth.currentUser.getIdToken(), card=/Card/.test(dm);
+      var r=await fetch(REAL_API+'/deposit',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body:JSON.stringify({amountUsd:a,paymentMethod:card?'card':'mobile_money',phoneNumber:card?'':'+256'+dph.slice(1)})});
+      var d=await r.json().catch(function(){return {};});
+      if(!r.ok){ window.ktSay(m,d.error||'Could not start the payment.','err'); return; }
+      el('wDepAmt').value='';
+      if(d.redirectUrl){ window.ktSay(m,'Opening the secure card page…','ok'); window.open(d.redirectUrl,'_blank'); }
+      else window.ktSay(m,'Check your phone and approve the payment. Your wallet updates by itself.','ok');
+      pollDeposit(d.reference,m);
+    }catch(err){ window.ktSay(m,'Could not reach the payment server. Check your internet and try again.','err'); }
+    finally{ btn.disabled=false; }
+  }
+  async function realWithdraw(id,m){
+    try{
+      var tok=await auth.currentUser.getIdToken();
+      var r=await fetch(REAL_API+'/withdraw',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body:JSON.stringify({ledgerId:id})});
+      var d=await r.json().catch(function(){return {};});
+      if(!r.ok){ window.ktSay(m,d.error||'Could not send the money.','err'); return; }
+      if(d.status==='completed'){ window.ktSay(m,'Sent! The money is on its way to your phone.','ok'); return; }
+      window.ktSay(m,'Your withdrawal is being sent. This page updates by itself.','ok'); pollWithdraw(id,m);
+    }catch(err){ window.ktSay(m,'Could not reach the payment server. Your request is saved.','warn'); }
+  }
+  var polled={};
+  function pollWithdraw(id,m){ var n=0; (function tick(){ if(n++>36) return; setTimeout(async function(){ try{
+    var tk=await auth.currentUser.getIdToken(), r=await fetch(REAL_API+'/verify-withdrawal',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tk},body:JSON.stringify({ledgerId:id})}), d=await r.json();
+    if(d.status==='completed'){ window.ktSay(m,'Sent! The money is on its way to your phone.','ok'); return; }
+    if(d.status==='rejected'){ window.ktSay(m,'The payout did not go through. The money is back in your wallet.','err'); return; }
+  }catch(err){} tick(); },5000); })(); }
+  function pollDeposit(ref,m){ var n=0; (function tick(){ if(n++>40) return; setTimeout(async function(){ try{
+    var tk=await auth.currentUser.getIdToken(), r=await fetch(REAL_API+'/verify-deposit',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tk},body:JSON.stringify({reference:ref})}), d=await r.json();
+    if(d.paid){ window.ktSay(m,'Payment received. Your real wallet has been credited.','ok'); return; }
+    if(d.status==='failed'||d.status==='cancelled'){ window.ktSay(m,'The payment was not completed.','err'); return; }
+  }catch(err){} tick(); },5000); })(); }
 
   document.addEventListener('click',async function(e){
     var t=e.target; if(!t.closest) return; var q;
     try{
+      if((q=t.closest('[data-wmode]'))){ var wm2=q.getAttribute('data-wmode'); if(wm2==='real'&&!realOpen()){ alert('The real wallet is not open yet.'); return; } S.pref=wm2; try{ localStorage.setItem('kt_wallet_mode',wm2); }catch(err){} render(); return; }
       if(t.closest('#wDepBtn')){
         if(!S.user){ location.hash='#account'; return; }
         var a=parseFloat(el('wDepAmt').value), m=el('wDepMsg');
         if(!(a>=5)){ window.ktSay(m,'Enter at least $5.','err'); return; }
         var dm=el('wDepMethod').value, dph='';
         if(/MTN|Airtel/.test(dm)){ var pv=window.ktPhone(el('wDepPhone').value,dm); if(!pv.ok){ window.ktSay(m,pv.msg,'err'); return; } dph=pv.local; }
+        if(S.mode==='real'){ await realDeposit(a,dm,dph,m); return; }
         await createEntry({type:'deposit',amount:a,method:dm,note:(WALLET_LIVE?'':'Test funds')+(dph?(WALLET_LIVE?'':' · ')+'From '+dph:'')});
         el('wDepAmt').value=''; window.ktSay(m,'Deposit requested. It will show as completed after we confirm it.','ok'); return;
       }
@@ -4783,8 +4833,11 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
         var wm=el('wWdMethod').value;
         if(!to){ window.ktSay(mm,'Enter the phone number or account to send it to.','err'); return; }
         if(/MTN|Airtel/.test(wm)){ var wv=window.ktPhone(to,wm); if(!wv.ok){ window.ktSay(mm,wv.msg,'err'); return; } to=wv.local; }
-        await createEntry({type:'withdrawal',amount:-w,method:wm,note:'To '+to});
-        el('wWdAmt').value=''; window.ktSay(mm,'Withdrawal requested. We will release it and the status will update.','ok'); return;
+        if(S.mode==='real'&&!/MTN|Airtel/.test(wm)){ window.ktSay(mm,'Real withdrawals go to an MTN or Airtel number. Please choose one of them.','err'); return; }
+        var wref=await createEntry({type:'withdrawal',amount:-w,method:wm,note:'To '+to});
+        el('wWdAmt').value='';
+        if(S.mode==='real'){ await realWithdraw(wref.id,mm); return; }
+        window.ktSay(mm,'Withdrawal requested. We will release it and the status will update.','ok'); return;
       }
       if((q=t.closest('[data-wcancel]'))){ await deleteDoc(doc(db,'ledger',q.getAttribute('data-wcancel'))); return; }
       if((q=t.closest('.pay-wallet-btn'))){
@@ -4798,7 +4851,7 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
       }
       if((q=t.closest('[data-wconfirm]'))){
         var en=S.entries.filter(function(x){return x.id===q.getAttribute('data-wconfirm');})[0]; if(!en) return;
-        if(en.amount<0&&completedBal(en.uid)<-en.amount-0.005){ alert('This member does not have enough completed balance.'); return; }
+        if(en.amount<0&&S.entries.filter(function(x){return x.uid===en.uid&&x.status==='completed'&&modeOf(x)===modeOf(en);}).reduce(function(a,x){return a+x.amount;},0)<-en.amount-0.005){ alert('This member does not have enough completed balance.'); return; }
         var b=writeBatch(db); b.update(doc(db,'ledger',en.id),{status:'completed',completedAt:Date.now(),confirmedBy:'admin'});
         if(en.type==='purchase'&&en.refKind==='request'){
           var rs=await getDocs(query(collection(db,'requests'),where('ticketId','==',en.refId))), L={};
@@ -4819,14 +4872,14 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
   onAuthStateChanged(auth,function(user){
     if(unsub){ try{unsub();}catch(e){} unsub=null; }
     S.user=user; S.isAdmin=!!(user&&user.email===ADMIN_EMAIL); S.entries=[];
-    if(user){ var src=S.isAdmin?collection(db,'ledger'):query(collection(db,'ledger'),where('uid','==',user.uid)); unsub=onSnapshot(src,function(s){ S.entries=snap(s); render(); },function(e){ console.error(e); }); }
+    if(user){ var src=S.isAdmin?collection(db,'ledger'):query(collection(db,'ledger'),where('uid','==',user.uid)); unsub=onSnapshot(src,function(s){ S.entries=snap(s); render(); S.entries.forEach(function(x){ if(S.user&&x.uid===S.user.uid&&x.type==='withdrawal'&&x.status==='processing'&&x.payoutRef&&!polled[x.id]){ polled[x.id]=1; pollWithdraw(x.id,null); } }); },function(e){ console.error(e); }); }
     render();
   });
   render();
 })();
 </script>
 
-<script>window.KT_REAL_ENABLED=false; /* change to true to switch on Real transactions */</script>
+<script>window.KT_REAL_ENABLED=true; window.KT_REAL_PUBLIC=true; window.KT_REAL_TESTERS=[]; /* KT_REAL_PUBLIC=true: the Real wallet is open to every signed-in member. To lock it again set it to false (only the admin and the emails in KT_REAL_TESTERS will see it) and add REAL_LOCKED=true in Cloudflare. */</script>
 <script>
 /* Batch 1: visible alerts, offline bar, phone checks, richer transactions, notification bell */
 (function(){
