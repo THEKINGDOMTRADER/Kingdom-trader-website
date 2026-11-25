@@ -1102,6 +1102,10 @@
   .tx-toggle{display:block;width:100%;margin-top:8px;padding:9px 12px;background:transparent;border:1px solid var(--line);border-radius:6px;color:var(--gold);font:inherit;font-size:13px;cursor:pointer;}
   .tx-toggle:hover{border-color:var(--gold);}
   .tx-toggle[hidden]{display:none;}
+  .pay-seg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 10px;}
+  .pay-seg .chip{padding:11px 12px;font-size:13px;font-weight:600;text-align:center;border-width:1.5px;border-radius:8px;}
+  #wDepNet [data-net="MTN Mobile Money"].on{background:#FFCC08;border-color:#FFCC08;color:#0C121C;}
+  #wDepNet [data-net="Airtel Money"].on{background:#ED1C24;border-color:#ED1C24;color:#fff;}
   #walletTest{border-color:#5AA9FF;background:rgba(90,169,255,.08);}
   #walletRealNote{border-color:#4ED394;background:rgba(78,211,148,.08);}
 
@@ -1447,9 +1451,9 @@
     <span class="eyebrow">3 · Trade for me</span>
     <h2 style="margin:8px 0 10px;">Choose a plan. We trade for you.</h2>
     <p class="svc-lead">Not sure where to start? Pick a time period, enter an amount and see the figure you are aiming for. Targets are not guaranteed.</p>
-    <ul class="tick-list"><li>2-week, 1-month, 3-month and 6-month plans</li><li>Enrol Sunday to Tuesday, and everyone that week starts together</li><li>Statements for every completed plan</li></ul>
+    <ul class="tick-list"><li>2-week, 1-month, 3-month and 6-month plans</li><li>Open enrolment: join any day, your plan starts the next day</li><li>Statements for every completed plan</li></ul>
     <h4 class="how-h">How it works</h4>
-    <div class="inv-steps"><div class="inv-step"><span class="n">1</span><h4>Choose a plan</h4><p>Pick the period that suits you and enter an amount.</p></div><div class="inv-step"><span class="n">2</span><h4>Join a cohort</h4><p>Enrol Sunday to Tuesday. Your cohort starts on Wednesday.</p></div><div class="inv-step"><span class="n">3</span><h4>We trade</h4><p>Funds are traded by our team following a defined strategy and risk rules.</p></div><div class="inv-step"><span class="n">4</span><h4>Withdraw or reinvest</h4><p>At maturity, take your money out or reinvest part or all of it.</p></div></div>
+    <div class="inv-steps"><div class="inv-step"><span class="n">1</span><h4>Choose a plan</h4><p>Pick the period that suits you and enter an amount.</p></div><div class="inv-step"><span class="n">2</span><h4>Join a plan</h4><p>Join any day. Your plan starts the next day at 00:00 EAT.</p></div><div class="inv-step"><span class="n">3</span><h4>We trade</h4><p>Funds are traded by our team following a defined strategy and risk rules.</p></div><div class="inv-step"><span class="n">4</span><h4>Withdraw or reinvest</h4><p>At maturity, take your money out or reinvest part or all of it.</p></div></div>
     <div class="svc-next"><a href="#invest" class="btn btn-gold">See the plans</a> <a href="#start" class="btn btn-ghost">Back to 1</a></div>
   </div>
 </section>
@@ -1573,7 +1577,7 @@
       <details><summary>How do I get my bot after paying?</summary><p>When your order is ready you will get a notification on the bell icon. Open <a href="#account-bots" style="color:var(--gold);">My Account → Bots</a> to find your licence and download link.</p></details>
       <details><summary>Which platforms do your bots run on?</summary><p>MetaTrader 5 and TradingView.</p></details>
       <details><summary>Can I swap a bot I bought?</summary><p>Yes. You can request a swap from your Licenses for another bot of equal or lesser value. See the <a href="#legal" style="color:var(--gold);">legal &amp; risk page</a> for the full policy.</p></details>
-      <details><summary>When can I join a trade-for-me plan?</summary><p>Enrolment for each weekly cohort is open from Sunday to Tuesday. Everyone who joins that week starts together. The amount shown on each plan is a target, not a guarantee.</p></details>
+      <details><summary>When can I join a trade-for-me plan?</summary><p>Enrolment is open every day. When you join, your plan starts the next day at 00:00 EAT and runs for the period you chose. The amount shown on each plan is a target, not a guarantee.</p></details>
       <details><summary>Are results guaranteed?</summary><p>No. Trading carries risk and results depend on market conditions. We only publish results we can verify. Please read the <a href="#legal" style="color:var(--gold);">legal &amp; risk page</a> before you invest.</p></details>
       <details><summary>How long does a withdrawal take?</summary><p>You request the withdrawal from your wallet, and we release it to the MTN, Airtel or bank details you gave. The status in your transactions list updates when it is sent.</p></details>
       <details><summary>How do I contact support?</summary><p>Tap the round WhatsApp button or the Chat button at the top of any page, or use the form on the contact page.</p></details>
@@ -1591,7 +1595,7 @@
         <h2 style="margin:8px 0 12px;">Choose a plan. We trade for you.</h2>
         <p style="color:var(--text-dim);">Funds are traded by our team of experienced traders, following a defined strategy and risk rules. Pick how long you want your money invested, enter an amount, and see the figure you are aiming for. Every completed plan comes with a statement.</p>
         <div class="inv-steps">
-          <div class="inv-step"><span class="n">1</span><h4>Join a cohort</h4><p>Enrol Sunday to Tuesday. Everyone who joins that week starts together.</p></div>
+          <div class="inv-step"><span class="n">1</span><h4>Join a plan</h4><p>Join any day. Your plan starts the next day at 00:00 EAT.</p></div>
           <div class="inv-step"><span class="n">2</span><h4>Pay &amp; wait</h4><p>We confirm your payment, then you watch the countdown.</p></div>
           <div class="inv-step"><span class="n">3</span><h4>Withdraw or reinvest</h4><p>At maturity, take your money out or reinvest part or all of it.</p></div>
         </div>
@@ -1628,7 +1632,7 @@
 
       <div class="adm-block">
         <h4>Cohorts</h4>
-        <p class="note">Each cohort is a plan and an enrolment week (Sunday to Tuesday). Everyone in it starts on the Wednesday and matures on the same day.</p>
+        <p class="note">Each cohort is a plan and the day people joined it (open enrolment). Everyone in it starts the next day and matures on the same day. Older weekly cohorts still show as before.</p>
         <div class="scroll-x"><table class="inv-table" id="ivCohortTable"></table></div>
       </div>
 
@@ -1804,7 +1808,9 @@
         <div class="wallet-forms">
           <div class="wallet-form"><h4>Deposit</h4>
             <div class="inv-field"><input type="number" inputmode="decimal" id="wDepAmt" placeholder="Amount in USD" aria-label="Deposit amount"></div>
-            <div class="inv-field"><select id="wDepMethod" aria-label="Deposit method"><option>MTN Mobile Money</option><option>Airtel Money</option><option>Card</option></select></div>
+            <div class="pay-seg" id="wDepSeg"><button type="button" class="chip on" data-dm="mm">📱 Mobile Money</button><button type="button" class="chip" data-dm="Card">💳 Card</button></div>
+            <div class="pay-seg" id="wDepNet"><button type="button" class="chip on" data-net="MTN Mobile Money">MTN</button><button type="button" class="chip" data-net="Airtel Money">Airtel</button></div>
+            <select id="wDepMethod" hidden aria-hidden="true" tabindex="-1"><option>MTN Mobile Money</option><option>Airtel Money</option><option>Card</option></select>
             <div class="inv-field" id="wDepPhoneBox"><input type="tel" inputmode="tel" id="wDepPhone" placeholder="Number you will pay from, e.g. 0771234567" aria-label="Mobile money number" autocomplete="tel"><p class="phone-hint" id="wDepHint"></p></div>
             <button type="button" class="btn btn-gold btn-sm" id="wDepBtn">Request deposit</button><p class="note" id="wDepMsg"></p></div>
           <div class="wallet-form"><h4>Withdraw</h4>
@@ -3343,13 +3349,13 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
 
   /* weeks & cohorts: enrol Sun 00:00 – Tue 23:59 EAT, start Wed 00:00 EAT */
   function sunday(ts){ var d=new Date(ts+EAT); return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()-d.getUTCDay())-EAT; }
-  function winFor(ts){ var s=sunday(ts); return ts<=s+3*D-1?s:s+7*D; }
-  function dates(pk,ws){ return {id:pk+'-'+ws,plan:pk,winStart:ws,winEnd:ws+3*D-1,startAt:ws+3*D,maturesAt:ws+3*D+plan(pk).days*D,contribs:[]}; }
+  function winFor(ts){ return Math.floor((ts+EAT)/D)*D-EAT; } /* open enrolment: each EAT day is its own start group */
+  function dates(pk,ws,open){ var w=open?D:3*D; return {id:pk+'-'+ws+(open?'o':''),plan:pk,winStart:ws,open:!!open,winEnd:ws+w-1,startAt:ws+w,maturesAt:ws+w+plan(pk).days*D,contribs:[]}; }
   function timeStatus(c){ var t=now(); if(t<c.winStart) return 'upcoming'; if(t<=c.winEnd) return 'enrolling'; if(t<c.startAt) return 'starting'; if(t<c.maturesAt) return 'running'; return 'matured'; }
   var ST={upcoming:'Opens soon',enrolling:'Enrolling',starting:'Starts soon',running:'Running',matured:'Matured',settled:'Settled'};
-  function openCohort(pk){ return dates(pk,winFor(now())); }
+  function openCohort(pk){ return dates(pk,winFor(now()),true); }
   function cohorts(){
-    var map={}; S.all.forEach(function(x){ if(!x.plan||!x.winStart) return; var id=x.plan+'-'+x.winStart; if(!map[id]) map[id]=dates(x.plan,x.winStart); map[id].contribs.push(x); });
+    var map={}; S.all.forEach(function(x){ if(!x.plan||!x.winStart) return; var id=x.plan+'-'+x.winStart+(x.open?'o':''); if(!map[id]) map[id]=dates(x.plan,x.winStart,x.open); map[id].contribs.push(x); });
     return Object.keys(map).map(function(k){return map[k];});
   }
   function actives(c){ return c.contribs.filter(function(x){return x.status==='active';}); }
@@ -3382,8 +3388,8 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   function chip(cls,html){ return '<div class="remind '+cls+'">'+html+'</div>'; }
   function remindCustomer(){
     var h='', n=now();
-    myList().forEach(function(x){ var c=dates(x.plan,x.winStart), p=plan(x.plan), st=timeStatus(c);
-      if(x.status==='pending'&&n<=c.winEnd) h+=chip('warn','Your '+p.name+' is waiting for payment confirmation. Enrolment closes in '+cd(c.winEnd)+'.');
+    myList().forEach(function(x){ var c=dates(x.plan,x.winStart,x.open), p=plan(x.plan), st=timeStatus(c);
+      if(x.status==='pending'&&n<=c.winEnd) h+=chip('warn','Your '+p.name+' is waiting for payment confirmation. We will confirm it shortly.');
       if(x.status==='active'&&st==='running'&&c.maturesAt-n<=3*D) h+=chip('info','Your '+p.name+' matures in '+cd(c.maturesAt)+'.');
       if(x.status==='active'&&st==='matured') h+=chip('info','Your '+p.name+' has matured. We are settling it now.');
       if(x.status==='closed'&&x.payout>0&&x.settlement&&now()-x.settlement.at<14*D) h+=chip('go','Your '+p.name+' paid '+money(x.payout)+' into your wallet. <a href="#" data-payout="'+x.id+'">Reinvest</a> or withdraw it from My Account → Wallet.'); });
@@ -3402,15 +3408,13 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
 
   /* customer side */
   function renderEnrol(){
-    var n=now(), ws=winFor(n), open=(n>=ws&&n<=ws+3*D-1);
-    el('ivEnrol').innerHTML=open?'<span class="dot go"></span><div><strong>Enrolment is open</strong> until '+fmtD(ws+3*D-1)+', 23:59 EAT. Closes in '+cd(ws+3*D-1)+'. This cohort starts '+fmtD(ws+3*D)+'.</div>'
-      :'<span class="dot"></span><div><strong>Enrolment is closed</strong> for now. The next cohort opens '+fmtD(ws)+' at 00:00 EAT, in '+cd(ws)+'.'+(S.testOpen?' <em>(testing: window ignored)</em>':'')+'</div>';
+    el('ivEnrol').innerHTML='<span class="dot go"></span><div><strong>Enrolment is open</strong> every day. Join any time. A plan you join today starts tomorrow at 00:00 EAT.</div>';
   }
   function renderPlans(){
     var box=el('ivPlans'); box.innerHTML='';
     PLANS.forEach(function(p){
       var c=openCohort(p.key), st=timeStatus(c), t=tgt(p.key), can=(st==='enrolling'||(S.isAdmin&&S.testOpen)), ready=S.targetsLoaded&&S.targets[p.key]!=null;
-      var label=!S.user?'Log in to join':(!ready?'Opening soon':(can?'Join this cohort':'Opens '+fmtD(c.winStart)));
+      var label=!S.user?'Log in to join':(!ready?'Opening soon':(can?'Join this plan':'Opens '+fmtD(c.winStart)));
       var wav=window.ktWallet?window.ktWallet.available():0, opts='<option value="Wallet">Wallet balance ('+money(wav)+')</option>';
       var d=document.createElement('div'); d.className='pool'; d.setAttribute('data-plan',p.key);
       d.innerHTML='<h3>'+p.name+'<span class="tag">TARGET +'+pct(t*100)+'</span></h3>'+
@@ -3427,13 +3431,13 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   }
   function renderPortfolio(){
     var rows='', n=now();
-    myList().slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);}).forEach(function(x){ var c=dates(x.plan,x.winStart), p=plan(x.plan), st=timeStatus(c), clock='', act='', badge='';
+    myList().slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);}).forEach(function(x){ var c=dates(x.plan,x.winStart,x.open), p=plan(x.plan), st=timeStatus(c), clock='', act='', badge='';
       if(x.status==='pending'){ if(n>c.winEnd&&!S.testOpen){ badge='<span class="out bad">Expired</span>'; } else { badge='<span class="out mid">Awaiting confirmation</span>'; clock='Ref '+ref(x)+' · closes in '+cd(c.winEnd); act='<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/256774077467?text='+encodeURIComponent('Hello, I joined the '+p.name+' (ref '+ref(x)+', $'+x.amount+'). Please confirm my payment.')+'">Tell us on WhatsApp</a>'+(x.source==='reinvest'?'':' <button type="button" class="btn btn-ghost btn-sm" data-cancel="'+x.id+'">Cancel</button>'); } }
       else if(x.status==='active'){ if(st==='enrolling'||st==='starting'){ badge='<span class="out ok">Active</span>'; clock='Starts in '+cd(c.startAt); } else if(st==='running'){ badge='<span class="out ok">Running</span>'; clock='Day '+Math.min(p.days,Math.floor((n-c.startAt)/D)+1)+' of '+p.days+' · matures in '+cd(c.maturesAt); } else { badge='<span class="out mid">Matured</span>'; clock='Being settled'; } }
       else if(x.status==='settled'){ badge='<span class="out ok">Ready</span>'; act='<button type="button" class="btn btn-gold btn-sm" data-payout="'+x.id+'">Withdraw / reinvest</button>'; clock=money(x.payout)+' available'; }
       else if(x.status==='closed'){ badge='<span class="out '+(x.out||'mid')+'">Completed</span>'; clock=x.payout>0?money(x.payout)+' paid into your wallet':'Completed'; if(x.payout>0) act='<button type="button" class="btn btn-gold btn-sm" data-payout="'+x.id+'">Reinvest</button>'; }
       else return;
-      rows+='<tr><td>'+p.name+(x.source==='reinvest'?' <small>(reinvested)</small>':'')+'<br><small>Cohort '+fmtD(c.winStart)+'</small></td><td class="num">'+money(x.amount)+'</td><td class="num">'+money(x.amount*(1+x.t))+'</td><td>'+badge+'<br><small>'+clock+'</small></td><td>'+act+'</td></tr>'; });
+      rows+='<tr><td>'+p.name+(x.source==='reinvest'?' <small>(reinvested)</small>':'')+'<br><small>Joined '+fmtD(c.winStart)+'</small></td><td class="num">'+money(x.amount)+'</td><td class="num">'+money(x.amount*(1+x.t))+'</td><td>'+badge+'<br><small>'+clock+'</small></td><td>'+act+'</td></tr>'; });
     var msg=S.user?'No plans yet. Choose a plan above to get started.':'Log in to see your plans.';
     el('ivPortfolio').innerHTML='<div class="scroll-x">'+(rows?'<table class="inv-table"><thead><tr><th>Plan</th><th class="num">Amount</th><th class="num">Target amount</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>':'<div class="empty">'+msg+'</div>')+'</div>';
     var w=myWds().slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);}).map(function(x){ return '<tr><td>'+fmtDY(x.createdAt||Date.now())+'</td><td class="num">'+money(x.amount)+'</td><td>'+(x.status==='released'?'<span class="out ok">Released</span>':'<span class="out mid">Requested</span>')+'</td></tr>'; }).join('');
@@ -3442,7 +3446,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   function renderStatements(){
     var done=myList().filter(function(x){return x.status==='settled'||x.status==='closed';}), box=el('ivStatements');
     if(!done.length){ box.innerHTML='<div class="scroll-x"><div class="empty">Your statements appear here when a plan is completed.</div></div>'; return; }
-    box.innerHTML=done.map(function(x){ var c=dates(x.plan,x.winStart), p=plan(x.plan), rate=((x.payout-x.amount)/x.amount)*100;
+    box.innerHTML=done.map(function(x){ var c=dates(x.plan,x.winStart,x.open), p=plan(x.plan), rate=((x.payout-x.amount)/x.amount)*100;
       return '<div class="stmt"><div class="stmt-head"><h4>'+p.name+' · matured '+fmtDY(c.maturesAt)+'</h4><span class="out '+x.out+'">'+(x.out==='ok'?'Target reached':(x.out==='mid'?'Below target':'Loss'))+'</span></div>'+
         '<dl><dt>Plan period</dt><dd>'+fmtDY(c.startAt)+' – '+fmtDY(c.maturesAt)+'</dd><dt>Amount invested</dt><dd>'+money(x.amount)+'</dd><dt>Target at the time</dt><dd>+'+pct(x.t*100)+'</dd><dt>Your result</dt><dd>'+(rate>=0?'+':'−')+pct(Math.abs(rate))+'</dd><dt><strong>Amount returned</strong></dt><dd><strong>'+money(x.payout)+'</strong></dd></dl>'+
         '<p class="how">Targets are not guarantees. Results are shared in proportion to each member\u2019s contribution.</p><button type="button" class="btn btn-ghost btn-sm" data-print="'+x.id+'" style="margin-top:12px;">Print / save as PDF</button></div>'; }).join('');
@@ -3487,10 +3491,10 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   function dash(){
     var list=myList(), wds=myWds(), tx=[], rows='';
     list.slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);}).forEach(function(x){
-      var p=plan(x.plan), c=dates(x.plan,x.winStart);
+      var p=plan(x.plan), c=dates(x.plan,x.winStart,x.open);
       var stt=x.status==='pending'?'Awaiting confirmation':(x.status==='active'?'Active':(x.status==='settled'?'Ready to withdraw':(x.status==='closed'?'Completed':x.status)));
       if(x.fundedBy!=='wallet') tx.push({t:x.createdAt||0,svc:'Investments',label:p.name+(x.source==='reinvest'?' — reinvestment':' — contribution'),amt:x.amount,st:stt,ref:ref(x)});
-      rows+='<div class="tx-row"><div class="l">'+p.name+'<small>Cohort '+fmtD(c.winStart)+' · matures '+fmtD(c.maturesAt)+'</small></div><div class="r">'+money(x.amount)+'<small><span class="out '+(x.status==='pending'?'mid':'ok')+'">'+stt+'</span></small></div></div>';
+      rows+='<div class="tx-row"><div class="l">'+p.name+'<small>Joined '+fmtD(c.winStart)+' · matures '+fmtD(c.maturesAt)+'</small></div><div class="r">'+money(x.amount)+'<small><span class="out '+(x.status==='pending'?'mid':'ok')+'">'+stt+'</span></small></div></div>';
     });
     window.__ktTx=window.__ktTx||{}; window.__ktTx.plan=tx; document.dispatchEvent(new CustomEvent('ktplan')); window.__ktCnt=window.__ktCnt||{}; window.__ktCnt.p=list.length;
     var box=el('dashInvest'); if(box) box.innerHTML=rows||'<p class="text-dim-note">Your plans appear here once you join one.</p>';
@@ -3510,7 +3514,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   }
   function closePayout(){ var m=el('ivPayout'); if(m){ m.hidden=true; document.body.style.overflow=''; } payCtx=null; }
   function printStmt(id){
-    var x=find(id); if(!x) return; var c=dates(x.plan,x.winStart), p=plan(x.plan), rate=((x.payout-x.amount)/x.amount)*100, box=el('stmtPrint');
+    var x=find(id); if(!x) return; var c=dates(x.plan,x.winStart,x.open), p=plan(x.plan), rate=((x.payout-x.amount)/x.amount)*100, box=el('stmtPrint');
     function row(a,b){ return '<tr><td>'+a+'</td><td>'+b+'</td></tr>'; }
     box.innerHTML='<h2>The Kingdom Trader — Plan statement</h2><div>'+esc(x.name||'')+' · '+p.name+' · matured '+fmtDY(c.maturesAt)+'</div><table>'+row('Plan period',fmtDY(c.startAt)+' – '+fmtDY(c.maturesAt))+row('Amount invested',money(x.amount))+row('Target at the time','+'+pct(x.t*100))+row('Your result',(rate>=0?'+':'−')+pct(Math.abs(rate)))+row('<strong>Amount returned</strong>','<strong>'+money(x.payout)+'</strong>')+'</table><div class="warn">This statement shows the amounts recorded for this plan. Targets are not guarantees and trading carries a high risk of loss.</div>';
     window.print();
@@ -3536,7 +3540,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       var xx=find(payCtx.id), rr=Math.round(xx.payout*payCtx.pctRe)/100, ww=who();
       if(rr>(window.ktWallet?window.ktWallet.available():0)+0.0001){ alert('Not enough wallet balance.'); return; }
       var tc2=openCohort(payCtx.plan), cr=doc(collection(db,'contributions')), bb=writeBatch(db);
-      bb.set(cr,{uid:xx.uid,name:xx.name||ww.name,email:xx.email||ww.email,plan:payCtx.plan,amount:rr,status:'pending',cohortId:tc2.id,winStart:tc2.winStart,startAt:tc2.startAt,maturesAt:tc2.maturesAt,t:tgt(payCtx.plan),method:'Wallet',fundedBy:'wallet',source:'reinvest',fromId:xx.id,createdAt:Date.now()});
+      bb.set(cr,{uid:xx.uid,name:xx.name||ww.name,email:xx.email||ww.email,plan:payCtx.plan,amount:rr,status:'pending',cohortId:tc2.id,winStart:tc2.winStart,open:true,startAt:tc2.startAt,maturesAt:tc2.maturesAt,t:tgt(payCtx.plan),method:'Wallet',fundedBy:'wallet',source:'reinvest',fromId:xx.id,createdAt:Date.now()});
       bb.set(doc(collection(db,'ledger')),{uid:xx.uid,name:xx.name||ww.name,email:xx.email||ww.email,type:'plan_join',mode:(window.ktWallet&&window.ktWallet.mode?window.ktWallet.mode():'demo'),amount:-rr,status:'pending',refKind:'contribution',refId:cr.id,service:'Investments',method:'Wallet',note:plan(payCtx.plan).name+' (reinvested)',createdBy:'member',createdAt:Date.now()});
       await bb.commit(); closePayout(); return;
     }
@@ -3562,7 +3566,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
     if((q=t.closest('[data-skip]'))){ var dd=parseInt(q.getAttribute('data-skip'),10); S.offset=dd===0?0:S.offset+dd*D; try{ localStorage.setItem('kt_plan_offset',String(S.offset)); }catch(x){} renderAll(); return; }
     if(t.closest('#ivAddMember')){
       var nm=el('ivMName').value.trim(), pk2=el('ivMPlan').value, am=parseFloat(el('ivMAmt').value); if(!nm||!(am>=10)){ alert('Enter a name and an amount of at least $10.'); return; }
-      var co=openCohort(pk2); await addDoc(collection(db,'contributions'),{uid:'manual:'+Date.now(),name:nm,email:'',plan:pk2,amount:am,status:'active',cohortId:co.id,winStart:co.winStart,startAt:co.startAt,maturesAt:co.maturesAt,t:tgt(pk2),method:'Added by admin',source:'manual',createdAt:Date.now(),confirmedAt:Date.now()});
+      var co=openCohort(pk2); await addDoc(collection(db,'contributions'),{uid:'manual:'+Date.now(),name:nm,email:'',plan:pk2,amount:am,status:'active',cohortId:co.id,winStart:co.winStart,open:true,startAt:co.startAt,maturesAt:co.maturesAt,t:tgt(pk2),method:'Added by admin',source:'manual',createdAt:Date.now(),confirmedAt:Date.now()});
       el('ivMName').value=''; el('ivMAmt').value=''; return;
     }
     var act=t.closest('[data-act="join"]');
@@ -3574,7 +3578,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       if(!(amt>=p.min)){ msg.textContent='Enter at least $'+p.min+'.'; return; }
       if(!card.querySelector('[data-agree]').checked){ msg.textContent='Please tick the box to accept the terms.'; return; }
       act.disabled=true; var w2=who(), msel=card.querySelector('[data-method]').value, cref=doc(collection(db,'contributions'));
-      var cdata={uid:w2.uid,name:w2.name,email:w2.email,plan:p.key,amount:amt,status:'pending',cohortId:co2.id,winStart:co2.winStart,startAt:co2.startAt,maturesAt:co2.maturesAt,t:tgt(p.key),method:msel,fundedBy:msel==='Wallet'?'wallet':'manual',source:'new',createdAt:Date.now()};
+      var cdata={uid:w2.uid,name:w2.name,email:w2.email,plan:p.key,amount:amt,status:'pending',cohortId:co2.id,winStart:co2.winStart,open:true,startAt:co2.startAt,maturesAt:co2.maturesAt,t:tgt(p.key),method:msel,fundedBy:msel==='Wallet'?'wallet':'manual',source:'new',createdAt:Date.now()};
       if(msel==='Wallet'){
         if(amt>(window.ktWallet?window.ktWallet.available():0)+0.0001){ window.ktSay(msg,'Funds are not enough. Add money in My Account → Wallet first.','err'); act.disabled=false; return; }
         var bw=writeBatch(db); bw.set(cref,cdata); bw.set(doc(collection(db,'ledger')),{uid:w2.uid,name:w2.name,email:w2.email,type:'plan_join',mode:(window.ktWallet&&window.ktWallet.mode?window.ktWallet.mode():'demo'),amount:-amt,status:'pending',refKind:'contribution',refId:cref.id,service:'Investments',method:'Wallet',note:p.name,createdBy:'member',createdAt:Date.now()}); await bw.commit();
@@ -3972,7 +3976,10 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
     el('ivAdminWalletList').innerHTML=pend.length?'<div class="scroll-x"><table class="inv-table"><thead><tr><th>Date</th><th>Member</th><th>Type</th><th class="num">Amount</th><th>Method</th><th></th></tr></thead><tbody>'+pend.map(function(e){
       return '<tr><td>'+fmtDY(e.createdAt||Date.now())+'</td><td>'+esc(e.name||e.email)+'</td><td>'+(LABEL[e.type]||e.type)+' · <b>'+(modeOf(e)==='real'?'REAL':'Demo')+'</b>'+(e.note?'<br><small>'+esc(e.note)+'</small>':'')+'</td><td class="num">'+money(e.amount)+'</td><td>'+esc(e.method||'')+'</td><td><button type="button" class="btn btn-gold btn-sm" data-wconfirm="'+e.id+'">'+(e.type==='withdrawal'?'Mark released':'Confirm')+'</button> <button type="button" class="btn btn-ghost btn-sm" data-wreject="'+e.id+'">Reject</button></td></tr>'; }).join('')+'</tbody></table></div>':'<div class="empty">No wallet requests waiting.</div>';
   }
-  async function createEntry(o){ var w=who(); var e=Object.assign({uid:w.uid,name:w.name,email:w.email,status:'pending',createdBy:'member',createdAt:Date.now(),mode:S.mode},o); return addDoc(collection(db,'ledger'),e); }
+  async function createEntry(o){ var w=who(); var e=Object.assign({uid:w.uid,name:w.name,email:w.email,status:'pending',createdBy:'member',createdAt:Date.now(),mode:S.mode},o); var r=await addDoc(collection(db,'ledger'),e);
+    /* demo deposits and withdrawals approve themselves; if the database rules do not allow it, they stay pending for the admin */
+    if(e.mode==='demo'&&(e.type==='deposit'||e.type==='withdrawal')&&!e.refKind){ try{ await updateDoc(r,{status:'completed',completedAt:Date.now(),confirmedBy:'auto-demo'}); r.auto=true; }catch(err){ console.warn('Demo auto-approve not allowed by rules',err); } }
+    return r; }
   function fail(e){ console.error(e); alert('Could not save: '+(e&&e.code==='permission-denied'?'permission denied. Please check the Firebase rules.':(e&&e.message)||'try again.')); }
 
   async function realDeposit(a,dm,dph,m){
@@ -4022,8 +4029,8 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
         var dm=el('wDepMethod').value, dph='';
         if(/MTN|Airtel/.test(dm)){ var pv=window.ktPhone(el('wDepPhone').value,dm); if(!pv.ok){ window.ktSay(m,pv.msg,'err'); return; } dph=pv.local; }
         if(S.mode==='real'){ await realDeposit(a,dm,dph,m); return; }
-        await createEntry({type:'deposit',amount:a,method:dm,note:(WALLET_LIVE?'':'Test funds')+(dph?(WALLET_LIVE?'':' · ')+'From '+dph:'')});
-        el('wDepAmt').value=''; window.ktSay(m,'Deposit requested. It will show as completed after we confirm it.','ok'); return;
+        var dref=await createEntry({type:'deposit',amount:a,method:dm,note:(WALLET_LIVE?'':'Test funds')+(dph?(WALLET_LIVE?'':' · ')+'From '+dph:'')});
+        el('wDepAmt').value=''; window.ktSay(m,dref.auto?'Done. Your demo funds are in your Demo wallet.':'Deposit requested. It will show as completed after we confirm it.','ok'); return;
       }
       if(t.closest('#wWdBtn')){
         if(!S.user){ location.hash='#account'; return; }
@@ -4034,14 +4041,15 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
         if(!to){ window.ktSay(mm,'Enter the phone number or account to send it to.','err'); return; }
         if(/MTN|Airtel/.test(wm)){ var wv=window.ktPhone(to,wm); if(!wv.ok){ window.ktSay(mm,wv.msg,'err'); return; } to=wv.local; }
         if(S.mode==='real'&&!/MTN|Airtel/.test(wm)){ window.ktSay(mm,'Real withdrawals go to an MTN or Airtel number. Please choose one of them.','err'); return; }
-        var wref=await createEntry({type:'withdrawal',amount:-w,method:wm,note:'To '+to});
+        var wref=await createEntry({type:'withdrawal',amount:-w,method:wm,note:'To '+to}); window._ktLastAuto=!!wref.auto;
         el('wWdAmt').value='';
         if(S.mode==='real'){ await realWithdraw(wref.id,mm); return; }
-        window.ktSay(mm,'Withdrawal requested. We will release it and the status will update.','ok'); return;
+        window.ktSay(mm,window._ktLastAuto?'Done. Your demo withdrawal is completed.':'Withdrawal requested. We will release it and the status will update.','ok'); return;
       }
       if((q=t.closest('[data-wcancel]'))){ await deleteDoc(doc(db,'ledger',q.getAttribute('data-wcancel'))); return; }
       if((q=t.closest('.pay-wallet-btn'))){
         if(!S.user){ return; }
+        if(S.mode!=='real'){ alert('Demo funds cannot be used to buy bots or services. Switch to your Real wallet and top it up first.'); return; }
         var amt=parseFloat(q.getAttribute('data-amount')), tk=q.getAttribute('data-ticket');
         if(!(amt>0)||!tk) return;
         if(S.entries.some(function(x){return x.refId===tk&&x.status==='pending';})){ alert('You already sent this payment from your wallet. We will confirm it shortly.'); return; }
@@ -4228,6 +4236,23 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
   btn.addEventListener('click',function(){ list.classList.toggle('expanded'); if(!list.classList.contains('expanded')) list.scrollTop=0; sync(); });
   new MutationObserver(sync).observe(list,{childList:true});
   sync();
+})();
+</script>
+<script>
+(function(){
+  var sel=document.getElementById('wDepMethod'), seg=document.getElementById('wDepSeg'), net=document.getElementById('wDepNet');
+  if(!sel||!seg||!net) return;
+  var lastNet='MTN Mobile Money';
+  function paint(){
+    var card=sel.value==='Card';
+    seg.querySelectorAll('[data-dm]').forEach(function(b){ b.classList.toggle('on',(b.getAttribute('data-dm')==='Card')===card); });
+    net.style.display=card?'none':'';
+    net.querySelectorAll('[data-net]').forEach(function(b){ b.classList.toggle('on',b.getAttribute('data-net')===sel.value); });
+  }
+  function set(v){ sel.value=v; sel.dispatchEvent(new Event('change')); paint(); }
+  seg.addEventListener('click',function(e){ var b=e.target.closest('[data-dm]'); if(!b) return; set(b.getAttribute('data-dm')==='Card'?'Card':lastNet); });
+  net.addEventListener('click',function(e){ var b=e.target.closest('[data-net]'); if(!b) return; lastNet=b.getAttribute('data-net'); set(lastNet); });
+  paint();
 })();
 </script>
 </body>
