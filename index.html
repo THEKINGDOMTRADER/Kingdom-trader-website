@@ -1102,6 +1102,8 @@
   .tx-toggle{display:block;width:100%;margin-top:8px;padding:9px 12px;background:transparent;border:1px solid var(--line);border-radius:6px;color:var(--gold);font:inherit;font-size:13px;cursor:pointer;}
   .tx-toggle:hover{border-color:var(--gold);}
   .tx-toggle[hidden]{display:none;}
+  #walletTest{border-color:#5AA9FF;background:rgba(90,169,255,.08);}
+  #walletRealNote{border-color:#4ED394;background:rgba(78,211,148,.08);}
 
   .page-back-wrap{padding:26px 0 34px;text-align:center;} .page-back-wrap[hidden],.page-back[hidden]{display:none;}
   .page-back{background:var(--panel);border:1px solid var(--gold);color:var(--gold);font:inherit;font-size:14px;font-weight:600;padding:9px 22px;border-radius:999px;cursor:pointer;} .page-back:hover{background:rgba(198,161,83,.12);} .page-back.sm{font-size:12.5px;padding:5px 14px;margin-left:auto;}
@@ -1206,7 +1208,7 @@
         <span class="path-go">See the bots →</span>
       </a>
       <a href="#start-invest" class="path">
-        <span class="path-tag">I'm not sure · prototype</span>
+        <span class="path-tag">I'm not sure</span>
         <h3>Trade for me</h3>
         <p>Pick a plan and a time period, and we trade on your behalf. Targets are not guaranteed.</p>
         <span class="path-go">Explore the plans →</span>
@@ -1267,7 +1269,7 @@
     <div class="teaser">
       <div>
         <h3>Not sure where to start? Try a trade-for-me plan.</h3>
-        <p>Our trade-for-me plans are in a prototype stage. Choose a plan and a time period and try the demo with virtual funds. Targets are not guaranteed.</p>
+        <p>Choose a plan and a time period and see the figure you are aiming for. Targets are not guaranteed.</p>
       </div>
       <a href="#invest" class="btn btn-gold">Explore the plans</a>
     </div>
@@ -1443,9 +1445,9 @@
 <section class="svc" data-page="start" data-start-panel="3">
   <div class="wrap">
     <figure class="media-card svc-hero"><img src="invest-piggy.jpg" alt="Coins flowing from a piggy bank into a trading chart" width="1200" height="628"></figure>
-    <span class="eyebrow">3 · Trade for me · prototype</span>
+    <span class="eyebrow">3 · Trade for me</span>
     <h2 style="margin:8px 0 10px;">Choose a plan. We trade for you.</h2>
-    <p class="svc-lead">Not sure where to start? Pick a time period, enter an amount and see the figure you are aiming for. Targets are not guaranteed, and the plans are a prototype for now.</p>
+    <p class="svc-lead">Not sure where to start? Pick a time period, enter an amount and see the figure you are aiming for. Targets are not guaranteed.</p>
     <ul class="tick-list"><li>2-week, 1-month, 3-month and 6-month plans</li><li>Enrol Sunday to Tuesday, and everyone that week starts together</li><li>Statements for every completed plan</li></ul>
     <h4 class="how-h">How it works</h4>
     <div class="inv-steps"><div class="inv-step"><span class="n">1</span><h4>Choose a plan</h4><p>Pick the period that suits you and enter an amount.</p></div><div class="inv-step"><span class="n">2</span><h4>Join a cohort</h4><p>Enrol Sunday to Tuesday. Your cohort starts on Wednesday.</p></div><div class="inv-step"><span class="n">3</span><h4>We trade</h4><p>Funds are traded by our team following a defined strategy and risk rules.</p></div><div class="inv-step"><span class="n">4</span><h4>Withdraw or reinvest</h4><p>At maturity, take your money out or reinvest part or all of it.</p></div></div>
@@ -1566,7 +1568,7 @@
     <div class="faq-list">
       <details><summary>How does the wallet work?</summary><p>Your wallet is where all your money on The Kingdom Trader sits. Money you add goes into your wallet. You then use the wallet to pay for bots, rentals and trade-for-me plans. Anything we pay you, such as a plan payout or a refund, comes back into the same wallet. From the wallet you can withdraw to MTN, Airtel or a bank/card.</p></details>
       <details><summary>Can I pay for a bot or plan directly from my phone number?</summary><p>No. To keep every shilling traceable, payments for services are made from your wallet only. Add money to your wallet first, then pay from it.</p></details>
-      <details><summary>Is the wallet using real money yet?</summary><p>Not yet. The wallet is in test mode with virtual funds while we finish the payment gateway and legal checks. This page will tell you clearly when real payments go live.</p></details>
+      <details><summary>Is the wallet using real money?</summary><p>Yes, you have two wallets. The Demo wallet uses virtual funds so you can practise. The Real wallet uses real money: deposit with MTN or Airtel Mobile Money or Card, and your balance updates by itself. Switch between them with the tabs at the top of your wallet.</p></details>
       <details><summary>Which mobile money numbers can I use?</summary><p>MTN and Airtel Uganda numbers. We check the number as you type: it must be a valid Ugandan number, and it must match the network you chose (for example an Airtel number cannot be used with MTN Mobile Money).</p></details>
       <details><summary>How do I see where my money went?</summary><p>Open <a href="#account-wallet" style="color:var(--gold);">My Account → Wallet</a>. The transactions list shows every movement, and you can filter by money in, money out, service and period. Each line shows where the money came from and where it went.</p></details>
       <details><summary>How do I get my bot after paying?</summary><p>When your order is ready you will get a notification on the bell icon. Open <a href="#account-bots" style="color:var(--gold);">My Account → Bots</a> to find your licence and download link.</p></details>
@@ -1579,10 +1581,10 @@
     </div>
   </div>
 </section>
-<div class="page-banner" data-page="invest" style="--img:url(invest-scales.jpg)"><div class="wrap"><span class="eyebrow">Trade for me · Prototype</span><h1>Trade-for-me plans.</h1><p>Choose a plan, see the amount you are aiming for, and track it from your account. Virtual funds only for now.</p></div></div>
+<div class="page-banner" data-page="invest" style="--img:url(invest-scales.jpg)"><div class="wrap"><span class="eyebrow">Trade for me</span><h1>Trade-for-me plans.</h1><p>Choose a plan, see the amount you are aiming for, and track it from your account.</p></div></div>
 <section id="invest" data-page="invest">
   <div class="wrap">
-    <div class="demo-banner"><strong>Prototype · no real money yet.</strong> Your account and plans are saved, but nothing is invested and no real payment is taken. Expected amounts are targets, not guarantees, and you can lose money when trading.</div>
+    <div class="demo-banner"><strong>Demo wallet = virtual funds. Real wallet = real money.</strong> Your account and plans are saved. Expected amounts are targets, not guarantees, and you can lose money when trading.</div>
 
     <div class="split">
       <div>
@@ -1674,7 +1676,7 @@
         <p><strong>Expected amounts are targets, not guarantees.</strong> If results fall short, you receive less than the target. You can also get back less than you invested.</p>
         <p><strong>Your money is managed together with other members' funds.</strong> This keeps minimums low. It does not make profits more likely or protect your capital.</p>
         <p><strong>Targets can be ambitious.</strong> A return of 30% or more in a month is exceptional and should never be treated as dependable. The targets shown here are illustrations.</p>
-        <p><strong>Status:</strong> prototype. Real deposits are not open yet. We are completing the legal and regulatory steps first.</p>
+        <p><strong>Status:</strong> live. Real deposits are open. Expected amounts are targets, not guarantees, and you can lose money when trading.</p>
         <button type="button" class="btn btn-ghost btn-sm" data-open-terms>Read the draft terms</button>
       </div>
     </div>
@@ -1691,7 +1693,7 @@
     <h3>What we provide</h3>
     <p>Our bots and custom builds are professionally built, tested trading systems that follow clear entry, exit and risk rules. Results depend on market conditions, so we cannot promise a particular profit. The final decisions on your account are yours, and we do not give personal financial advice. We recommend sensible lot sizes and stop losses.</p>
     <h3>Trade-for-me plans</h3>
-    <p>The trade-for-me plans are a prototype. No real deposits are accepted yet. Expected amounts are targets, not guarantees. Read the <a href="#" data-open-terms>draft plan terms</a>.</p>
+    <p>Expected amounts for the trade-for-me plans are targets, not guarantees, and you can lose money. Read the <a href="#" data-open-terms>plan terms</a>.</p>
     <h3>Refunds and swaps</h3>
     <p>Because our products are digital, sales are final once the file or license has been delivered. If a product does not suit you, you can ask to swap it for another product of equal or lesser value. To ask, open <strong>My Account → Licenses → Request a swap</strong>, or message us on WhatsApp. Every swap request is reviewed by us.</p>
     <h3>Contact</h3>
@@ -2069,8 +2071,8 @@
       <div class="dash-section-label" style="margin-top:0;">Your wallet</div>
       <div id="walletBox">
         <div class="chips sub" id="wMode"><button type="button" class="chip on" data-wmode="demo">Demo wallet</button><button type="button" class="chip" data-wmode="real" id="wModeReal" style="display:none;">Real wallet</button></div>
-        <div class="wallet-test" id="walletTest">Test wallet · virtual funds only. No real money is accepted here.</div>
-        <div class="wallet-test" id="walletRealNote" hidden>Real wallet · deposits are paid with real Mobile Money or Card and your balance updates by itself.</div>
+        <div class="wallet-test" id="walletTest">Demo wallet · virtual funds only. Nothing here is real money, so practise freely.</div>
+        <div class="wallet-test" id="walletRealNote" hidden>Real wallet · this is real money. Deposits are paid with Mobile Money or Card and your balance updates by itself.</div>
         <div class="wallet-rule">💼 Every payment goes through your wallet. Add money here first, then pay for bots and plans from it. Payouts and refunds come back here, and you can withdraw to MTN, Airtel or bank.</div>
         <div class="wallet-cards"><div><small>Balance</small><b id="wBal">$0.00</b></div><div><small>Available</small><b id="wAvail">$0.00</b></div><div><small>Pending</small><b id="wPend">$0.00</b></div></div>
         <div class="wallet-forms">
@@ -2089,7 +2091,7 @@
       </div>
       <div class="dash-section-label">Transactions</div>
       <div class="chips" id="txChips"><button type="button" class="chip on" data-tx="all">All</button><button type="button" class="chip" data-tx="Wallet">Wallet</button><button type="button" class="chip" data-tx="Strategy">Strategy</button><button type="button" class="chip" data-tx="Bots">Bots</button><button type="button" class="chip" data-tx="Investments">Investments</button></div>
-      <div class="chips sub" id="txMode"><button type="button" class="chip on" data-mode="demo">Demo</button><button type="button" class="chip" data-mode="real" disabled title="Not active yet">Real · soon</button></div>
+      <div class="chips sub" id="txMode"><button type="button" class="chip on" data-mode="demo">Demo</button><button type="button" class="chip" data-mode="real">Real</button></div>
       <div class="chips sub" id="txDir"><button type="button" class="chip on" data-dir="all">All money</button><button type="button" class="chip" data-dir="in">Money in</button><button type="button" class="chip" data-dir="out">Money out</button></div>
       <div class="chips sub" id="txPer"><button type="button" class="chip on" data-per="0">All time</button><button type="button" class="chip" data-per="7">Last 7 days</button><button type="button" class="chip" data-per="30">Last 30 days</button></div>
       <div id="txSummary"></div>
@@ -4112,7 +4114,7 @@ document.getElementById('f-service').addEventListener('change', function() {
     <button type="button" class="modal-x" data-close aria-label="Close">×</button>
     <span class="eyebrow">Plan terms · draft</span>
     <h3 id="termsTitle" style="margin:6px 0 12px;">Trade-for-me plan terms</h3>
-    <p class="note" style="color:var(--gold);font-size:13px;margin-bottom:10px;">Draft for the prototype. These terms must be reviewed by a lawyer before any real deposit is accepted.</p>
+    <p class="note" style="color:var(--gold);font-size:13px;margin-bottom:10px;">Please read these terms before you join a plan. We will tell you here if they change.</p>
     <ol class="terms-list">
       <li><strong>What the plan is.</strong> You choose a plan length and an amount. The Kingdom Trader trades funds on your behalf.</li>
       <li><strong>Targets are not guarantees.</strong> The expected amount shown is a target. Trading carries a high risk of loss, and you can receive back less than you put in.</li>
@@ -4120,7 +4122,7 @@ document.getElementById('f-service').addEventListener('change', function() {
       <li><strong>Our fee.</strong> If the portfolio earns more than the combined targets, The Kingdom Trader keeps the amount above the targets as its fee.</li>
       <li><strong>If results fall short.</strong> If the portfolio ends below the targets, members receive what the portfolio actually holds, in proportion to their contributions, even when that is less than the target or the amount invested.</li>
       <li><strong>Statements.</strong> You can view and print a statement for every completed plan.</li>
-      <li><strong>Prototype.</strong> This page uses virtual funds. No real money is accepted yet.</li>
+      <li><strong>Demo and real wallets.</strong> The Demo wallet uses virtual funds. The Real wallet uses real money.</li>
     </ol>
   </div>
 </div>
@@ -4332,7 +4334,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   function printStmt(id){
     var x=find(id); if(!x) return; var c=dates(x.plan,x.winStart), p=plan(x.plan), rate=((x.payout-x.amount)/x.amount)*100, box=el('stmtPrint');
     function row(a,b){ return '<tr><td>'+a+'</td><td>'+b+'</td></tr>'; }
-    box.innerHTML='<h2>The Kingdom Trader — Plan statement</h2><div>'+esc(x.name||'')+' · '+p.name+' · matured '+fmtDY(c.maturesAt)+'</div><table>'+row('Plan period',fmtDY(c.startAt)+' – '+fmtDY(c.maturesAt))+row('Amount invested',money(x.amount))+row('Target at the time','+'+pct(x.t*100))+row('Your result',(rate>=0?'+':'−')+pct(Math.abs(rate)))+row('<strong>Amount returned</strong>','<strong>'+money(x.payout)+'</strong>')+'</table><div class="warn">PROTOTYPE. This statement uses virtual funds and is not a record of real money. Targets are not guarantees and trading carries a high risk of loss.</div>';
+    box.innerHTML='<h2>The Kingdom Trader — Plan statement</h2><div>'+esc(x.name||'')+' · '+p.name+' · matured '+fmtDY(c.maturesAt)+'</div><table>'+row('Plan period',fmtDY(c.startAt)+' – '+fmtDY(c.maturesAt))+row('Amount invested',money(x.amount))+row('Target at the time','+'+pct(x.t*100))+row('Your result',(rate>=0?'+':'−')+pct(Math.abs(rate)))+row('<strong>Amount returned</strong>','<strong>'+money(x.payout)+'</strong>')+'</table><div class="warn">This statement shows the amounts recorded for this plan. Targets are not guarantees and trading carries a high risk of loss.</div>';
     window.print();
   }
 
@@ -4536,7 +4538,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
     if(ans.s==='yes') r={t:'Build my bot',p:'You have rules, so we can turn them into a tested bot that runs on your own account.',h:'#start',b:'Start a custom build'};
     else if(ans.s==='some') r={t:'Build my bot',p:'We can help you write your rules down clearly, then build and test the bot with you.',h:'#start',b:'Start a custom build'};
     else if(ans.c==='control') r={t:'Buy or rent a bot',p:'Choose a ready-made bot from the catalog and run it on your own account. Rent by the month if you want to try first.',h:'#start-bots',b:'See the bots'};
-    else r={t:'Trade for me',p:'Our trade-for-me plans are a prototype for now. You can explore how they will work, with virtual funds.',h:'#start-invest',b:'Explore the plans'};
+    else r={t:'Trade for me',p:'Choose a plan and a period, then see the figure you are aiming for.',h:'#start-invest',b:'Explore the plans'};
     set('Your best path: '+r.t,'<p style="color:var(--text-dim);margin-bottom:16px;">'+r.p+'</p><a class="btn btn-gold" href="'+r.h+'" data-close>'+r.b+'</a> <button type="button" class="btn btn-ghost" data-restart>Start over</button>');
   }
   document.addEventListener('click',function(e){
