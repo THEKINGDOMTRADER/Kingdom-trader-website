@@ -1084,6 +1084,25 @@
   .tx-sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px;} .tx-sum div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;} .tx-sum small{display:block;color:var(--text-dim);font-size:11.5px;} .tx-sum b{font-family:'JetBrains Mono',monospace;font-size:15px;} .tx-sum .in b{color:#4ED394;} .tx-sum .out b{color:#FF7B7D;}
   .tx-flow{font-size:12.5px;color:var(--text-dim);margin:6px 0 0;display:grid;gap:3px;} .tx-flow span{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:3px 0;} .tx-flow b{font-family:'JetBrains Mono',monospace;color:var(--text);font-weight:600;}
   .tx-row .rt{color:var(--gold);}
+  /* ---- UI fixes: wallet tabs, deposit input, scrollable transactions ---- */
+  #wMode,#txMode{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:0 0 14px;}
+  #wMode .chip,#txMode .chip{padding:11px 12px;font-size:13px;font-weight:600;border-radius:8px;border-width:1.5px;text-align:center;}
+  #wMode [data-wmode="demo"].on,#txMode [data-mode="demo"].on{border-color:#5AA9FF;color:#5AA9FF;background:rgba(90,169,255,.12);}
+  #wMode [data-wmode="real"].on,#txMode [data-mode="real"].on{border-color:#4ED394;color:#4ED394;background:rgba(78,211,148,.12);}
+  #wMode [data-wmode="demo"]:not(.on):hover,#txMode [data-mode="demo"]:not(.on):hover{border-color:#5AA9FF;color:#5AA9FF;}
+  #wMode [data-wmode="real"]:not(.on):hover,#txMode [data-mode="real"]:not(.on):hover{border-color:#4ED394;color:#4ED394;}
+  #txChips,#txDir,#txPer{gap:8px;}
+  #txChips .chip,#txDir .chip,#txPer .chip{padding:7px 13px;min-height:34px;}
+  .chips.sub{margin-top:12px;}
+  .wallet-form .inv-field{flex-direction:column;gap:4px;}
+  .wallet-form .inv-field input,.wallet-form .inv-field select{width:100%;min-height:44px;flex:none;}
+  .wallet-form .phone-hint{margin:0;}
+  #txList{max-height:300px;overflow-y:auto;overscroll-behavior:contain;align-content:start;padding-right:4px;-webkit-overflow-scrolling:touch;}
+  #txList.expanded{max-height:none;overflow-y:visible;}
+  .tx-toggle{display:block;width:100%;margin-top:8px;padding:9px 12px;background:transparent;border:1px solid var(--line);border-radius:6px;color:var(--gold);font:inherit;font-size:13px;cursor:pointer;}
+  .tx-toggle:hover{border-color:var(--gold);}
+  .tx-toggle[hidden]{display:none;}
+
   .page-back-wrap{padding:26px 0 34px;text-align:center;} .page-back-wrap[hidden],.page-back[hidden]{display:none;}
   .page-back{background:var(--panel);border:1px solid var(--gold);color:var(--gold);font:inherit;font-size:14px;font-weight:600;padding:9px 22px;border-radius:999px;cursor:pointer;} .page-back:hover{background:rgba(198,161,83,.12);} .page-back.sm{font-size:12.5px;padding:5px 14px;margin-left:auto;}
   .faq-sec{padding:60px 0;} .faq-list{max-width:780px;display:grid;gap:10px;margin-top:8px;}
@@ -2075,6 +2094,7 @@
       <div class="chips sub" id="txPer"><button type="button" class="chip on" data-per="0">All time</button><button type="button" class="chip" data-per="7">Last 7 days</button><button type="button" class="chip" data-per="30">Last 30 days</button></div>
       <div id="txSummary"></div>
       <div id="txList" class="tx-list"><p class="text-dim-note">Nothing yet. Orders, payments, plan contributions, payouts and withdrawals will be listed here.</p></div>
+      <button type="button" class="tx-toggle" id="txToggle" hidden>Show all transactions ▾</button>
       <p class="text-dim-note" style="margin-top:10px;">Amounts are in US dollars. Statuses update automatically.</p>
     </div>
     <div id="panelLicensesView" style="display:none;">
@@ -5093,5 +5113,19 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
 })();
 </script>
 
+<script>
+(function(){
+  var list=document.getElementById('txList'), btn=document.getElementById('txToggle');
+  if(!list||!btn) return;
+  function sync(){
+    var n=list.querySelectorAll('.tx-row').length;
+    btn.hidden = n<=4;
+    btn.textContent = list.classList.contains('expanded') ? 'Minimise ▴' : 'Show all transactions ▾';
+  }
+  btn.addEventListener('click',function(){ list.classList.toggle('expanded'); if(!list.classList.contains('expanded')) list.scrollTop=0; sync(); });
+  new MutationObserver(sync).observe(list,{childList:true});
+  sync();
+})();
+</script>
 </body>
 </html>
