@@ -1115,6 +1115,32 @@
   .faq-list details{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:0 16px;} .faq-list details[open]{border-color:var(--gold);}
   .faq-list summary{cursor:pointer;padding:14px 0;font-weight:600;font-size:15px;list-style:none;display:flex;justify-content:space-between;gap:12px;} .faq-list summary::-webkit-details-marker{display:none;} .faq-list summary::after{content:'+';color:var(--gold);font-size:20px;line-height:1;} .faq-list details[open] summary::after{content:'–';}
   .faq-list p{color:var(--text-dim);font-size:14px;line-height:1.6;padding:0 0 14px;}
+
+  /* ---- Ample spacing pass (tabs, chips, filters, forms) ---- */
+  .chips{gap:10px;}
+  .chip{padding:8px 14px;font-size:12.5px;min-height:34px;}
+  .chips.sub{margin-top:16px;}
+  #wMode,#txMode{margin:16px 0 16px;gap:12px;}
+  #wMode .chip,#txMode .chip{padding:12px 14px;min-height:44px;font-size:13.5px;}
+  #txChips{margin:6px 0 0;}
+  #txDir,#txPer{margin:16px 0 0;}
+  .dash-section-label{margin-top:30px;margin-bottom:14px;}
+  #txSummary{margin-top:16px;}
+  #txList{margin-top:14px;}
+  .tx-toggle{margin-top:12px;padding:11px 14px;}
+  .pay-seg{gap:12px;margin:0 0 14px;}
+  .pay-seg .chip{padding:12px 14px;min-height:44px;}
+  .wallet-form .inv-field{margin-bottom:14px;}
+  .sub-tabs{gap:10px;padding-bottom:12px;}
+  .sub-tabs button{padding:10px 16px;}
+  @media (max-width:480px){ .sub-tabs{gap:10px;} .sub-tabs button{padding:10px 16px;font-size:13px;} }
+  .nav-pills{gap:10px;padding:10px 16px 12px;}
+  .nav-pills a{padding:9px 16px;}
+  .auth-tabs{gap:12px;margin-bottom:28px;}
+  .start-tabs .wrap{gap:12px;padding-top:12px;padding-bottom:12px;}
+  .start-tabs a{padding:11px 14px;}
+  @media (max-width:560px){ .start-tabs .wrap{gap:8px;} .start-tabs a{padding:10px 6px;} }
+  .bell-tabs{gap:8px;}
 </style>
 </head>
 <body>
