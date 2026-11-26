@@ -1141,6 +1141,23 @@
   .start-tabs a{padding:11px 14px;}
   @media (max-width:560px){ .start-tabs .wrap{gap:8px;} .start-tabs a{padding:10px 6px;} }
   .bell-tabs{gap:8px;}
+
+  /* ---- Buy / Rent window ---- */
+  .kb-ov{position:fixed;inset:0;z-index:200;background:rgba(5,8,14,.78);display:flex;align-items:flex-end;justify-content:center;padding:0}
+  .kb-ov[hidden]{display:none}
+  .kb-box{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px 16px 0 0;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;padding:22px 20px 26px}
+  @media(min-width:640px){.kb-ov{align-items:center}.kb-box{border-radius:16px}}
+  .kb-x{position:absolute;right:12px;top:8px;background:none;border:0;color:var(--text-dim);font-size:30px;line-height:1;width:44px;height:44px;cursor:pointer}
+  .kb-box h3{font-size:20px;margin-bottom:2px;padding-right:40px}
+  .kb-box label{display:block;font-size:12px;color:var(--text-dim);margin:14px 0 6px}
+  .kb-box input,.kb-box select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:12px;font:15px Inter,sans-serif;min-height:46px;margin-bottom:8px}
+  .kb-tier{display:block;width:100%;text-align:left;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0;cursor:pointer;font:inherit}
+  .kb-tier.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+  .kb-tier small{display:block;color:var(--text-dim);margin-top:2px}
+  .kb-sum{background:var(--panel-2);border-radius:12px;padding:14px;margin:16px 0 10px}
+  .kb-sum div{display:flex;justify-content:space-between;padding:3px 0}
+  .kb-warn{color:var(--gold);font-size:14px;margin:8px 0}
+  .kb-err{color:var(--sell);font-size:14px;margin:8px 0}
 </style>
 </head>
 <body>
@@ -2154,7 +2171,7 @@
         ${d.winRate ? `<div class="bot-detail-row"><span class="l">Win rate</span><span class="v">${d.winRate}%</span></div>` : ''}
         ${d.advantages ? `<div class="bot-detail-row"><span class="l">Advantages</span><span class="v">${d.advantages}</span></div>` : ''}
         <div class="bot-detail-row"><span class="l">Strengths</span><span class="v">${d.strengths || '—'}</span></div>
-        <div class="bot-detail-row"><span class="l">Buy price</span><span class="v">$${d.buyPrice || 0} for 1 platform, up to 6 accounts</span></div>
+        <div class="bot-detail-row"><span class="l">Tiers</span><span class="v">${(d.tiers && d.tiers.length) ? d.tiers.map(t => t.name + ' $' + t.buyPrice + ' (' + t.mt5Accounts + ' accounts' + (t.instruments ? ', ' + t.instruments + ' instruments' : '') + (t.vps ? ', VPS' : '') + ')').join(' · ') : '$' + (d.buyPrice || 0) + ' for 1 platform, up to 6 accounts'}</span></div>
         ${platforms.length > 1 ? `<div class="bot-detail-row"><span class="l">Buy — all ${platforms.length} platforms</span><span class="v">$${Math.round((d.buyPrice||0) * (PLATFORM_PRICE_MULTIPLIER[platforms.length] || 1))}</span></div>` : ''}
         <div class="bot-detail-row"><span class="l">Available on</span><span class="v">${platforms.join(', ')}</span></div>
         <div class="bot-detail-row" style="border-top:1px solid var(--gold-soft);padding-top:10px;margin-top:4px;"><span class="l">Rental pricing (1 platform, all durations)</span><span class="v"></span></div>
@@ -2181,7 +2198,7 @@
     let mt5Count = 0, tvCount = 0;
     snapshot.forEach((docSnap) => {
       const d = docSnap.data();
-      window.__ktProducts[docSnap.id] = { buyPrice: d.buyPrice || 0, rentPrice: d.rentPrice || 0 };
+      window.__ktProducts[docSnap.id] = { buyPrice: d.buyPrice || 0, rentPrice: d.rentPrice || 0, tiers: d.tiers || [], platforms: d.platforms || ['MT5'] };
       const platforms = d.platforms || ['MT5'];
       if (platforms.includes('MT5')) {
         const card = renderProductCard(docSnap.id, d);
@@ -2528,6 +2545,7 @@
           <div class="r-detail">${platformDetail}</div>
           <div class="r-detail">Subscription: ${d.subscriptionType || '—'}</div>
           <div class="r-date">${d.expiryDate ? 'Expires ' + d.expiryDate : 'Lifetime license'}</div>
+          ${d.status === 'Active' && d.deliveryLink ? `<div class="r-detail">${d.tier ? 'Tier: ' + d.tier + ' · ' : ''}up to ${d.maxSlots || 1} MT5 account${(d.maxSlots || 1) > 1 ? 's' : ''}${d.instruments ? ' · ' + d.instruments + ' instruments' : ''} · VPS ${d.vps ? 'included' : 'not included'}</div><div class="r-detail mono">Licence key: ${d.licenseKey || '—'} · Ticket ${d.ticketId || '—'}</div><a href="${String(d.deliveryLink).replace(/"/g, '')}" target="_blank" rel="noopener" class="download-btn" style="margin-top:10px;">⬇ Download</a><button type="button" class="install-guide-toggle">📖 How to install (${d.platform || 'MT5'}) — tap to expand</button><div class="install-guide-content">${getInstallGuide(d.platform)}</div>` : ''}
           ${!isRental ? '<button type="button" class="btn btn-ghost swap-btn" style="margin-top:10px;">Request a swap</button>' : ''}
           ${isRental ? `
             <div class="admin-edit-row" style="margin-top:12px;">
@@ -4281,5 +4299,84 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
   paint();
 })();
 </script>
+<div class="kb-ov" id="kbOv" hidden><div class="kb-box" role="dialog" aria-modal="true"><button type="button" class="kb-x" id="kbX" aria-label="Close">×</button><div id="kbBody"></div></div></div>
+<script type="module">
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+(function(){
+  var auth=getAuth(getApp()), API='https://kingdom-trader-pay.thekingdomtrader7.workers.dev';
+  var RM={7:1.10,14:1.05,30:1.00,60:0.95,90:0.90,120:0.88,180:0.82,365:0.75}, RL={7:'1 week',14:'2 weeks',30:'1 month',60:'2 months',90:'3 months',120:'4 months',180:'6 months',365:'1 year'};
+  var $=function(i){return document.getElementById(i);}, st=null, busy=false;
+  function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function money(n){return '$'+(Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  /* only the REAL wallet can buy bots */
+  function realAvail(){ var u=auth.currentUser; if(!u||!window.ktWallet) return 0;
+    var E=window.ktWallet.entries().filter(function(e){return e.uid===u.uid&&String(e.mode||'').toLowerCase()==='real';});
+    return E.filter(function(e){return e.status==='completed';}).reduce(function(a,e){return a+e.amount;},0)
+      +E.filter(function(e){return (e.status==='pending'||e.status==='processing')&&e.amount<0;}).reduce(function(a,e){return a+e.amount;},0); }
+  function tierOf(){ return st.tiers.filter(function(t){return t.key===st.tier;})[0]; }
+  function price(){ var t=tierOf(); if(!t) return 0; return st.act==='buy'?t.buyPrice:Math.round((t.rentPrice/30)*st.days*(RM[st.days]||1)); }
+  function open(name,act){
+    if(!auth.currentUser){ if(window.ktToast) window.ktToast('Please log in or register first.','warn'); location.hash='#account'; return; }
+    var p=(window.__ktProducts||{})[name]; if(!p) return;
+    var tiers=(p.tiers&&p.tiers.length)?p.tiers:[{key:'standard',name:'Standard',buyPrice:p.buyPrice,rentPrice:p.rentPrice,mt5Accounts:6,instruments:0,vps:false}];
+    st={name:name,act:act,tiers:tiers,tier:tiers[0].key,days:30,count:1,accts:[''],platform:p.platforms[0],platforms:p.platforms,msg:'',done:null};
+    $('kbOv').hidden=false; document.body.style.overflow='hidden'; draw();
+  }
+  function close(){ $('kbOv').hidden=true; document.body.style.overflow=''; busy=false; }
+  function draw(){
+    var b=$('kbBody'), t=tierOf(), pr=price(), av=realAvail(), short=pr-av;
+    if(st.done){ b.innerHTML='<h3>Payment complete ✓</h3><p class="note" style="margin:6px 0 14px;">Your licence is ready. Download it from My Account.</p><div class="kb-sum"><div><span>Ticket ID</span><b class="mono">'+esc(st.done.ticketId)+'</b></div><div><span>Order ID</span><b class="mono">'+esc(st.done.orderId)+'</b></div><div><span>Paid</span><b>'+money(st.done.price)+'</b></div><div><span>Wallet left</span><b>'+money(st.done.balance)+'</b></div></div><p class="note">Keep your ticket ID. Support uses it to find your order.</p><button type="button" class="btn btn-gold btn-lg" id="kbGo" style="width:100%;margin-top:12px;">Open My Account → Downloads</button>'; return; }
+    var h='<h3>'+esc(st.name)+' — '+(st.act==='buy'?'Buy':'Rent')+'</h3><p class="note">Pay from your Real wallet. Your licence and download appear instantly.</p>';
+    h+='<label>Choose a tier</label>'+st.tiers.map(function(x){ var p=st.act==='buy'?x.buyPrice:x.rentPrice;
+      return '<button type="button" class="kb-tier'+(x.key===st.tier?' on':'')+'" data-tier="'+esc(x.key)+'"><b>'+esc(x.name)+'</b> — '+money(p)+(st.act==='rent'?' / month':'')+'<small>Up to '+x.mt5Accounts+' MT5 account'+(x.mt5Accounts>1?'s':'')+(x.instruments?' · '+x.instruments+' instruments':'')+' · VPS '+(x.vps?'included':'not included')+'</small></button>'; }).join('');
+    if(st.platforms.length>1) h+='<label>Platform</label><select id="kbPl">'+st.platforms.map(function(x){return '<option'+(x===st.platform?' selected':'')+'>'+x+'</option>';}).join('')+'</select>';
+    if(st.act==='rent') h+='<label>Rental length</label><select id="kbDays">'+Object.keys(RL).map(function(d){return '<option value="'+d+'"'+(+d===st.days?' selected':'')+'>'+RL[d]+'</option>';}).join('')+'</select>';
+    if(st.platform!=='TradingView'){
+      var max=Math.max(1,t.mt5Accounts||1); h+='<label>How many MT5 accounts will you use? (up to '+max+')</label><select id="kbCnt">'+Array.from({length:max},function(_,i){return '<option'+(i+1===st.count?' selected':'')+'>'+(i+1)+'</option>';}).join('')+'</select>';
+      for(var i=0;i<st.count;i++) h+='<input class="kbAcc" data-i="'+i+'" inputmode="numeric" placeholder="MT5 account number '+(i+1)+' (optional, add later)" value="'+esc(st.accts[i]||'')+'">';
+    } else h+='<label>Your TradingView username (optional, add later)</label><input class="kbAcc" data-i="0" value="'+esc(st.accts[0]||'')+'">';
+    h+='<div class="kb-sum"><div><span>Price</span><b>'+money(pr)+'</b></div><div><span>Your Real wallet</span><b>'+money(av)+'</b></div></div>';
+    if(st.msg) h+='<div class="kb-err">'+esc(st.msg)+'</div>';
+    if(short>0.0001) h+='<div class="kb-warn">You need '+money(short)+' more in your Real wallet to pay for this.</div><button type="button" class="btn btn-gold btn-lg" id="kbTop" style="width:100%;">Top up my Real wallet</button>';
+    else h+='<button type="button" class="btn btn-gold btn-lg" id="kbPay" style="width:100%;"'+(busy?' disabled':'')+'>'+(busy?'Paying…':'Pay '+money(pr)+' from wallet')+'</button>';
+    b.innerHTML=h;
+  }
+  function keepAccts(){ document.querySelectorAll('.kbAcc').forEach(function(i){ st.accts[+i.dataset.i]=i.value.trim(); }); }
+  async function pay(){
+    keepAccts(); busy=true; st.msg=''; draw();
+    try{
+      var tok=await auth.currentUser.getIdToken();
+      var r=await fetch(API+'/shop/checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:JSON.stringify({product:st.name,action:st.act,tier:st.tier,days:st.days,platform:st.platform,accounts:st.accts.slice(0,st.count).filter(Boolean)})});
+      var j=await r.json().catch(function(){return {};});
+      busy=false;
+      if(r.ok&&j.ok){ st.done=j; draw(); return; }
+      st.msg=j.error||'The payment did not go through. You have not been charged.'; draw();
+    }catch(e){ busy=false; st.msg='Could not reach the payment server. You have not been charged. Please try again.'; draw(); }
+  }
+  /* take over the Buy and Rent buttons (runs before the old handler, which opened the long request form) */
+  $('botsContainer').addEventListener('click',function(e){
+    var b=e.target.closest('.bot-buy-btn'); if(!b) return; e.stopPropagation(); e.preventDefault();
+    open(b.closest('.bot-card').dataset.botName,b.dataset.action);
+  },true);
+  $('kbX').addEventListener('click',close);
+  $('kbOv').addEventListener('click',function(e){ if(e.target===$('kbOv')) close(); });
+  $('kbBody').addEventListener('click',function(e){
+    var t=e.target.closest('[data-tier]'); if(t){ keepAccts(); st.tier=t.dataset.tier; st.count=Math.min(st.count,tierOf().mt5Accounts||1); st.msg=''; draw(); return; }
+    if(e.target.closest('#kbPay')) return pay();
+    if(e.target.closest('#kbTop')){ close(); try{localStorage.setItem('kt_wallet_mode','real');}catch(x){} location.hash='#account-wallet'; setTimeout(function(){ var rb=document.querySelector('#wMode [data-wmode="real"]'); if(rb) rb.click(); },400); return; }
+    if(e.target.closest('#kbGo')){ close(); location.hash='#account-bots'; }
+  });
+  $('kbBody').addEventListener('change',function(e){
+    keepAccts();
+    if(e.target.id==='kbDays') st.days=+e.target.value;
+    else if(e.target.id==='kbCnt') st.count=+e.target.value;
+    else if(e.target.id==='kbPl'){ st.platform=e.target.value; st.count=1; }
+    else return; st.msg=''; draw();
+  });
+  document.addEventListener('ktwallet',function(){ if(st&&!$('kbOv').hidden&&!st.done&&!busy){ keepAccts(); draw(); } });
+})();
+</script>
+
 </body>
 </html>
