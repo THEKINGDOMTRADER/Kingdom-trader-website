@@ -349,17 +349,26 @@
   .bot-link{font-size:12.5px;color:var(--text-dim);}
   .bot-link:hover{color:var(--gold);}
   .bot-actions{display:flex;gap:8px;}
-  .kt-tiers{margin:4px 0 14px;display:flex;flex-direction:column;gap:10px;}
-  .kt-tier-row{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--bg);}
-  .kt-tier-row:hover{border-color:var(--gold-soft);}
-  .kt-tier-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;}
-  .kt-tier-head b{font-size:15px;color:var(--gold);}
-  .kt-tier-price{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);}
+  .bot-card.kt-product{grid-column:1/-1;padding:22px;}
+  .bots.kt-stack{display:flex;flex-direction:column;gap:22px;overflow:visible;scroll-snap-type:none;padding:0;}
+  .bots.kt-stack .bot-card.kt-product{flex:none;width:100%;max-width:100%;}
+  .kt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
+  .kt-head h4{font-size:20px;margin:0;}
+  .kt-sub{font-size:12px;color:var(--text-dim);margin:2px 0 0;font-family:'JetBrains Mono',monospace;}
+  .kt-tier-scroll{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 2px 14px;margin-top:10px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}
+  .kt-tier-scroll:after{content:"";flex:0 0 1px;}
+  .kt-tier-card{flex:0 0 min(285px,78%);scroll-snap-align:start;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:12px;display:flex;flex-direction:column;cursor:default;}
+  .kt-tier-card:hover{border-color:var(--gold-soft);}
+  .kt-tier-card .bot-media{margin:0 0 12px;}
+  .kt-tier-name small{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;color:var(--text-dim);letter-spacing:.06em;}
+  .kt-tier-name b{font-size:18px;color:var(--gold);}
+  .kt-tier-price{font-family:'JetBrains Mono',monospace;font-size:13px;margin:8px 0 2px;color:var(--text);}
   .kt-tier-price span{color:var(--text-dim);font-size:11px;}
-  .kt-perks{list-style:none;margin:8px 0 10px;padding:0;display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--text-dim);}
+  .kt-perks{list-style:none;margin:8px 0 12px;padding:0;display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--text-dim);flex:1;}
   .kt-perks li:before{content:"✓ ";color:var(--buy);}
   .kt-perks li.no:before{content:"– ";color:var(--text-dim);}
-  .kt-tier-row .bot-actions{justify-content:flex-end;}
+  .kt-tier-card .bot-actions{justify-content:space-between;}
+  .kt-tier-card .bot-buy-btn{flex:1;padding:9px 10px;}
   .bot-buy-btn{
     background:var(--panel-2);border:1px solid var(--line);color:var(--text);
     font-size:12px;font-weight:600;padding:7px 14px;border-radius:4px;cursor:pointer;
@@ -2163,12 +2172,19 @@
     card.dataset.category = d.category || 'PC';
     const platforms = d.platforms || ['MT5'];
     const platformBadges = platforms.map(p => `<span class="platform-mini-badge">${p}</span>`).join('');
+    card.classList.add('kt-product');
+    const esc2 = s => String(s == null ? '' : s).replace(/"/g, '');
     const tierList = (d.tiers && d.tiers.length) ? d.tiers : [{ key: 'standard', name: 'Standard', buyPrice: d.buyPrice || 0, rentPrice: d.rentPrice || 0, mt5Accounts: 6, instruments: 0, vps: false }];
-    const tierRows = tierList.map(t => {
-      const key = String(t.key || t.name).replace(/"/g, '');
+    const tierCards = tierList.map(t => {
+      const key = esc2(t.key || t.name);
       const acc = Number(t.mt5Accounts) || 1;
-      return `<div class="kt-tier-row">
-          <div class="kt-tier-head"><b>${t.name}</b><span class="kt-tier-price">Buy $${t.buyPrice} <span>·</span> Rent $${t.rentPrice}<span>/mo</span></span></div>
+      const pic = t.imageUrl || d.imageUrl || '';
+      const ini = String(t.name).split(/[^A-Za-z0-9]+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || 'KT';
+      const timg = pic ? `<img src="${esc2(pic)}" alt="${esc2(name)} ${esc2(t.name)}" loading="lazy" onerror="this.remove()">` : '';
+      return `<div class="kt-tier-card">
+          <div class="bot-media"><span class="bot-media-ph">${ini}</span>${timg}<span class="cat-badge">${d.category || 'PC'}</span></div>
+          <div class="kt-tier-name"><small>${name}</small><b>${t.name}</b></div>
+          <div class="kt-tier-price">Buy $${t.buyPrice} <span>·</span> Rent $${t.rentPrice}<span>/mo</span></div>
           <ul class="kt-perks">
             <li>Up to ${acc} MT5 account${acc > 1 ? 's' : ''}</li>
             ${t.instruments ? `<li>${t.instruments} instruments</li>` : ''}
@@ -2180,19 +2196,15 @@
           </div>
         </div>`;
     }).join('');
-    const initials = String(name).split(/[^A-Za-z0-9]+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || 'KT';
-    const imgTag = d.imageUrl ? `<img src="${String(d.imageUrl).replace(/"/g, '')}" alt="${String(name).replace(/"/g, '')}" loading="lazy" onerror="this.remove()">` : '';
-    const mediaHtml = `<div class="bot-media"><span class="bot-media-ph">${initials}</span>${imgTag}<span class="cat-badge">${d.category || 'PC'}</span></div>`;
     card.innerHTML = `
-      ${mediaHtml}
-      <div class="bot-top">
-        <h4 style="margin-bottom:0;">${name}</h4>
+      <div class="kt-head">
+        <div><h4>${name}</h4><p class="kt-sub">${tierList.length} tier${tierList.length > 1 ? 's' : ''} · swipe to compare →</p></div>
         <span class="bot-tag tag-buy">${d.pair || ''}</span>
       </div>
       <div class="platform-badges-row">${platformBadges}</div>
       ${d.winRate ? `<div class="win-rate-badge">📈 ${d.winRate}% win rate</div>` : ''}
-      <p>${d.description || ''}</p>
-      <div class="kt-tiers">${tierRows}</div>
+      <p style="margin-bottom:6px;">${d.description || ''}</p>
+      <div class="kt-tier-scroll">${tierCards}</div>
       <div class="bot-detail">
         ${d.winRate ? `<div class="bot-detail-row"><span class="l">Win rate</span><span class="v">${d.winRate}%</span></div>` : ''}
         ${d.advantages ? `<div class="bot-detail-row"><span class="l">Advantages</span><span class="v">${d.advantages}</span></div>` : ''}
@@ -2200,11 +2212,8 @@
         <div class="bot-detail-row"><span class="l">Available on</span><span class="v">${platforms.join(', ')}</span></div>
         <div class="bot-detail-row"><span class="l">Rental lengths</span><span class="v">From 1 week to 1 year. You pick the length at checkout. Prices are in US dollars.</span></div>
       </div>
-      <div class="bot-foot">
-        <span class="bot-tag tag-buy">${tierList.length} tier${tierList.length > 1 ? 's' : ''}</span>
-        <div class="bot-actions">
-          <button type="button" class="bot-details-btn">Details</button>
-        </div>
+      <div class="bot-foot" style="justify-content:flex-end;">
+        <button type="button" class="bot-details-btn">More about this bot ▾</button>
       </div>
     `;
     return card;
@@ -2213,6 +2222,7 @@
   onSnapshot(query(collection(db, 'products'), where('active', '==', true)), (snapshot) => {
     const mt5Grid = document.getElementById('mt5BotsGrid');
     const tvGrid = document.getElementById('tvBotsGrid');
+    mt5Grid.classList.add('kt-stack'); tvGrid.classList.add('kt-stack');
     document.querySelectorAll('.bot-card[data-dynamic="true"]').forEach(el => el.remove());
     window.__ktProducts = {};
 
@@ -3150,7 +3160,7 @@ document.getElementById('botsContainer').addEventListener('click', (e) => {
   }
 
   const card = e.target.closest('.bot-card[data-expandable="true"]');
-  if (card) card.classList.toggle('expanded');
+  if (card && !e.target.closest('.kt-tier-scroll')) card.classList.toggle('expanded');
 });
 
 // Show custom-build pricing note when that service is selected
