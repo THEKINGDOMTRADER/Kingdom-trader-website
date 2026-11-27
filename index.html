@@ -349,6 +349,17 @@
   .bot-link{font-size:12.5px;color:var(--text-dim);}
   .bot-link:hover{color:var(--gold);}
   .bot-actions{display:flex;gap:8px;}
+  .kt-tiers{margin:4px 0 14px;display:flex;flex-direction:column;gap:10px;}
+  .kt-tier-row{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--bg);}
+  .kt-tier-row:hover{border-color:var(--gold-soft);}
+  .kt-tier-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;}
+  .kt-tier-head b{font-size:15px;color:var(--gold);}
+  .kt-tier-price{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);}
+  .kt-tier-price span{color:var(--text-dim);font-size:11px;}
+  .kt-perks{list-style:none;margin:8px 0 10px;padding:0;display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--text-dim);}
+  .kt-perks li:before{content:"✓ ";color:var(--buy);}
+  .kt-perks li.no:before{content:"– ";color:var(--text-dim);}
+  .kt-tier-row .bot-actions{justify-content:flex-end;}
   .bot-buy-btn{
     background:var(--panel-2);border:1px solid var(--line);color:var(--text);
     font-size:12px;font-weight:600;padding:7px 14px;border-radius:4px;cursor:pointer;
@@ -1548,7 +1559,7 @@
         <div class="form-group form-group-full">
           <label for="reg-country">Your country</label>
           <select id="reg-country" required></select>
-          <span class="form-helper-note" style="margin:4px 0 0;padding:0;border:none;">Used to show prices in your currency and market sessions in your time.</span>
+          <span class="form-helper-note" style="margin:4px 0 0;padding:0;border:none;">Used to show market sessions in your time. All prices are in US dollars.</span>
         </div>
         <div class="form-group form-group-full">
           <label for="reg-password">Password</label>
@@ -1749,7 +1760,7 @@
 <div id="pageBack" class="page-back-wrap" hidden><div class="wrap"><button type="button" id="pageBackBtn" class="page-back">← Back</button></div></div>
 <footer>
   <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;width:100%;">
-    <div class="foot-risk" style="flex-basis:100%;">Prices in other currencies are approximate. <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener" style="text-decoration:underline;">Rates by Exchange Rate API</a>. Risk warning: trading carries a high risk of loss, and results are not guaranteed. Prices shown in UGX are approximate; the final amount is confirmed at checkout.</div>
+    <div class="foot-risk" style="flex-basis:100%;">All prices are in US dollars. Risk warning: trading carries a high risk of loss, and results are not guaranteed. The final amount is confirmed at checkout.</div>
     <div>© <span id="year"></span> The Kingdom Trader. All rights reserved.</div>
     <div class="foot-links">
       <a href="#start">Get started</a>
@@ -2031,7 +2042,7 @@
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(cred.user, { displayName: name });
-      try { const cc = document.getElementById('reg-country').value; if (window.ktSetCountry) window.ktSetCountry(cc, true); await setDoc(doc(db, 'users', cred.user.uid), { country: cc, createdAt: Date.now() }); } catch (_) {}
+      try { const cc = document.getElementById('reg-country').value; if (window.ktSetCountry) window.ktSetCountry(cc, true); await setDoc(doc(db, 'users', cred.user.uid), { country: cc, name: name, email: email, createdAt: Date.now() }, { merge: true }); window.__ktSavedCountry = cc; } catch (_) {}
     } catch (err) {
       errBox.textContent = friendlyAuthError(err);
       btn.disabled = false;
@@ -2152,9 +2163,23 @@
     card.dataset.category = d.category || 'PC';
     const platforms = d.platforms || ['MT5'];
     const platformBadges = platforms.map(p => `<span class="platform-mini-badge">${p}</span>`).join('');
-    const rentRows = Object.keys(RENTAL_LABELS).map(days =>
-      `<div class="bot-detail-row"><span class="l">${RENTAL_LABELS[days]}</span><span class="v">$${computeRentalPrice(d.rentPrice || 0, days)} (1 platform)</span></div>`
-    ).join('');
+    const tierList = (d.tiers && d.tiers.length) ? d.tiers : [{ key: 'standard', name: 'Standard', buyPrice: d.buyPrice || 0, rentPrice: d.rentPrice || 0, mt5Accounts: 6, instruments: 0, vps: false }];
+    const tierRows = tierList.map(t => {
+      const key = String(t.key || t.name).replace(/"/g, '');
+      const acc = Number(t.mt5Accounts) || 1;
+      return `<div class="kt-tier-row">
+          <div class="kt-tier-head"><b>${t.name}</b><span class="kt-tier-price">Buy $${t.buyPrice} <span>·</span> Rent $${t.rentPrice}<span>/mo</span></span></div>
+          <ul class="kt-perks">
+            <li>Up to ${acc} MT5 account${acc > 1 ? 's' : ''}</li>
+            ${t.instruments ? `<li>${t.instruments} instruments</li>` : ''}
+            <li class="${t.vps ? '' : 'no'}">VPS ${t.vps ? 'included' : 'not included'}</li>
+          </ul>
+          <div class="bot-actions">
+            <button type="button" class="bot-buy-btn" data-action="rent" data-tier="${key}">Rent</button>
+            <button type="button" class="bot-buy-btn primary" data-action="buy" data-tier="${key}">Buy</button>
+          </div>
+        </div>`;
+    }).join('');
     const initials = String(name).split(/[^A-Za-z0-9]+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || 'KT';
     const imgTag = d.imageUrl ? `<img src="${String(d.imageUrl).replace(/"/g, '')}" alt="${String(name).replace(/"/g, '')}" loading="lazy" onerror="this.remove()">` : '';
     const mediaHtml = `<div class="bot-media"><span class="bot-media-ph">${initials}</span>${imgTag}<span class="cat-badge">${d.category || 'PC'}</span></div>`;
@@ -2167,22 +2192,18 @@
       <div class="platform-badges-row">${platformBadges}</div>
       ${d.winRate ? `<div class="win-rate-badge">📈 ${d.winRate}% win rate</div>` : ''}
       <p>${d.description || ''}</p>
+      <div class="kt-tiers">${tierRows}</div>
       <div class="bot-detail">
         ${d.winRate ? `<div class="bot-detail-row"><span class="l">Win rate</span><span class="v">${d.winRate}%</span></div>` : ''}
         ${d.advantages ? `<div class="bot-detail-row"><span class="l">Advantages</span><span class="v">${d.advantages}</span></div>` : ''}
         <div class="bot-detail-row"><span class="l">Strengths</span><span class="v">${d.strengths || '—'}</span></div>
-        <div class="bot-detail-row"><span class="l">Tiers</span><span class="v">${(d.tiers && d.tiers.length) ? d.tiers.map(t => t.name + ' $' + t.buyPrice + ' (' + t.mt5Accounts + ' accounts' + (t.instruments ? ', ' + t.instruments + ' instruments' : '') + (t.vps ? ', VPS' : '') + ')').join(' · ') : '$' + (d.buyPrice || 0) + ' for 1 platform, up to 6 accounts'}</span></div>
-        ${platforms.length > 1 ? `<div class="bot-detail-row"><span class="l">Buy — all ${platforms.length} platforms</span><span class="v">$${Math.round((d.buyPrice||0) * (PLATFORM_PRICE_MULTIPLIER[platforms.length] || 1))}</span></div>` : ''}
         <div class="bot-detail-row"><span class="l">Available on</span><span class="v">${platforms.join(', ')}</span></div>
-        <div class="bot-detail-row" style="border-top:1px solid var(--gold-soft);padding-top:10px;margin-top:4px;"><span class="l">Rental pricing (1 platform, all durations)</span><span class="v"></span></div>
-        ${rentRows}
+        <div class="bot-detail-row"><span class="l">Rental lengths</span><span class="v">From 1 week to 1 year. You pick the length at checkout. Prices are in US dollars.</span></div>
       </div>
       <div class="bot-foot">
-        <span class="bot-price">from $${d.buyPrice || 0} / $${d.rentPrice || 0} mo</span>
+        <span class="bot-tag tag-buy">${tierList.length} tier${tierList.length > 1 ? 's' : ''}</span>
         <div class="bot-actions">
           <button type="button" class="bot-details-btn">Details</button>
-          <button type="button" class="bot-buy-btn" data-action="rent">Rent</button>
-          <button type="button" class="bot-buy-btn primary" data-action="buy">Buy</button>
         </div>
       </div>
     `;
@@ -3635,7 +3656,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   /* data subscriptions */
   function snap(s){ var a=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; a.push(o); }); return a; }
   document.addEventListener('ktwallet',function(){ var av=window.ktWallet?window.ktWallet.available():0; document.querySelectorAll('[data-method] option[value="Wallet"]').forEach(function(o){ o.textContent='Wallet balance ('+money(av)+')'; }); });
-  document.addEventListener('ktcountry',function(e){ if(S.user) setDoc(doc(db,'users',S.user.uid),{country:e.detail,updatedAt:Date.now()},{merge:true}).catch(function(){}); });
+  document.addEventListener('ktcountry',function(e){ if(!S.user||window.__ktSavedCountry===e.detail) return; window.__ktSavedCountry=e.detail; setDoc(doc(db,'users',S.user.uid),{country:e.detail},{merge:true}).catch(function(){}); });
   function stop(){ unsubs.forEach(function(u){ try{u();}catch(e){} }); unsubs=[]; }
   onSnapshot(collection(db,'planSettings'),function(s){ var t={}; s.forEach(function(d){ var v=d.data().target; if(typeof v==='number') t[d.id]=v; }); S.targets=t; S.targetsLoaded=true;
     if(S.isAdmin) PLANS.forEach(function(p){ if(t[p.key]==null) setDoc(doc(db,'planSettings',p.key),{target:p.target,updatedAt:Date.now()}).catch(function(){}); });
@@ -3643,7 +3664,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   onAuthStateChanged(auth,function(user){
     stop(); S.user=user; S.isAdmin=!!(user&&user.email===ADMIN_EMAIL); S.mine=[];S.all=[];S.wds=[];S.allWds=[];
     if(user){
-      unsubs.push(onSnapshot(doc(db,'users',user.uid),function(s2){ var d=s2.exists()?s2.data():null; if(d&&d.country&&window.ktSetCountry) window.ktSetCountry(d.country,true); },function(){}));
+      unsubs.push(onSnapshot(doc(db,'users',user.uid),function(s2){ var d=s2.exists()?s2.data():null; if(d&&d.country){ window.__ktSavedCountry=d.country; if(window.ktSetCountry) window.ktSetCountry(d.country,true); } },function(){}));
       if(S.isAdmin){
         unsubs.push(onSnapshot(collection(db,'contributions'),function(s){ S.all=snap(s); renderLists(); },function(e){ console.error(e); }));
         unsubs.push(onSnapshot(collection(db,'withdrawals'),function(s){ S.allWds=snap(s); renderLists(); },function(e){ console.error(e); }));
@@ -3907,7 +3928,7 @@ import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/f
   function fmt(usd,cur){ var r=rateFor(cur); if(!r) return null; var v=usd*r, step=r>=1000?1000:(r>=100?10:(r>=10?1:0.5)); v=Math.round(v/step)*step; return cur+' '+v.toLocaleString('en-US',{maximumFractionDigits:r<5?2:0}); }
   window.ktAddLocal=function(){
     var cur=window.ktLocale.currency;
-    document.querySelectorAll('.ugx-target, .bot-price').forEach(function(el){
+    document.querySelectorAll('.ugx-target').forEach(function(el){
       var raw=el.getAttribute('data-usd-text'); if(raw===null){ raw=el.textContent; el.setAttribute('data-usd-text',raw); }
       var tag=el.querySelector('.ugx');
       if(cur==='USD'||!/\$\s*\d/.test(raw)){ if(tag) tag.remove(); return; }
@@ -4316,11 +4337,11 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
       +E.filter(function(e){return (e.status==='pending'||e.status==='processing')&&e.amount<0;}).reduce(function(a,e){return a+e.amount;},0); }
   function tierOf(){ return st.tiers.filter(function(t){return t.key===st.tier;})[0]; }
   function price(){ var t=tierOf(); if(!t) return 0; return st.act==='buy'?t.buyPrice:Math.round((t.rentPrice/30)*st.days*(RM[st.days]||1)); }
-  function open(name,act){
+  function open(name,act,tierKey){
     if(!auth.currentUser){ if(window.ktToast) window.ktToast('Please log in or register first.','warn'); location.hash='#account'; return; }
     var p=(window.__ktProducts||{})[name]; if(!p) return;
     var tiers=(p.tiers&&p.tiers.length)?p.tiers:[{key:'standard',name:'Standard',buyPrice:p.buyPrice,rentPrice:p.rentPrice,mt5Accounts:6,instruments:0,vps:false}];
-    st={name:name,act:act,tiers:tiers,tier:tiers[0].key,days:30,count:1,accts:[''],platform:p.platforms[0],platforms:p.platforms,msg:'',done:null};
+    st={name:name,act:act,tiers:tiers,tier:(tiers.filter(function(x){return x.key===tierKey;})[0]||tiers[0]).key,days:30,count:1,accts:[''],platform:p.platforms[0],platforms:p.platforms,msg:'',done:null};
     $('kbOv').hidden=false; document.body.style.overflow='hidden'; draw();
   }
   function close(){ $('kbOv').hidden=true; document.body.style.overflow=''; busy=false; }
@@ -4357,7 +4378,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
   /* take over the Buy and Rent buttons (runs before the old handler, which opened the long request form) */
   $('botsContainer').addEventListener('click',function(e){
     var b=e.target.closest('.bot-buy-btn'); if(!b) return; e.stopPropagation(); e.preventDefault();
-    open(b.closest('.bot-card').dataset.botName,b.dataset.action);
+    open(b.closest('.bot-card').dataset.botName,b.dataset.action,b.dataset.tier);
   },true);
   $('kbX').addEventListener('click',close);
   $('kbOv').addEventListener('click',function(e){ if(e.target===$('kbOv')) close(); });
