@@ -355,20 +355,26 @@
   .kt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
   .kt-head h4{font-size:20px;margin:0;}
   .kt-sub{font-size:12px;color:var(--text-dim);margin:2px 0 0;font-family:'JetBrains Mono',monospace;}
-  .kt-tier-scroll{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 2px 14px;margin-top:10px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}
+  .kt-tier-scroll{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 4px 18px;margin-top:8px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--gold-soft) transparent;}
   .kt-tier-scroll:after{content:"";flex:0 0 1px;}
-  .kt-tier-card{flex:0 0 min(285px,78%);scroll-snap-align:start;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:12px;display:flex;flex-direction:column;cursor:default;}
-  .kt-tier-card:hover{border-color:var(--gold-soft);}
-  .kt-tier-card .bot-media{margin:0 0 12px;}
-  .kt-tier-name small{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;color:var(--text-dim);letter-spacing:.06em;}
-  .kt-tier-name b{font-size:18px;color:var(--gold);}
-  .kt-tier-price{font-family:'JetBrains Mono',monospace;font-size:13px;margin:8px 0 2px;color:var(--text);}
-  .kt-tier-price span{color:var(--text-dim);font-size:11px;}
-  .kt-perks{list-style:none;margin:8px 0 12px;padding:0;display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--text-dim);flex:1;}
-  .kt-perks li:before{content:"✓ ";color:var(--buy);}
-  .kt-perks li.no:before{content:"– ";color:var(--text-dim);}
-  .kt-tier-card .bot-actions{justify-content:space-between;}
-  .kt-tier-card .bot-buy-btn{flex:1;padding:9px 10px;}
+  .kt-tier-card{position:relative;flex:0 0 min(300px,80%);scroll-snap-align:start;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,rgba(198,161,83,.07),rgba(12,18,28,0) 38%),var(--bg);padding:14px;display:flex;flex-direction:column;cursor:default;box-shadow:0 6px 22px rgba(0,0,0,.28);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;}
+  .kt-tier-card:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 12px 30px rgba(198,161,83,.16);}
+  .kt-tier-card.top{border-color:var(--gold);box-shadow:0 8px 28px rgba(198,161,83,.18);}
+  .kt-tier-card .bot-media{margin:0 0 14px;border-radius:12px;}
+  .kt-top{position:absolute;right:8px;top:8px;z-index:1;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--gold);color:#0C121C;font-weight:700;}
+  .kt-tier-name small{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;color:var(--text-dim);letter-spacing:.08em;}
+  .kt-tier-name b{display:block;font-size:22px;line-height:1.2;color:var(--gold);margin-top:2px;}
+  .kt-prices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 4px;}
+  .kt-prices>div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.02);}
+  .kt-prices small{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);}
+  .kt-prices b{font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--text);}
+  .kt-prices b span{font-size:11px;color:var(--text-dim);font-weight:400;}
+  .kt-perks{list-style:none;margin:12px 0 16px;padding:12px 0 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--text);flex:1;}
+  .kt-perks li:before{content:"✓";display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-right:8px;border-radius:50%;background:rgba(78,211,148,.15);color:var(--buy);font-size:11px;}
+  .kt-perks li.no{color:var(--text-dim);}
+  .kt-perks li.no:before{content:"–";background:rgba(255,255,255,.06);color:var(--text-dim);}
+  .kt-tier-card .bot-actions{justify-content:space-between;gap:10px;}
+  .kt-tier-card .bot-buy-btn{flex:1;padding:11px 10px;border-radius:999px;font-weight:600;}
   .bot-buy-btn{
     background:var(--panel-2);border:1px solid var(--line);color:var(--text);
     font-size:12px;font-weight:600;padding:7px 14px;border-radius:4px;cursor:pointer;
@@ -1109,6 +1115,8 @@
   #wMode .chip,#txMode .chip{padding:11px 12px;font-size:13px;font-weight:600;border-radius:8px;border-width:1.5px;text-align:center;}
   #wMode [data-wmode="demo"].on,#txMode [data-mode="demo"].on{border-color:#5AA9FF;color:#5AA9FF;background:rgba(90,169,255,.12);}
   #wMode [data-wmode="real"].on,#txMode [data-mode="real"].on{border-color:#4ED394;color:#4ED394;background:rgba(78,211,148,.12);}
+  #ivMode [data-ivmode="demo"].on{border-color:#5AA9FF;color:#5AA9FF;background:rgba(90,169,255,.12);}
+  #ivMode [data-ivmode="real"].on{border-color:#4ED394;color:#4ED394;background:rgba(78,211,148,.12);}
   #wMode [data-wmode="demo"]:not(.on):hover,#txMode [data-mode="demo"]:not(.on):hover{border-color:#5AA9FF;color:#5AA9FF;}
   #wMode [data-wmode="real"]:not(.on):hover,#txMode [data-mode="real"]:not(.on):hover{border-color:#4ED394;color:#4ED394;}
   #txChips,#txDir,#txPer{gap:8px;}
@@ -1650,7 +1658,8 @@
 <div class="page-banner" data-page="invest" style="--img:url(invest-scales.jpg)"><div class="wrap"><span class="eyebrow">Trade for me</span><h1>Trade-for-me plans.</h1><p>Choose a plan, see the amount you are aiming for, and track it from your account.</p></div></div>
 <section id="invest" data-page="invest">
   <div class="wrap">
-    <div class="demo-banner"><strong>Demo wallet = virtual funds. Real wallet = real money.</strong> Your account and plans are saved. Expected amounts are targets, not guarantees, and you can lose money when trading.</div>
+    <div class="chips sub" id="ivMode" style="margin-bottom:12px;"><button type="button" class="chip on" data-ivmode="demo">Demo investing</button><button type="button" class="chip" data-ivmode="real" id="ivModeReal" style="display:none;">Real investing</button></div>
+    <div class="demo-banner" id="ivModeBanner"><strong>Demo wallet = virtual funds. Real wallet = real money.</strong> Your account and plans are saved. Expected amounts are targets, not guarantees, and you can lose money when trading.</div>
 
     <div class="split">
       <div>
@@ -2175,16 +2184,17 @@
     card.classList.add('kt-product');
     const esc2 = s => String(s == null ? '' : s).replace(/"/g, '');
     const tierList = (d.tiers && d.tiers.length) ? d.tiers : [{ key: 'standard', name: 'Standard', buyPrice: d.buyPrice || 0, rentPrice: d.rentPrice || 0, mt5Accounts: 6, instruments: 0, vps: false }];
-    const tierCards = tierList.map(t => {
+    const tierCards = tierList.map((t, ti) => {
+      const isTop = tierList.length > 1 && ti === tierList.length - 1;
       const key = esc2(t.key || t.name);
       const acc = Number(t.mt5Accounts) || 1;
       const pic = t.imageUrl || d.imageUrl || '';
       const ini = String(t.name).split(/[^A-Za-z0-9]+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || 'KT';
       const timg = pic ? `<img src="${esc2(pic)}" alt="${esc2(name)} ${esc2(t.name)}" loading="lazy" onerror="this.remove()">` : '';
-      return `<div class="kt-tier-card">
-          <div class="bot-media"><span class="bot-media-ph">${ini}</span>${timg}<span class="cat-badge">${d.category || 'PC'}</span></div>
+      return `<div class="kt-tier-card${isTop ? ' top' : ''}">
+          <div class="bot-media"><span class="bot-media-ph">${ini}</span>${timg}<span class="cat-badge">${d.category || 'PC'}</span>${isTop ? '<span class="kt-top">Top tier</span>' : ''}</div>
           <div class="kt-tier-name"><small>${name}</small><b>${t.name}</b></div>
-          <div class="kt-tier-price">Buy $${t.buyPrice} <span>·</span> Rent $${t.rentPrice}<span>/mo</span></div>
+          <div class="kt-prices"><div><small>Buy once</small><b>$${t.buyPrice}</b></div><div><small>Rent</small><b>$${t.rentPrice}<span>/mo</span></b></div></div>
           <ul class="kt-perks">
             <li>Up to ${acc} MT5 account${acc > 1 ? 's' : ''}</li>
             ${t.instruments ? `<li>${t.instruments} instruments</li>` : ''}
@@ -2199,7 +2209,7 @@
     card.innerHTML = `
       <div class="kt-head">
         <div><h4>${name}</h4><p class="kt-sub">${tierList.length} tier${tierList.length > 1 ? 's' : ''} · swipe to compare →</p></div>
-        <span class="bot-tag tag-buy">${d.pair || ''}</span>
+        ${d.pair ? `<span class="bot-tag tag-buy">${d.pair}</span>` : ''}
       </div>
       <div class="platform-badges-row">${platformBadges}</div>
       ${d.winRate ? `<div class="win-rate-badge">📈 ${d.winRate}% win rate</div>` : ''}
@@ -3430,14 +3440,20 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   var ST={upcoming:'Opens soon',enrolling:'Enrolling',starting:'Starts soon',running:'Running',matured:'Matured',settled:'Settled'};
   function openCohort(pk){ return dates(pk,winFor(now()),true); }
   function cohorts(){
-    var map={}; S.all.forEach(function(x){ if(!x.plan||!x.winStart) return; var id=x.plan+'-'+x.winStart+(x.open?'o':''); if(!map[id]) map[id]=dates(x.plan,x.winStart,x.open); map[id].contribs.push(x); });
+    var map={}; S.all.forEach(function(x){ if(!x.plan||!x.winStart) return; var m=cmode(x), id=x.plan+'-'+x.winStart+(x.open?'o':'')+'-'+m; if(!map[id]){ map[id]=dates(x.plan,x.winStart,x.open); map[id].id=id; map[id].mode=m; } map[id].contribs.push(x); });
     return Object.keys(map).map(function(k){return map[k];});
   }
   function actives(c){ return c.contribs.filter(function(x){return x.status==='active';}); }
   function counted(c){ return c.contribs.filter(function(x){return x.status==='active'||x.status==='settled'||x.status==='closed';}); }
   function cStatus(c){ if(!actives(c).length&&counted(c).length) return 'settled'; return timeStatus(c); }
   function total(list){ return list.reduce(function(a,m){return a+m.amount;},0); }
-  function myList(){ return S.isAdmin?S.all.filter(function(x){return S.user&&x.uid===S.user.uid;}):S.mine; }
+  function curMode(){ return (window.ktWallet&&window.ktWallet.mode)?window.ktWallet.mode():'demo'; }
+  function cmode(x){ if(x.mode) return String(x.mode).toLowerCase()==='real'?'real':'demo';
+    var le=(window.ktWallet?window.ktWallet.entries():[]).filter(function(e){return e.refId===x.id&&e.type==='plan_join'&&e.mode;})[0];
+    if(le) return String(le.mode).toLowerCase()==='real'?'real':'demo';
+    return (window.ktWallet&&window.ktWallet.live)?'real':'demo'; }
+  function mtag(c){ return c.mode?(c.mode==='real'?' [REAL]':' [DEMO]'):''; }
+  function myList(){ var all=S.isAdmin?S.all.filter(function(x){return S.user&&x.uid===S.user.uid;}):S.mine; var m=curMode(); return all.filter(function(x){ return cmode(x)===m; }); }
   function myWds(){ return S.isAdmin?S.allWds.filter(function(x){return S.user&&x.uid===S.user.uid;}):S.wds; }
 
   function calc(list,final){
@@ -3474,8 +3490,8 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   function remindAdmin(){
     var h='', n=now(), pend=S.all.filter(function(x){return x.status==='pending';}).length, wd=S.allWds.filter(function(w){return w.status==='requested';}).length;
     cohorts().forEach(function(c){ if(!counted(c).length) return; var p=plan(c.plan), st=cStatus(c);
-      if(st==='matured') h+=chip('warn','Due now: '+p.name+' cohort '+fmtD(c.winStart)+' has matured. <a href="#" data-calc="'+c.id+'">Calculate and settle</a>.');
-      else if(st==='running'&&c.maturesAt-n<=3*D) h+=chip('info',p.name+' cohort '+fmtD(c.winStart)+' matures in '+cd(c.maturesAt)+'.'); });
+      if(st==='matured') h+=chip('warn','Due now: '+p.name+' cohort '+fmtD(c.winStart)+mtag(c)+' has matured. <a href="#" data-calc="'+c.id+'">Calculate and settle</a>.');
+      else if(st==='running'&&c.maturesAt-n<=3*D) h+=chip('info',p.name+' cohort '+fmtD(c.winStart)+mtag(c)+' matures in '+cd(c.maturesAt)+'.'); });
     if(pend) h+=chip('warn',pend+' contribution'+(pend>1?'s':'')+' waiting for you to confirm payment.');
     if(wd) h+=chip('warn',wd+' withdrawal request'+(wd>1?'s':'')+' waiting for you to release.');
     el('ivAdminRemind').innerHTML=h||'<div class="remind">No reminders right now.</div>';
@@ -3582,7 +3598,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   function find(id){ var r=null; (S.isAdmin?S.all:S.mine).forEach(function(x){ if(x.id===id) r=x; }); return r; }
   function openPayout(id){ var x=find(id); if(!x||x.status!=='closed'||!(x.payout>0)) return; payCtx={id:id,pctRe:50,plan:x.plan}; drawPayout(); el('ivPayout').hidden=false; document.body.style.overflow='hidden'; }
   function drawPayout(){
-    var x=find(payCtx.id), re=Math.round(x.payout*payCtx.pctRe)/100, tc=openCohort(payCtx.plan), wb=window.ktWallet?window.ktWallet.available():0;
+    var x=find(payCtx.id), re=Math.round(x.payout*payCtx.pctRe)/100, tc=openCohort(payCtx.plan), wb=window.ktWallet?window.ktWallet.availableIn(cmode(x)):0;
     var pc=[50,75,100].map(function(v){return '<button type="button" class="chip'+(payCtx.pctRe===v?' on':'')+'" data-re="'+v+'">Reinvest '+v+'%</button>';}).join('');
     var po=PLANS.map(function(p){return '<option value="'+p.key+'"'+(p.key===payCtx.plan?' selected':'')+'>'+p.name+'</option>';}).join('');
     el('payBody').innerHTML='<p style="color:var(--text-dim);margin-bottom:12px;">This plan paid <strong style="color:var(--text)">'+money(x.payout)+'</strong> into your wallet (capital and returns together). Wallet available: <strong style="color:var(--text)">'+money(wb)+'</strong>.</p><div class="chips" style="margin-bottom:12px;">'+pc+'</div><div class="inv-field" style="margin-bottom:10px;"><select data-replan>'+po+'</select></div><p class="note" style="margin-bottom:8px;">Reinvested into the cohort starting '+fmtD(tc.startAt)+', at that plan\u2019s current target of +'+pct(tgt(payCtx.plan)*100)+'. Not guaranteed. We confirm it before it starts.</p><dl class="calc-sum"><dt>Reinvest from wallet</dt><dd>'+money(re)+'</dd><dt>Stays in your wallet</dt><dd>'+money(x.payout-re)+'</dd></dl><button type="button" class="btn btn-gold" data-confirm-pay'+(re>wb+0.0001?' disabled':'')+'>Confirm</button>'+(re>wb+0.0001?'<p class="note" style="margin-top:8px;">Your available wallet balance is lower than this amount.</p>':'');
@@ -3613,17 +3629,17 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
     if((q=t.closest('[data-re]'))&&payCtx){ payCtx.pctRe=parseInt(q.getAttribute('data-re'),10); drawPayout(); return; }
     if(t.closest('[data-confirm-pay]')&&payCtx){
       var xx=find(payCtx.id), rr=Math.round(xx.payout*payCtx.pctRe)/100, ww=who();
-      if(rr>(window.ktWallet?window.ktWallet.available():0)+0.0001){ alert('Not enough wallet balance.'); return; }
+      if(rr>(window.ktWallet?window.ktWallet.availableIn(cmode(xx)):0)+0.0001){ alert('Not enough '+(cmode(xx)==='real'?'real':'demo')+' wallet balance.'); return; }
       var tc2=openCohort(payCtx.plan), cr=doc(collection(db,'contributions')), bb=writeBatch(db);
-      bb.set(cr,{uid:xx.uid,name:xx.name||ww.name,email:xx.email||ww.email,plan:payCtx.plan,amount:rr,status:'pending',cohortId:tc2.id,winStart:tc2.winStart,open:true,startAt:tc2.startAt,maturesAt:tc2.maturesAt,t:tgt(payCtx.plan),method:'Wallet',fundedBy:'wallet',source:'reinvest',fromId:xx.id,createdAt:Date.now()});
-      bb.set(doc(collection(db,'ledger')),{uid:xx.uid,name:xx.name||ww.name,email:xx.email||ww.email,type:'plan_join',mode:(window.ktWallet&&window.ktWallet.mode?window.ktWallet.mode():'demo'),amount:-rr,status:'pending',refKind:'contribution',refId:cr.id,service:'Investments',method:'Wallet',note:plan(payCtx.plan).name+' (reinvested)',createdBy:'member',createdAt:Date.now()});
+      bb.set(cr,{uid:xx.uid,name:xx.name||ww.name,email:xx.email||ww.email,plan:payCtx.plan,amount:rr,status:'pending',cohortId:tc2.id,winStart:tc2.winStart,open:true,startAt:tc2.startAt,maturesAt:tc2.maturesAt,t:tgt(payCtx.plan),method:'Wallet',fundedBy:'wallet',source:'reinvest',fromId:xx.id,mode:cmode(xx),createdAt:Date.now()});
+      bb.set(doc(collection(db,'ledger')),{uid:xx.uid,name:xx.name||ww.name,email:xx.email||ww.email,type:'plan_join',mode:cmode(xx),amount:-rr,status:'pending',refKind:'contribution',refId:cr.id,service:'Investments',method:'Wallet',note:plan(payCtx.plan).name+' (reinvested)',createdBy:'member',createdAt:Date.now()});
       await bb.commit(); closePayout(); return;
     }
     if((q=t.closest('[data-cancel]'))){ var cid=q.getAttribute('data-cancel'), bd=writeBatch(db); bd.delete(doc(db,'contributions',cid)); (window.ktWallet?window.ktWallet.entries():[]).forEach(function(le){ if(le.refId===cid&&le.status==='pending') bd.delete(doc(db,'ledger',le.id)); }); await bd.commit(); return; }
     if((q=t.closest('[data-confirm]'))){
       var cid2=q.getAttribute('data-confirm'), cx=S.all.filter(function(z){return z.id===cid2;})[0], bc=writeBatch(db);
       if(cx&&cx.fundedBy==='wallet'){ var le=(window.ktWallet?window.ktWallet.entries():[]).filter(function(e2){return e2.refId===cid2&&e2.status==='pending';})[0];
-        if(le){ if(window.ktWallet.completedBalance(cx.uid)<cx.amount-0.005){ alert('This member does not have enough completed wallet balance.'); return; } bc.update(doc(db,'ledger',le.id),{status:'completed',completedAt:Date.now(),confirmedBy:'admin'}); } }
+        if(le){ if(window.ktWallet.completedBalance(cx.uid,cmode(cx))<cx.amount-0.005){ alert('This member does not have enough completed wallet balance.'); return; } bc.update(doc(db,'ledger',le.id),{status:'completed',completedAt:Date.now(),confirmedBy:'admin'}); } }
       bc.update(doc(db,'contributions',cid2),{status:'active',confirmedAt:Date.now()}); await bc.commit(); return;
     }
     if((q=t.closest('[data-reject]'))){ var rid=q.getAttribute('data-reject'); if(confirm('Reject and remove this contribution?')){ var br=writeBatch(db); br.delete(doc(db,'contributions',rid)); (window.ktWallet?window.ktWallet.entries():[]).forEach(function(le){ if(le.refId===rid&&le.status==='pending') br.update(doc(db,'ledger',le.id),{status:'rejected',completedAt:Date.now()}); }); await br.commit(); } return; }
@@ -3634,7 +3650,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       var res=calc(actives(c),fv), b2=writeBatch(db);
       var byId={}; actives(c).forEach(function(a){ byId[a.id]=a; });
       res.rows.forEach(function(r){ var mx=byId[r.id]; b2.update(doc(db,'contributions',r.id),{status:'closed',payout:r.pay,out:r.out,settlement:{final:fv,fee:res.fee,at:Date.now()}});
-        if(mx&&mx.uid&&String(mx.uid).indexOf('manual:')!==0&&r.pay>0) b2.set(doc(collection(db,'ledger')),{uid:mx.uid,name:mx.name||'',email:mx.email||'',type:'plan_payout',amount:r.pay,status:'completed',refKind:'contribution',refId:r.id,service:'Investments',method:'Plan payout',note:plan(c.plan).name,createdBy:'admin',createdAt:Date.now(),completedAt:Date.now()}); });
+        if(mx&&mx.uid&&String(mx.uid).indexOf('manual:')!==0&&r.pay>0) b2.set(doc(collection(db,'ledger')),{uid:mx.uid,name:mx.name||'',email:mx.email||'',type:'plan_payout',mode:cmode(mx),amount:r.pay,status:'completed',refKind:'contribution',refId:r.id,service:'Investments',method:'Plan payout',note:plan(c.plan).name,createdBy:'admin',createdAt:Date.now(),completedAt:Date.now()}); });
       await b2.commit(); calcId=null; return;
     }
     if((q=t.closest('[data-release]'))){ await updateDoc(doc(db,'withdrawals',q.getAttribute('data-release')),{status:'released',releasedAt:Date.now()}); return; }
@@ -3653,7 +3669,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       if(!(amt>=p.min)){ msg.textContent='Enter at least $'+p.min+'.'; return; }
       if(!card.querySelector('[data-agree]').checked){ msg.textContent='Please tick the box to accept the terms.'; return; }
       act.disabled=true; var w2=who(), msel=card.querySelector('[data-method]').value, cref=doc(collection(db,'contributions'));
-      var cdata={uid:w2.uid,name:w2.name,email:w2.email,plan:p.key,amount:amt,status:'pending',cohortId:co2.id,winStart:co2.winStart,open:true,startAt:co2.startAt,maturesAt:co2.maturesAt,t:tgt(p.key),method:msel,fundedBy:msel==='Wallet'?'wallet':'manual',source:'new',createdAt:Date.now()};
+      var cdata={uid:w2.uid,name:w2.name,email:w2.email,plan:p.key,amount:amt,status:'pending',cohortId:co2.id,winStart:co2.winStart,open:true,startAt:co2.startAt,maturesAt:co2.maturesAt,t:tgt(p.key),method:msel,fundedBy:msel==='Wallet'?'wallet':'manual',source:'new',mode:curMode(),createdAt:Date.now()};
       if(msel==='Wallet'){
         if(amt>(window.ktWallet?window.ktWallet.available():0)+0.0001){ window.ktSay(msg,'Funds are not enough. Add money in My Account → Wallet first.','err'); act.disabled=false; return; }
         var bw=writeBatch(db); bw.set(cref,cdata); bw.set(doc(collection(db,'ledger')),{uid:w2.uid,name:w2.name,email:w2.email,type:'plan_join',mode:(window.ktWallet&&window.ktWallet.mode?window.ktWallet.mode():'demo'),amount:-amt,status:'pending',refKind:'contribution',refId:cref.id,service:'Investments',method:'Wallet',note:p.name,createdBy:'member',createdAt:Date.now()}); await bw.commit();
@@ -3665,7 +3681,12 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
 
   /* data subscriptions */
   function snap(s){ var a=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; a.push(o); }); return a; }
-  document.addEventListener('ktwallet',function(){ var av=window.ktWallet?window.ktWallet.available():0; document.querySelectorAll('[data-method] option[value="Wallet"]').forEach(function(o){ o.textContent='Wallet balance ('+money(av)+')'; }); });
+  document.addEventListener('ktwallet',function(){ var av=window.ktWallet?window.ktWallet.available():0, m=curMode(); document.querySelectorAll('[data-method] option[value="Wallet"]').forEach(function(o){ o.textContent=(m==='real'?'Real':'Demo')+' wallet balance ('+money(av)+')'; });
+    document.querySelectorAll('#ivMode [data-ivmode]').forEach(function(b){ b.classList.toggle('on',b.getAttribute('data-ivmode')===m); });
+    var rb=el('ivModeReal'); if(rb) rb.style.display=(window.ktWallet&&window.ktWallet.realOpen&&window.ktWallet.realOpen())?'':'none';
+    var bn=el('ivModeBanner'); if(bn) bn.innerHTML=m==='real'?'<strong>Real investing.</strong> Plans here use your Real wallet (real money). Available now: <strong>'+money(av)+'</strong>. Expected amounts are targets, not guarantees, and you can lose money when trading.':'<strong>Demo investing.</strong> Plans here use your Demo wallet (virtual funds only). Available now: <strong>'+money(av)+'</strong>. Switch to Real investing to use real money.';
+    try{ renderAll(); }catch(err){} });
+  document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('[data-ivmode]'); if(b&&window.ktWallet) window.ktWallet.setMode(b.getAttribute('data-ivmode')); });
   document.addEventListener('ktcountry',function(e){ if(!S.user||window.__ktSavedCountry===e.detail) return; window.__ktSavedCountry=e.detail; setDoc(doc(db,'users',S.user.uid),{country:e.detail},{merge:true}).catch(function(){}); });
   function stop(){ unsubs.forEach(function(u){ try{u();}catch(e){} }); unsubs=[]; }
   onSnapshot(collection(db,'planSettings'),function(s){ var t={}; s.forEach(function(d){ var v=d.data().target; if(typeof v==='number') t[d.id]=v; }); S.targets=t; S.targetsLoaded=true;
@@ -4010,8 +4031,9 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
   function fmtDY(ts){ return new Date(ts).toLocaleDateString('en-GB',{timeZone:'Africa/Kampala',day:'numeric',month:'short',year:'numeric'}); }
   function who(){ return {uid:S.user.uid,name:S.user.displayName||(S.user.email||'').split('@')[0],email:S.user.email||''}; }
   function mine(){ return S.entries.filter(function(e){ return S.user&&e.uid===S.user.uid; }); }
-  function completedBal(uid){ return S.entries.filter(function(e){return e.uid===uid&&e.status==='completed'&&inMode(e);}).reduce(function(a,e){return a+e.amount;},0); }
-  function pendingDebits(uid){ return S.entries.filter(function(e){return e.uid===uid&&(e.status==='pending'||e.status==='processing')&&e.amount<0&&inMode(e);}).reduce(function(a,e){return a+e.amount;},0); }
+  function inM(e,m){ return modeOf(e)===(m||S.mode); }
+  function completedBal(uid,m){ return S.entries.filter(function(e){return e.uid===uid&&e.status==='completed'&&inM(e,m);}).reduce(function(a,e){return a+e.amount;},0); }
+  function pendingDebits(uid,m){ return S.entries.filter(function(e){return e.uid===uid&&(e.status==='pending'||e.status==='processing')&&e.amount<0&&inM(e,m);}).reduce(function(a,e){return a+e.amount;},0); }
   function pendingCredits(uid){ return S.entries.filter(function(e){return e.uid===uid&&(e.status==='pending'||e.status==='processing')&&e.amount>0&&inMode(e);}).reduce(function(a,e){return a+e.amount;},0); }
   function myUid(){ return S.user?S.user.uid:null; }
   window.ktWallet={
@@ -4020,6 +4042,9 @@ import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
     available:function(){ return S.user?completedBal(S.user.uid)+pendingDebits(S.user.uid):0; },
     entries:function(){ return S.entries; },
     completedBalance:completedBal,
+    availableIn:function(m){ return S.user?completedBal(S.user.uid,m)+pendingDebits(S.user.uid,m):0; },
+    realOpen:realOpen,
+    setMode:function(m){ if(m==='real'&&!realOpen()){ alert('The real wallet is not open yet.'); return; } S.pref=(m==='real')?'real':'demo'; try{ localStorage.setItem('kt_wallet_mode',S.pref); }catch(err){} render(); },
     mode:function(){ return S.mode; }
   };
   var LABEL={deposit:'Deposit',withdrawal:'Withdrawal',plan_join:'Plan contribution',plan_payout:'Plan payout',purchase:'Bot payment',adjustment:'Adjustment'};
