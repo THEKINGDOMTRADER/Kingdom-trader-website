@@ -364,7 +364,11 @@
   .kt-top{position:absolute;right:8px;top:8px;z-index:1;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--gold);color:#0C121C;font-weight:700;}
   .kt-tier-name small{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;color:var(--text-dim);letter-spacing:.08em;}
   .kt-tier-name b{display:block;font-size:22px;line-height:1.2;color:var(--gold);margin-top:2px;}
-  .kt-prices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 4px;}
+  .kt-prices{display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0 4px;}
+  .kt-rentlist{display:flex;flex-direction:column;gap:4px;margin-top:4px;}
+  .kt-rentlist>div{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+  .kt-rentlist span{font-size:12px;color:var(--text-dim);}
+  .kt-rentlist b{font-size:16px;}
   .kt-prices>div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.02);}
   .kt-prices small{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);}
   .kt-prices b{font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--text);}
@@ -1113,11 +1117,11 @@
   /* ---- UI fixes: wallet tabs, deposit input, scrollable transactions ---- */
   #wMode,#txMode{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:0 0 14px;}
   #wMode .chip,#txMode .chip{padding:11px 12px;font-size:13px;font-weight:600;border-radius:8px;border-width:1.5px;text-align:center;}
-  #wMode [data-wmode="demo"].on,#txMode [data-mode="demo"].on{border-color:#5AA9FF;color:#5AA9FF;background:rgba(90,169,255,.12);}
+  #wMode [data-wmode="demo"].on,#txMode [data-mode="demo"].on{border-color:var(--gold);color:var(--gold);background:rgba(198,161,83,.12);}
   #wMode [data-wmode="real"].on,#txMode [data-mode="real"].on{border-color:#4ED394;color:#4ED394;background:rgba(78,211,148,.12);}
-  #ivMode [data-ivmode="demo"].on{border-color:#5AA9FF;color:#5AA9FF;background:rgba(90,169,255,.12);}
+  #ivMode [data-ivmode="demo"].on{border-color:var(--gold);color:var(--gold);background:rgba(198,161,83,.12);}
   #ivMode [data-ivmode="real"].on{border-color:#4ED394;color:#4ED394;background:rgba(78,211,148,.12);}
-  #wMode [data-wmode="demo"]:not(.on):hover,#txMode [data-mode="demo"]:not(.on):hover{border-color:#5AA9FF;color:#5AA9FF;}
+  #wMode [data-wmode="demo"]:not(.on):hover,#txMode [data-mode="demo"]:not(.on):hover{border-color:var(--gold);color:var(--gold);}
   #wMode [data-wmode="real"]:not(.on):hover,#txMode [data-mode="real"]:not(.on):hover{border-color:#4ED394;color:#4ED394;}
   #txChips,#txDir,#txPer{gap:8px;}
   #txChips .chip,#txDir .chip,#txPer .chip{padding:7px 13px;min-height:34px;}
@@ -1134,7 +1138,7 @@
   .pay-seg .chip{padding:11px 12px;font-size:13px;font-weight:600;text-align:center;border-width:1.5px;border-radius:8px;}
   #wDepNet [data-net="MTN Mobile Money"].on{background:#FFCC08;border-color:#FFCC08;color:#0C121C;}
   #wDepNet [data-net="Airtel Money"].on{background:#ED1C24;border-color:#ED1C24;color:#fff;}
-  #walletTest{border-color:#5AA9FF;background:rgba(90,169,255,.08);}
+  #walletTest{border-color:var(--gold);background:rgba(198,161,83,.08);}
   #walletRealNote{border-color:#4ED394;background:rgba(78,211,148,.08);}
 
   .page-back-wrap{padding:26px 0 34px;text-align:center;} .page-back-wrap[hidden],.page-back[hidden]{display:none;}
@@ -2114,6 +2118,9 @@
   // Auth state -> toggle Auth box vs Dashboard, and load this user's requests
   // ===== PUBLIC BOT CATALOG (loads for everyone, logged in or not) =====
   const RENTAL_MULTIPLIERS = { 7: 1.10, 14: 1.05, 30: 1.00, 60: 0.95, 90: 0.90, 120: 0.88, 180: 0.82, 365: 0.75 };
+  window.ktRentFor = function (t, days) { var m = Number(t.rentPrice) || 0; if (days === 30) return m;
+    if (days === 14) return Number(t.rent14) > 0 ? Number(t.rent14) : Math.round(m / 30 * 14 * 1.05);
+    return Number(t.rentYear) > 0 ? Number(t.rentYear) : Math.round(m / 30 * 365 * 0.75); };
   const RENTAL_LABELS = { 7: '1 week', 14: '2 weeks', 30: '1 month', 60: '2 months', 90: '3 months', 120: '4 months', 180: '6 months', 365: '1 year' };
   function computeRentalPrice(monthlyRate, days) {
     return Math.round((monthlyRate / 30) * days * (RENTAL_MULTIPLIERS[days] || 1));
@@ -2194,7 +2201,7 @@
       return `<div class="kt-tier-card${isTop ? ' top' : ''}">
           <div class="bot-media"><span class="bot-media-ph">${ini}</span>${timg}<span class="cat-badge">${d.category || 'PC'}</span>${isTop ? '<span class="kt-top">Top tier</span>' : ''}</div>
           <div class="kt-tier-name"><small>${name}</small><b>${t.name}</b></div>
-          <div class="kt-prices"><div><small>Buy once</small><b>$${t.buyPrice}</b></div><div><small>Rent</small><b>$${t.rentPrice}<span>/mo</span></b></div></div>
+          <div class="kt-prices"><div><small>Buy once</small><b>$${t.buyPrice}</b></div><div><small>Rent</small><div class="kt-rentlist"><div><span>14 days</span><b>$${window.ktRentFor(t, 14)}</b></div><div><span>1 month</span><b>$${window.ktRentFor(t, 30)}</b></div><div><span>1 year</span><b>$${window.ktRentFor(t, 365)}</b></div></div></div></div>
           <ul class="kt-perks">
             <li>Up to ${acc} MT5 account${acc > 1 ? 's' : ''}</li>
             ${t.instruments ? `<li>${t.instruments} instruments</li>` : ''}
@@ -2592,11 +2599,8 @@
             <div class="admin-edit-row" style="margin-top:12px;">
               <label>Renew for</label>
               <select class="renew-duration-select">
-                <option value="7">7 days</option>
                 <option value="14">14 days</option>
-                <option value="30" selected>30 days</option>
-                <option value="60">60 days</option>
-                <option value="90">90 days</option>
+                <option value="30" selected>1 month</option>
                 <option value="365">1 year</option>
               </select>
             </div>
@@ -2610,8 +2614,11 @@
             const msg = card.querySelector('.admin-save-msg');
             try {
               const productDoc = await getDoc(doc(db, 'products', d.product));
-              const rentPrice = productDoc.exists() ? (productDoc.data().rentPrice || 0) : 0;
-              const amount = computeRentalPrice(rentPrice, days);
+              const pd = productDoc.exists() ? productDoc.data() : {};
+              const tiersList = Array.isArray(pd.tiers) ? pd.tiers : [];
+              const myTier = tiersList.find((t) => t.key === d.tierKey || t.name === d.tier) || tiersList[0] || { rentPrice: pd.rentPrice || 0 };
+              const amount = window.ktRentFor(myTier, days);
+              if (!(amount > 0)) { msg.textContent = 'This tier has no rent price yet. Please contact support.'; return; }
 
               if (!window.confirm(`Renew ${d.product} for ${days} days — $${amount}?\n\nThis will create a renewal request. Go to Payments to complete it, then send us your ticket ID on WhatsApp.`)) {
                 return;
@@ -2628,7 +2635,7 @@
                 service: 'Renew license',
                 platform: d.platform,
                 accountNumber: d.mt5AccountNumber || d.tradingViewUsername || '',
-                tier: 'Standard',
+                tier: d.tier || 'Standard',
                 strategy: `Renewal request for ${days} days`,
                 status: 'Awaiting Payment',
                 note: `Renewal request received — you owe $${amount}. Head to the Payments tab to complete payment, then send us your ticket ID on WhatsApp.`,
@@ -3451,6 +3458,7 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
   function cmode(x){ if(x.mode) return String(x.mode).toLowerCase()==='real'?'real':'demo';
     var le=(window.ktWallet?window.ktWallet.entries():[]).filter(function(e){return e.refId===x.id&&e.type==='plan_join'&&e.mode;})[0];
     if(le) return String(le.mode).toLowerCase()==='real'?'real':'demo';
+    if(x.fundedBy==='manual') return 'real';
     return (window.ktWallet&&window.ktWallet.live)?'real':'demo'; }
   function mtag(c){ return c.mode?(c.mode==='real'?' [REAL]':' [DEMO]'):''; }
   function myList(){ var all=S.isAdmin?S.all.filter(function(x){return S.user&&x.uid===S.user.uid;}):S.mine; var m=curMode(); return all.filter(function(x){ return cmode(x)===m; }); }
@@ -3578,7 +3586,30 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       '<dl class="calc-sum"><dt>Total contributed</dt><dd>'+money(r.start)+'</dd><dt>Final amount</dt><dd>'+money(r.final)+'</dd><dt>Profit / loss</dt><dd>'+(r.profit>=0?'+':'−')+money(Math.abs(r.profit))+'</dd><dt>Needed to meet all targets</dt><dd>'+money(r.needAll)+'</dd><dt>Our fee (above targets)</dt><dd>'+money(r.fee)+'</dd><dt>Short of targets by</dt><dd>'+money(r.short)+'</dd></dl>'+
       '<button type="button" class="btn btn-gold btn-sm" data-settle="'+c.id+'"'+(can?'':' disabled')+'>Record settlement &amp; release to members</button><p class="note" style="margin-top:8px;">'+(can?'This marks every member\u2019s payout as available to withdraw or reinvest.':'Available once the cohort has matured ('+fmtD(c.maturesAt)+').')+'</p>';
   }
-  function renderAll(){ renderEnrol(); renderPlans(); renderLists(); tick2(); }
+  var autoBusy=false, autoTried={};
+  async function autoDemo(){
+    if(autoBusy||!S.user||!window.ktWallet) return;
+    var mine=S.isAdmin?S.all.filter(function(x){return x.uid===S.user.uid;}):S.mine, led=window.ktWallet.entries(), todo=[];
+    mine.forEach(function(x){ if(cmode(x)!=='demo'||x.mode!=='demo') return;
+      if(x.status==='pending'&&x.fundedBy==='wallet'&&!autoTried['c'+x.id]) todo.push(['c',x]);
+      else if(x.status==='active'&&x.maturesAt&&Date.now()>=x.maturesAt&&!autoTried['s'+x.id]) todo.push(['s',x]); });
+    if(!todo.length) return; autoBusy=true;
+    for(var i=0;i<todo.length;i++){ var k=todo[i][0], x=todo[i][1]; autoTried[k+x.id]=true;
+      try{ var b=writeBatch(db), nowT=Date.now();
+        if(k==='c'){
+          b.update(doc(db,'contributions',x.id),{status:'active',confirmedAt:nowT,confirmedBy:'auto-demo'});
+          led.filter(function(l){return l.refId===x.id&&l.status==='pending';}).forEach(function(l){ b.update(doc(db,'ledger',l.id),{status:'completed',completedAt:nowT,confirmedBy:'auto-demo'}); });
+        } else {
+          var pay=Math.round(x.amount*(1+x.t)*100)/100;
+          b.update(doc(db,'contributions',x.id),{status:'closed',payout:pay,out:'ok',settlement:{final:pay,fee:0,at:nowT,auto:true}});
+          b.set(doc(collection(db,'ledger')),{uid:x.uid,name:x.name||'',email:x.email||'',type:'plan_payout',mode:'demo',amount:pay,status:'completed',refKind:'contribution',refId:x.id,service:'Investments',method:'Plan payout',note:plan(x.plan).name+' (demo)',createdBy:'auto-demo',createdAt:nowT,completedAt:nowT});
+        }
+        await b.commit();
+      }catch(err){ console.warn('auto demo step failed',err); }
+    }
+    autoBusy=false;
+  }
+  function renderAll(){ renderEnrol(); renderPlans(); renderLists(); tick2(); try{ autoDemo(); }catch(err){} }
   function dash(){
     var list=myList(), wds=myWds(), tx=[], rows='';
     list.slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);}).forEach(function(x){
@@ -3668,13 +3699,13 @@ import { getFirestore, collection, addDoc, doc, updateDoc, setDoc, deleteDoc, qu
       if(!(timeStatus(co2)==='enrolling'||(S.isAdmin&&S.testOpen))){ msg.textContent='Enrolment is closed right now.'; return; }
       if(!(amt>=p.min)){ msg.textContent='Enter at least $'+p.min+'.'; return; }
       if(!card.querySelector('[data-agree]').checked){ msg.textContent='Please tick the box to accept the terms.'; return; }
-      act.disabled=true; var w2=who(), msel=card.querySelector('[data-method]').value, cref=doc(collection(db,'contributions'));
+      act.disabled=true; var w2=who(), msel=(curMode()==='demo')?'Wallet':card.querySelector('[data-method]').value, cref=doc(collection(db,'contributions'));
       var cdata={uid:w2.uid,name:w2.name,email:w2.email,plan:p.key,amount:amt,status:'pending',cohortId:co2.id,winStart:co2.winStart,open:true,startAt:co2.startAt,maturesAt:co2.maturesAt,t:tgt(p.key),method:msel,fundedBy:msel==='Wallet'?'wallet':'manual',source:'new',mode:curMode(),createdAt:Date.now()};
       if(msel==='Wallet'){
         if(amt>(window.ktWallet?window.ktWallet.available():0)+0.0001){ window.ktSay(msg,'Funds are not enough. Add money in My Account → Wallet first.','err'); act.disabled=false; return; }
         var bw=writeBatch(db); bw.set(cref,cdata); bw.set(doc(collection(db,'ledger')),{uid:w2.uid,name:w2.name,email:w2.email,type:'plan_join',mode:(window.ktWallet&&window.ktWallet.mode?window.ktWallet.mode():'demo'),amount:-amt,status:'pending',refKind:'contribution',refId:cref.id,service:'Investments',method:'Wallet',note:p.name,createdBy:'member',createdAt:Date.now()}); await bw.commit();
       } else { await setDoc(cref,cdata); }
-      card.querySelector('[data-amt]').value=''; card.querySelector('[data-agree]').checked=false; card.querySelector('[data-exp]').textContent='—'; msg.textContent='Saved. Your contribution is waiting for payment confirmation. See My plans below.'; act.disabled=false;
+      card.querySelector('[data-amt]').value=''; card.querySelector('[data-agree]').checked=false; card.querySelector('[data-exp]').textContent='—'; msg.textContent=(curMode()==='demo')?'Done. Your demo plan is being activated automatically. See My plans below.':'Saved. Your contribution is waiting for payment confirmation. See My plans below.'; act.disabled=false;
     }
     }catch(err){ fail(err); renderAll(); }
   });
@@ -4361,7 +4392,7 @@ import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 (function(){
   var auth=getAuth(getApp()), API='https://kingdom-trader-pay.thekingdomtrader7.workers.dev';
-  var RM={7:1.10,14:1.05,30:1.00,60:0.95,90:0.90,120:0.88,180:0.82,365:0.75}, RL={7:'1 week',14:'2 weeks',30:'1 month',60:'2 months',90:'3 months',120:'4 months',180:'6 months',365:'1 year'};
+  var RM={7:1.10,14:1.05,30:1.00,60:0.95,90:0.90,120:0.88,180:0.82,365:0.75}, RL={14:'14 days',30:'1 month',365:'1 year'};
   var $=function(i){return document.getElementById(i);}, st=null, busy=false;
   function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function money(n){return '$'+(Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -4371,7 +4402,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
     return E.filter(function(e){return e.status==='completed';}).reduce(function(a,e){return a+e.amount;},0)
       +E.filter(function(e){return (e.status==='pending'||e.status==='processing')&&e.amount<0;}).reduce(function(a,e){return a+e.amount;},0); }
   function tierOf(){ return st.tiers.filter(function(t){return t.key===st.tier;})[0]; }
-  function price(){ var t=tierOf(); if(!t) return 0; return st.act==='buy'?t.buyPrice:Math.round((t.rentPrice/30)*st.days*(RM[st.days]||1)); }
+  function price(){ var t=tierOf(); if(!t) return 0; return st.act==='buy'?t.buyPrice:window.ktRentFor(t,st.days); }
   function open(name,act,tierKey){
     if(!auth.currentUser){ if(window.ktToast) window.ktToast('Please log in or register first.','warn'); location.hash='#account'; return; }
     var p=(window.__ktProducts||{})[name]; if(!p) return;
@@ -4387,7 +4418,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
     h+='<label>Choose a tier</label>'+st.tiers.map(function(x){ var p=st.act==='buy'?x.buyPrice:x.rentPrice;
       return '<button type="button" class="kb-tier'+(x.key===st.tier?' on':'')+'" data-tier="'+esc(x.key)+'"><b>'+esc(x.name)+'</b> — '+money(p)+(st.act==='rent'?' / month':'')+'<small>Up to '+x.mt5Accounts+' MT5 account'+(x.mt5Accounts>1?'s':'')+(x.instruments?' · '+x.instruments+' instruments':'')+' · VPS '+(x.vps?'included':'not included')+'</small></button>'; }).join('');
     if(st.platforms.length>1) h+='<label>Platform</label><select id="kbPl">'+st.platforms.map(function(x){return '<option'+(x===st.platform?' selected':'')+'>'+x+'</option>';}).join('')+'</select>';
-    if(st.act==='rent') h+='<label>Rental length</label><select id="kbDays">'+Object.keys(RL).map(function(d){return '<option value="'+d+'"'+(+d===st.days?' selected':'')+'>'+RL[d]+'</option>';}).join('')+'</select>';
+    if(st.act==='rent') h+='<label>Rental length</label><select id="kbDays">'+Object.keys(RL).map(function(d){return '<option value="'+d+'"'+(+d===st.days?' selected':'')+'>'+RL[d]+' — '+money(window.ktRentFor(t,+d))+'</option>';}).join('')+'</select>';
     if(st.platform!=='TradingView'){
       var max=Math.max(1,t.mt5Accounts||1); h+='<label>How many MT5 accounts will you use? (up to '+max+')</label><select id="kbCnt">'+Array.from({length:max},function(_,i){return '<option'+(i+1===st.count?' selected':'')+'>'+(i+1)+'</option>';}).join('')+'</select>';
       for(var i=0;i<st.count;i++) h+='<input class="kbAcc" data-i="'+i+'" inputmode="numeric" placeholder="MT5 account number '+(i+1)+' (optional, add later)" value="'+esc(st.accts[i]||'')+'">';
